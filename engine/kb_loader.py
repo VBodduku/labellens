@@ -1,4 +1,5 @@
 """Fail-fast, typed KB loading. Public API callers receive copies, never cached objects."""
+
 from __future__ import annotations
 
 import json
@@ -47,6 +48,7 @@ class Term(FrozenModel):
     origin: Origin
     notes: str
     confidence: Literal["high", "medium"]
+    review_reason: str | None = None
 
     _categories = field_validator("categories", "possible_categories")(check_categories)
 
@@ -56,9 +58,14 @@ class Term(FrozenModel):
             raise ValueError("Possible categories require varies origin")
         if not self.notes.strip():
             raise ValueError("Every entry needs notes")
+        if self.review_reason is not None and not self.review_reason.strip():
+            raise ValueError("Review reasons cannot be empty")
         if set(self.categories) & set(self.possible_categories):
             raise ValueError("Definite and possible categories overlap")
-        if any(not re.fullmatch(r"\d{3,4}[a-f]?(?:\(i{1,3}v?\))?", code) for code in self.ins):
+        if any(
+            not re.fullmatch(r"\d{3,4}[a-f]?(?:\(i{1,3}v?\))?", code)
+            for code in self.ins
+        ):
             raise ValueError("Invalid INS code syntax")
         return self
 
@@ -86,7 +93,9 @@ class Qualifier(FrozenModel):
     add_categories: tuple[str, ...] = ()
     remove_categories: tuple[str, ...] = ()
     term_ids: tuple[str, ...]
-    _categories = field_validator("add_categories", "remove_categories")(check_categories)
+    _categories = field_validator("add_categories", "remove_categories")(
+        check_categories
+    )
 
 
 class Nutrient(FrozenModel):
@@ -131,11 +140,16 @@ CATALOG = load_list("catalog.json", CatalogItem)
 STATEMENTS = load_list("statement_items.json", StatementItem)
 QUALIFIERS = load_list("qualifiers.json", Qualifier)
 NUTRIENTS = load_list("nutrients.json", Nutrient)
-DISPLAY_NAMES = DisplayNames.model_validate_json((ROOT / "kb/names.json").read_text(encoding="utf-8"))
+DISPLAY_NAMES = DisplayNames.model_validate_json(
+    (ROOT / "kb/names.json").read_text(encoding="utf-8")
+)
 
 
 def validate_indexes() -> None:
-    for label, ids in (("term", [t.id for t in TERMS]), ("catalog", [c.key for c in CATALOG])):
+    for label, ids in (
+        ("term", [t.id for t in TERMS]),
+        ("catalog", [c.key for c in CATALOG]),
+    ):
         if len(ids) != len(set(ids)):
             raise ValueError(f"Duplicate {label} ids")
     aliases: dict[str, str] = {}
@@ -145,12 +159,16 @@ def validate_indexes() -> None:
             for alias in names:
                 key = normalize(alias)
                 if key in aliases and aliases[key] != term.id:
-                    raise ValueError(f"Duplicate alias {alias}: {aliases[key]}, {term.id}")
+                    raise ValueError(
+                        f"Duplicate alias {alias}: {aliases[key]}, {term.id}"
+                    )
                 aliases[key] = term.id
         if codes.intersection(term.ins):
             raise ValueError(f"Duplicate INS code on {term.id}")
         codes.update(term.ins)
-    fixtures = json.loads((ROOT.parent / "shared/fixtures/catalog.json").read_text(encoding="utf-8"))
+    fixtures = json.loads(
+        (ROOT.parent / "shared/fixtures/catalog.json").read_text(encoding="utf-8")
+    )
     if {row["key"] for row in fixtures} - {c.key for c in CATALOG}:
         raise ValueError("Catalog missing fixture keys")
     for qualifier in QUALIFIERS:
@@ -162,8 +180,14 @@ validate_indexes()
 BY_ID = MappingProxyType({term.id: term for term in TERMS})
 BY_CODE = MappingProxyType({code: term for term in TERMS for code in term.ins})
 BY_KEY = MappingProxyType({item.key: item for item in CATALOG})
-ALIASES = tuple(sorted(
-    {(normalize(alias), term.id) for term in TERMS
-     for names in (term.names.en, term.names.hi, term.names.te) for alias in names},
-    key=lambda pair: (-len(pair[0]), pair[0], pair[1]),
-))
+ALIASES = tuple(
+    sorted(
+        {
+            (normalize(alias), term.id)
+            for term in TERMS
+            for names in (term.names.en, term.names.hi, term.names.te)
+            for alias in names
+        },
+        key=lambda pair: (-len(pair[0]), pair[0], pair[1]),
+    )
+)

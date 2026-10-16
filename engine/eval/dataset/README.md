@@ -105,22 +105,83 @@ Send each case's images to the backend with all eight profiles from
 `engine/eval/eval_profiles.json`, and save the complete returned **ScanResult JSON**
 as `engine/eval/responses/<case_id>.json`. Include extraction, nutrition_analysis,
 reports and metadata. A typical scanner response made with different profile IDs
-is not a valid substitute: missing IDs are listed and count as unknown. A missing
+is not a valid substitute: missing IDs are listed and always fail verdict accuracy
+(the confusion matrix places them under unknown). A missing
 response file aborts the run.
 
 From the repository root, in the project's Python environment:
 
 ```
-python -m engine.eval.run_eval --dataset engine/eval/dataset --responses engine/eval/responses
+python -m engine.eval.run_eval --backend http://localhost:8000 --reports engine/eval/reports/before
 ```
 
-This scores the supplied responses without rerunning the engine or making network
-calls, and writes `engine/eval/reports/report.json`, `report.md`, and `metrics.json`.
-Backend capture/upload is separate; the runner takes saved responses only.
+This requires a running backend with `ENGINE_MODE=real`, uploads every case with
+the fixed profiles, saves full responses to `engine/eval/responses/<case_id>.json`,
+and writes `report.json`, `report.md`, and `metrics.json` in the chosen directory.
+Health, timeout, malformed responses and per-case failures abort scoring. A capture
+manifest records providers, cache hits and request durations. Fixture extractions
+cannot measure real-packet accuracy. JPEG/PNG panels must be contiguous and at most
+400 KB each; image dimensions are validated by the backend.
+
+Before changing engine code, keep that baseline directory and raw responses. After
+fixes, replay **the same extraction** to isolate engine changes:
+
+```
+python -m engine.eval.run_eval --reevaluate --baseline engine/eval/reports/before/report.json --reports engine/eval/reports/after_offline
+```
+
+Replay leaves original responses unchanged and saves derived responses in
+`engine/eval/responses/reevaluated/`. Original LLM interpretations, if still needed,
+must be supplied in `<case_id>.interpretations.json`, a JSON object mapping unresolved
+term text to the frozen `TermInterpretation` shape (`term`, `categories`, `origin`,
+`confidence`, `rationale`). Missing original interpretation inputs block replay;
+they are never reconstructed from verdicts.
+
+Restart the backend so it loads the changed engine, then capture into a **different**
+response directory to preserve the baseline:
+
+```
+python -m engine.eval.run_eval --backend http://localhost:8000 --responses engine/eval/responses/after_live --baseline engine/eval/reports/before/report.json --reports engine/eval/reports/after_live
+```
+
+Both after reports contain before/after values. Comparison requires identical
+packet IDs, truth, photos and profiles. An engine fingerprint identifies local code;
+it cannot prove which checkout a separate backend process has loaded. The ordinary
+offline scorer (`--responses engine/eval/responses`, without `--reevaluate`) scores
+saved reports as supplied and never calls a model or backend.
+
+Review every error in `report.json.errors` against the photo and raw extraction.
+Record reviewed causes in e.g. `engine/eval/classifications.json`:
+
+```json
+{
+  "001_brand_product_clean:verdict:milk": {
+    "category": "extraction",
+    "explanation": "Photo shows milk powder; the extracted list omitted that item."
+  }
+}
+```
+
+Categories are `extraction`, `kb_gap`, `matcher_bug`, `rule_bug`. Engine-owned causes
+also require `regression_test`, an exact test path/name. This example is hypothetical,
+not an observed failure. Pass `--classifications engine/eval/classifications.json`
+when scoring; recheck reviews against each run. Unreviewed dangerous misses leave
+`engine_dangerous_misses` null, never a misleading zero. Copy actual packet-specific
+extraction findings into `engine/NOTES_FOR_OTHERS.md` for Part 2.
+
 The markdown report defines each rate and shows the four-by-four confusion matrix.
 The dangerous-miss rate is expected conflict predicted not_listed divided by all
 expected conflicts. Also inspect conflict-to-unknown and conflict-to-possible errors.
-Undefined rates are null; latency uses positive saved extraction durations.
+Undefined rates are null. Request latency uses positive capture-client timings
+from capture_manifest.json, including cache hits. Saved extraction-only durations
+and offline replays do not measure a backend request; their latency is null.
+
+The small metrics.json handed to the About page retains its existing
+`{status, metrics, generated_at}` envelope. Only nonempty real runs publish ready;
+synthetic runs publish pending with metrics.packets=0 and null rates/latency.
+Detailed scores and provenance remain in report.json/report.md. Rates are fractions,
+avg_latency_s is seconds, and generated_at is UTC artifact-generation time. See
+engine/NOTES_FOR_OTHERS.md for the exact frontend handoff.
 
 ## Synthetic verification
 

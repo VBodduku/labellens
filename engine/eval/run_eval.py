@@ -5,19 +5,26 @@ from __future__ import annotations
 import argparse
 import json
 import math
+from datetime import datetime, timezone
+from hashlib import sha256
 from pathlib import Path
 from typing import Literal, TypedDict
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, model_validator
 from shared.contract import (
     Evidence,
     Ingredient,
     NUTRIENT_KEYS,
     ScanResult,
+    Profile,
     VerdictState,
 )
 from engine.eval.metrics import matched_ingredients, ratio, score_verdicts
 from engine.normalize import normalize
+from engine.eval.comparison import EvaluationMetadata, comparison
+from engine.eval.errors import ErrorReview, EvaluationError, errors_for_packet
+from engine.eval.replay import load_profiles, replay
+from engine.eval.reporting import about_metrics, render_report, timestamp
 
 HERE = Path(__file__).resolve().parent
 CountKey = Literal[
@@ -42,12 +49,13 @@ class PacketScores(TypedDict):
     statements_exact: bool
     veg_mark_correct: bool
     verdict_pairs: list[tuple[VerdictState, VerdictState]]
+    verdict_correct: int
     missing_profiles: list[str]
     evidence_verified: int
     evidence_total: int
     unknown_results: int
     total_results: int
-    latency_ms: int | None
+    latency_ms: float | None
 
 
 class PacketRecord(PacketScores):
@@ -175,6 +183,9 @@ def score_packet(truth: Truth, scan: ScanResult) -> PacketScores:
         statements_exact=expected_statements == actual_statements,
         veg_mark_correct=truth.veg_mark == scan.extraction.veg_mark.value,
         verdict_pairs=pairs,
+        verdict_correct=sum(
+            reports.get(item.eval_profile) == item.state for item in truth.expected
+        ),
         missing_profiles=[
             item.eval_profile
             for item in truth.expected
@@ -194,7 +205,7 @@ def score_packet(truth: Truth, scan: ScanResult) -> PacketScores:
     )
 
 
-def run(dataset: Path, responses: Path, reports: Path) -> dict[str, object]:
+def case_files(dataset: Path) -> list[Path]:
     truth_files = sorted(
         path
         for path in dataset.glob("*/truth.json")
@@ -204,22 +215,163 @@ def run(dataset: Path, responses: Path, reports: Path) -> dict[str, object]:
         raise ValueError(
             "No real packet truth files or explicit synthetic packets found; the template is excluded. No accuracy report generated."
         )
+    return truth_files
+
+
+def run(
+    dataset: Path,
+    responses: Path,
+    reports: Path,
+    *,
+    profiles: list[Profile] | None = None,
+    reevaluate: bool = False,
+    baseline: Path | None = None,
+    reviews_path: Path | None = None,
+    source_mode: Literal["saved", "live", "reevaluated"] = "saved",
+    generated_at: datetime | None = None,
+) -> dict[str, object]:
+    truth_files = case_files(dataset)
+    if baseline and baseline.resolve() == (reports / "report.json").resolve():
+        raise ValueError(
+            "Use a separate baseline report directory; otherwise the baseline would be overwritten"
+        )
+    if reevaluate and not profiles:
+        raise ValueError(
+            "Offline re-evaluation requires the exact original evaluation profiles"
+        )
+    manifest = responses / "capture_manifest.json"
+    request_timings: dict[str, float] = {}
+    cache_hits: set[str] = set()
+    if manifest.exists():
+        capture_metadata = json.loads(manifest.read_text(encoding="utf-8"))
+        if capture_metadata.get("failed") or capture_metadata.get("pending"):
+            raise ValueError(
+                "Saved capture manifest has failed or incomplete cases; do not score a mixture of stale and fresh responses"
+            )
+        captured_profiles = capture_metadata.get("profiles")
+        if (
+            profiles
+            and captured_profiles is not None
+            and captured_profiles
+            != [profile.model_dump(mode="json") for profile in profiles]
+        ):
+            raise ValueError(
+                "Evaluation profiles differ from those submitted in the saved capture manifest"
+            )
+        for item in capture_metadata.get("cases", []):
+            duration = item.get("request_ms")
+            if (
+                item.get("status") == "captured"
+                and isinstance(duration, (float, int))
+                and math.isfinite(duration)
+                and duration > 0
+            ):
+                request_timings[item["packet_id"]] = duration
+                if item.get("cache_hit"):
+                    cache_hits.add(item["packet_id"])
+    reviews = (
+        TypeAdapter(dict[str, ErrorReview]).validate_json(
+            reviews_path.read_text(encoding="utf-8")
+        )
+        if reviews_path
+        else {}
+    )
     packets: list[PacketRecord] = []
+    errors: list[EvaluationError] = []
+    truths: list[dict[str, object]] = []
     sources: set[str] = set()
+    fixture_cases: list[str] = []
     for path in truth_files:
         truth = Truth.model_validate_json(path.read_text(encoding="utf-8"))
+        truths.append(
+            dict(
+                case_id=path.parent.name,
+                truth=truth.model_dump(mode="json"),
+                photos={
+                    photo.name: sha256(photo.read_bytes()).hexdigest()
+                    for photo in sorted(path.parent.glob("img_*"))
+                    if photo.is_file()
+                },
+            )
+        )
         sources.add(truth.source)
         scan = ScanResult.model_validate_json(
             (responses / f"{path.parent.name}.json").read_text(encoding="utf-8")
         )
+        if truth.source == "real" and scan.extraction.meta.provider == "fixture":
+            fixture_cases.append(path.parent.name)
+        if reevaluate:
+            assert profiles is not None
+            expected_ids = {expected.eval_profile for expected in truth.expected}
+            if expected_ids - {profile.profile_id for profile in profiles}:
+                raise ValueError(
+                    f"{path.parent.name}: truth references profiles absent from the replay profile file"
+                )
+            scan = replay(
+                scan, profiles, responses / f"{path.parent.name}.interpretations.json"
+            )
+            target = responses / "reevaluated"
+            target.mkdir(parents=True, exist_ok=True)
+            (target / f"{path.parent.name}.json").write_text(
+                scan.model_dump_json(indent=2) + "\n", encoding="utf-8"
+            )
+        errors.extend(
+            errors_for_packet(
+                path.parent.name,
+                truth.ingredients,
+                truth.nutrition_per_100,
+                truth.nutrition_rounding,
+                truth.nutrition_per_100_unit,
+                truth.allergen_statements,
+                truth.veg_mark,
+                {expected.eval_profile: expected.state for expected in truth.expected},
+                scan,
+                reviews,
+            )
+        )
         packets.append(
             PacketRecord(packet_id=path.parent.name, **score_packet(truth, scan))
+        )
+        packets[-1]["latency_ms"] = (
+            request_timings.get(path.parent.name)
+            if truth.source == "real" and not reevaluate
+            else None
         )
     if len(sources) != 1:
         raise ValueError(
             "Do not mix real and synthetic packets; generate separate reports"
         )
     kind = next(iter(sources))
+    if fixture_cases:
+        raise ValueError(
+            f"Fixture extraction cannot measure real-packet accuracy: {fixture_cases}"
+        )
+    metadata = EvaluationMetadata(
+        dataset_digest=sha256(
+            json.dumps(truths, sort_keys=True, ensure_ascii=False).encode()
+        ).hexdigest(),
+        profiles_digest=sha256(
+            json.dumps(
+                [profile.model_dump(mode="json") for profile in profiles],
+                sort_keys=True,
+            ).encode()
+        ).hexdigest()
+        if profiles
+        else None,
+        case_ids=[packet["packet_id"] for packet in packets],
+        source_mode="reevaluated" if reevaluate else source_mode,
+        local_engine_digest=sha256(
+            b"".join(
+                path.read_bytes()
+                for path in sorted(
+                    [
+                        *HERE.parent.glob("*.py"),
+                        *HERE.parent.joinpath("kb").glob("*.json"),
+                    ]
+                )
+            )
+        ).hexdigest(),
+    )
     scores = score_verdicts(
         [pair for packet in packets for pair in packet["verdict_pairs"]]
     )
@@ -239,12 +391,27 @@ def run(dataset: Path, responses: Path, reports: Path) -> dict[str, object]:
         else "Human-supplied truth and photo provenance have not been independently verified by the runner.",
         "Nutrient tolerance is max(2% of truth, annotated absolute printed rounding); no unannotated rounding allowance.",
         "Statements use exact normalized item sets; ingredients use top-level items with one-to-one fuzzy matching >=85.",
-        "Missing expected profiles count as unknown and are listed; missing responses abort the run.",
+        "Missing expected profiles appear as unknown in the confusion matrix, always fail verdict accuracy, and are listed; missing responses abort the run.",
         "Evidence rate counts unique extraction evidence records, including nested ingredients, claims and veg marks.",
         "Unknown rate uses restriction results in supplied reports. Verdict accuracy uses expected profile overalls.",
-        "Latency uses positive saved extraction durations for real packets only; synthetic latency is unmeasured.",
+        "Latency uses positive capture-client request durations for real packets only. Saved extraction-only timings, synthetic cases and offline replay have no measured request latency.",
         "Saved responses are scored as supplied; the runner does not re-evaluate them.",
     ]
+    if reevaluate:
+        limitations[-1] = (
+            "Saved extractions were re-evaluated with the current local engine and exact profiles; saved input responses remain unchanged."
+        )
+        limitations.append(
+            "Replay is not a new extraction run and has no measured scan latency. Missing original LLM inputs block replay rather than silently dropping model signals."
+        )
+    limitations.append(
+        "Error causes are unreviewed until explicitly classified with an explanation; engine-owned classifications require a regression-test reference."
+    )
+    limitations.append(
+        "The local engine fingerprint identifies this checkout, not the code loaded by a separate backend process. Restart the backend after engine changes; health only confirms ENGINE_MODE=real."
+    )
+    dangerous = [error for error in errors if error.dangerous_miss]
+    unreviewed_dangerous = sum(error.category == "unreviewed" for error in dangerous)
     metrics: dict[str, object] = dict(
         dataset_kind=kind,
         packets=len(packets),
@@ -256,7 +423,9 @@ def run(dataset: Path, responses: Path, reports: Path) -> dict[str, object]:
         / len(packets),
         veg_mark_accuracy=sum(packet["veg_mark_correct"] for packet in packets)
         / len(packets),
-        verdict_accuracy=ratio(scores.correct, scores.total),
+        verdict_accuracy=ratio(
+            sum(packet["verdict_correct"] for packet in packets), scores.total
+        ),
         confusion_matrix=scores.confusion,
         dangerous_misses=scores.dangerous_misses,
         expected_conflicts=scores.expected_conflicts,
@@ -268,51 +437,110 @@ def run(dataset: Path, responses: Path, reports: Path) -> dict[str, object]:
         ),
         average_latency_ms=sum(latencies) / len(latencies) if latencies else None,
         latency_samples=len(latencies),
+        latency_cache_hits=sum(
+            packet["packet_id"] in cache_hits and packet["latency_ms"] is not None
+            for packet in packets
+        ),
         limitations=limitations,
+        error_count=len(errors),
+        unreviewed_error_count=sum(error.category == "unreviewed" for error in errors),
+        unreviewed_dangerous_misses=unreviewed_dangerous,
+        engine_dangerous_misses=None
+        if unreviewed_dangerous
+        else sum(
+            error.category in {"kb_gap", "matcher_bug", "rule_bug"}
+            for error in dangerous
+        ),
+        extraction_dangerous_misses=sum(
+            error.category == "extraction" for error in dangerous
+        ),
     )
+    changes = comparison(baseline, metrics, metadata) if baseline else None
+    generated = timestamp(generated_at or datetime.now(timezone.utc))
+    headline = about_metrics(metrics, generated)
     reports.mkdir(parents=True, exist_ok=True)
     for name, data in (
-        ("metrics.json", metrics),
-        ("report.json", dict(metrics=metrics, packets=packets)),
+        ("metrics.json", headline.model_dump(mode="json")),
+        (
+            "report.json",
+            dict(
+                metrics=metrics,
+                packets=packets,
+                evaluation=metadata.model_dump(),
+                errors=[error.model_dump() for error in errors],
+                comparison=changes,
+                generated_at=generated,
+            ),
+        ),
     ):
         (reports / name).write_text(
             json.dumps(data, indent=2, ensure_ascii=False, allow_nan=False) + "\n",
             encoding="utf-8",
         )
-    title = (
-        "Synthetic pipeline check — NOT real-packet accuracy"
-        if kind == "synthetic"
-        else "Real-packet saved-response evaluation"
+    (reports / "report.md").write_text(
+        render_report(metrics, metadata, errors, changes, generated), encoding="utf-8"
     )
-    lines = [f"# {title}", "", "| Metric | Value |", "| --- | --- |"]
-    lines += [
-        f"| {key} | {value} |"
-        for key, value in metrics.items()
-        if key not in {"confusion_matrix", "limitations"}
-    ]
-    lines += [
-        "",
-        "Confusion matrix (rows expected, columns predicted):",
-        "",
-        "```json",
-        json.dumps(scores.confusion, indent=2),
-        "```",
-        "",
-    ]
-    lines += [f"- {limitation}" for limitation in limitations]
-    (reports / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     return metrics
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--responses", type=Path, required=True)
+    parser.add_argument("--responses", type=Path, default=HERE / "responses")
     parser.add_argument("--dataset", type=Path, default=HERE / "dataset")
     parser.add_argument("--reports", type=Path, default=HERE / "reports")
+    parser.add_argument(
+        "--backend",
+        help="Scan all cases live and save complete responses before scoring",
+    )
+    parser.add_argument("--profiles", type=Path, default=HERE / "eval_profiles.json")
+    parser.add_argument("--timeout", type=float, default=60.0)
+    parser.add_argument(
+        "--reevaluate",
+        action="store_true",
+        help="Re-evaluate saved extractions with current engine; preserve original responses",
+    )
+    parser.add_argument(
+        "--baseline",
+        type=Path,
+        help="Original report.json from the same truth set and profiles",
+    )
+    parser.add_argument(
+        "--classifications",
+        type=Path,
+        help="Reviewed error ID -> category/explanation/regression_test JSON",
+    )
     args = parser.parse_args()
+    if args.backend and args.reevaluate:
+        parser.error("--backend and --reevaluate are separate measurements")
     try:
-        metrics = run(args.dataset, args.responses, args.reports)
-    except (ValueError, OSError) as error:
+        profiles = load_profiles(args.profiles)
+        if args.backend:
+            from engine.eval.live import CaptureCase, capture
+
+            cases = []
+            for path in case_files(args.dataset):
+                truth = Truth.model_validate_json(path.read_text(encoding="utf-8"))
+                if {expected.eval_profile for expected in truth.expected} - {
+                    profile.profile_id for profile in profiles
+                }:
+                    raise ValueError(
+                        f"{path.parent.name}: truth references absent evaluation profiles"
+                    )
+                cases.append(CaptureCase(path.parent, truth.source))
+            if len({case.source for case in cases}) != 1:
+                raise ValueError("Do not mix real and synthetic packets")
+            capture(args.backend, cases, args.responses, profiles, args.timeout)
+        metrics = run(
+            args.dataset,
+            args.responses,
+            args.reports,
+            profiles=profiles,
+            reevaluate=args.reevaluate,
+            baseline=args.baseline,
+            reviews_path=args.classifications,
+            source_mode="live" if args.backend else "saved",
+        )
+    except (ValueError, OSError, RuntimeError) as error:
         parser.exit(2, f"Evaluation failed: {error}\n")
     print(json.dumps(metrics, indent=2))
 

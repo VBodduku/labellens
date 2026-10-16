@@ -54,3 +54,23 @@
 - Consistency status follows the specified 15% energy rule. Independent sanity failures still populate suspect_keys even with status consistent; threshold checks always inspect those keys.
 
 - Compile the entire alias-pattern tuple once at import: the expanded KB exceeded Python's implicit regex cache, so per-ingredient string-pattern matching regressed beyond 50 ms. Immutable compiled patterns preserve matching semantics and remove that cost.
+
+- Phase 3: network capture lives only in the explicit evaluation CLI, with bounded requests and real-engine health checks; core engine imports/evaluation remain offline.
+- Preserve raw scan responses for fixed-extraction replay. Require original LLM interpretation sidecars when needed instead of inferring model confidence/categories from verdicts.
+- Before/after comparisons require identical case IDs, truth, photo bytes and profiles. Local code fingerprints cannot attest which code a separate backend process has loaded.
+- Error causes require explicit reviewed explanations; engine-owned classifications require regression-test references. Unreviewed dangerous misses make the engine-caused count unmeasured, not zero.
+- Missing expected profiles always fail verdict accuracy, including expected unknown; confusion-matrix fallback remains unknown and missing IDs are separately counted.
+
+- Phase 3 KB has 260 entries; common Hindi/Telugu ingredient aliases are included but still require native-speaker and packet-use review. No new additive numbers were added.
+- Correct generic albumin from definite egg to possible egg/egg-derived (medium); explicit ovalbumin and egg albumen remain definite egg. Albumin is a protein family, not an exclusive egg-source label.
+- Whole-word boundaries treat Unicode combining marks as word content so Hindi/Telugu vowel signs cannot split a syllable. Existing >=92 fuzzy policy is retained.
+- Add optional internal review_reason metadata and generate KB_REVIEW.md from every medium, possible, variable-origin or flagged entry. High-confidence origin taxonomy limitations are flagged without silently changing spec-required lactitol/sugar categories.
+
+- Phase 4 feature freeze: no KB or verdict-rule changes. Edge cases cover empty/no-profile/no-restriction inputs, nested-only and duplicate panel ingredients, unknown keys and extreme/nonfinite nutrient readings.
+- About metrics retain Part 1's existing status/metrics envelope. Only real case measurements populate numeric rates; synthetic runs publish pending, zero real packets and null rates. generated_at is UTC artifact-generation time, not evidence of a live scan.
+- Request latency comes from capture_manifest request_ms, with cache hits disclosed. Extraction-only duration_ms and engine replay cannot establish request latency; leave it null if no HTTP timings were captured.
+- Performance benchmark explicitly distinguishes largest saved real extraction from opt-in fixture timing; fixture timing cannot satisfy the real-label acceptance target. Largest is measured by ingredient-name characters including children; report warm median/p95/max and environment.
+
+- Freeze follow-up: split ingredient lists using original character offsets while normalizing delimiter candidates; whole-string NFKC/lowercase offsets can truncate a following allergen. Exact label text remains intact.
+- Freeze follow-up: a full-fragment fuzzy compound repair may replace exact spans only if those spans are part of the candidate compound. It must not discard an unrelated exact allergen such as egg after a long misspelled additive name.
+- Mark a capture batch pending before writing any responses. Interrupted recaptures must block offline scoring even if a previous successful manifest and old responses exist.

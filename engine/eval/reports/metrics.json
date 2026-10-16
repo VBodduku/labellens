@@ -1,55 +1,15 @@
 {
-  "dataset_kind": "synthetic",
-  "packets": 2,
-  "real_packets": 0,
-  "ingredient_precision": 1.0,
-  "ingredient_recall": 0.9545454545454546,
-  "nutrient_accuracy": 0.9375,
-  "statement_accuracy": 1.0,
-  "veg_mark_accuracy": 1.0,
-  "verdict_accuracy": 0.9375,
-  "confusion_matrix": {
-    "conflict": {
-      "conflict": 8,
-      "possible": 1,
-      "unknown": 0,
-      "not_listed": 0
-    },
-    "possible": {
-      "conflict": 0,
-      "possible": 3,
-      "unknown": 0,
-      "not_listed": 0
-    },
-    "unknown": {
-      "conflict": 0,
-      "possible": 0,
-      "unknown": 3,
-      "not_listed": 0
-    },
-    "not_listed": {
-      "conflict": 0,
-      "possible": 0,
-      "unknown": 0,
-      "not_listed": 1
-    }
+  "status": "pending",
+  "metrics": {
+    "packets": 0,
+    "ingredient_recall": null,
+    "ingredient_precision": null,
+    "nutrient_accuracy": null,
+    "verdict_accuracy": null,
+    "dangerous_miss_rate": null,
+    "evidence_verified_rate": null,
+    "unknown_rate": null,
+    "avg_latency_s": null
   },
-  "dangerous_misses": 0,
-  "expected_conflicts": 9,
-  "dangerous_miss_rate": 0.0,
-  "evidence_verified_rate": 0.9571428571428572,
-  "unknown_rate": 0.1875,
-  "missing_profile_count": 0,
-  "average_latency_ms": null,
-  "latency_samples": 0,
-  "limitations": [
-    "Synthetic fixtures test software behavior only; they do not measure real-packet accuracy.",
-    "Nutrient tolerance is max(2% of truth, annotated absolute printed rounding); no unannotated rounding allowance.",
-    "Statements use exact normalized item sets; ingredients use top-level items with one-to-one fuzzy matching >=85.",
-    "Missing expected profiles count as unknown and are listed; missing responses abort the run.",
-    "Evidence rate counts unique extraction evidence records, including nested ingredients, claims and veg marks.",
-    "Unknown rate uses restriction results in supplied reports. Verdict accuracy uses expected profile overalls.",
-    "Latency uses positive saved extraction durations for real packets only; synthetic latency is unmeasured.",
-    "Saved responses are scored as supplied; the runner does not re-evaluate them."
-  ]
+  "generated_at": "2026-10-16T13:42:13Z"
 }

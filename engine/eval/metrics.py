@@ -1,4 +1,5 @@
 """Offline scoring helpers. Undefined rates are None, never invented perfect scores."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -13,10 +14,18 @@ def ratio(numerator: int, denominator: int) -> float | None:
     return numerator / denominator if denominator else None
 
 
-def matched_ingredients(expected: list[str], predicted: list[str]) -> int:
+def ingredient_pairs(
+    expected: list[str], predicted: list[str]
+) -> tuple[tuple[int, int], ...]:
     """Maximum one-to-one matching prevents duplicate predictions inflating recall."""
-    edges = [[j for j, truth in enumerate(expected)
-              if token_sort_ratio(normalize(term), normalize(truth)) >= 85] for term in predicted]
+    edges = [
+        [
+            j
+            for j, truth in enumerate(expected)
+            if token_sort_ratio(normalize(term), normalize(truth)) >= 85
+        ]
+        for term in predicted
+    ]
     assignment: dict[int, int] = {}
 
     def augment(index: int, visited: set[int]) -> bool:
@@ -29,7 +38,13 @@ def matched_ingredients(expected: list[str], predicted: list[str]) -> int:
                 return True
         return False
 
-    return sum(augment(index, set()) for index in range(len(predicted)))
+    for index in range(len(predicted)):
+        augment(index, set())
+    return tuple(sorted(assignment.items()))
+
+
+def matched_ingredients(expected: list[str], predicted: list[str]) -> int:
+    return len(ingredient_pairs(expected, predicted))
 
 
 @dataclass(frozen=True)
@@ -47,5 +62,10 @@ def score_verdicts(pairs: Sequence[tuple[str, str]]) -> VerdictScores:
         if truth not in STATES or prediction not in STATES:
             raise ValueError("Verdict outside the four-state vocabulary")
         matrix[truth][prediction] += 1
-    return VerdictScores(matrix, sum(truth == prediction for truth, prediction in pairs), len(pairs),
-                         matrix["conflict"]["not_listed"], sum(matrix["conflict"].values()))
+    return VerdictScores(
+        matrix,
+        sum(truth == prediction for truth, prediction in pairs),
+        len(pairs),
+        matrix["conflict"]["not_listed"],
+        sum(matrix["conflict"].values()),
+    )
