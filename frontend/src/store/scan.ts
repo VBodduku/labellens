@@ -1,10 +1,11 @@
 import { del as idbDel, get as idbGet, set as idbSet } from "idb-keyval";
 import { create } from "zustand";
 import { api, ApiError, isApiError } from "../api";
-import { applyCorrections } from "../lib/corrections";
+import { applyCorrections, makeCorrection } from "../lib/corrections";
+import { confirmsPrintedNumber } from "../lib/confirmations";
 import { createId } from "../lib/ids";
 import { changedVerdicts } from "../lib/resultDiff";
-import type { Correction, Lang, PanelHint, Profile, ScanResult } from "../shared/contract";
+import type { Contradiction, Correction, Lang, PanelHint, Profile, ScanResult } from "../shared/contract";
 
 export const MAX_PANELS = 3;
 export const LAST_SCAN_KEY = "labellens.lastScan";
@@ -54,6 +55,11 @@ interface ScanState {
   addCorrection: (correction: Correction, lang: Lang) => Promise<void>;
   /** Several corrections, one recheck (a confirmation covers each category of an ingredient). */
   addCorrections: (corrections: Correction[], lang: Lang) => Promise<void>;
+  /**
+   * "I checked the pack" for a contradiction: saved with the scan (and, for a disputed number, recorded as
+   * "the pack says this number"), then every verdict is rechecked. Shown as checked straight away.
+   */
+  checkContradiction: (contradiction: Contradiction, lang: Lang) => Promise<void>;
   loadDemo: () => Promise<void>;
   hydrate: () => Promise<void>;
   reset: () => void;
@@ -209,6 +215,24 @@ export const useScanStore = create<ScanState>()((set, get) => {
     addCorrections: async (corrections, lang) => {
       if (corrections.length === 0) return;
       set({ corrections: [...get().corrections, ...corrections] });
+      await get().recheck(lang);
+    },
+
+    checkContradiction: async (contradiction, lang) => {
+      const { result, corrections } = get();
+      if (!result || !contradiction.key) return;
+      const { extraction } = result;
+      const checked = [...new Set([...(extraction.checked_contradictions ?? []), contradiction.key])];
+      const confirmed = confirmsPrintedNumber(extraction, contradiction);
+      set({
+        result: {
+          ...result,
+          extraction: { ...extraction, checked_contradictions: checked },
+          contradictions: (result.contradictions ?? []).map((item) => (item.key === contradiction.key ? { ...item, checked: true } : item)),
+        },
+        corrections: confirmed ? [...corrections, makeCorrection(extraction, confirmed.fieldPath, confirmed.value)] : corrections,
+      });
+      await persist(get());
       await get().recheck(lang);
     },
 

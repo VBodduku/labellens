@@ -102,9 +102,15 @@ export const mockApi: LabelLensApi = {
     const failure = mockErrorFromUrl();
     await delay(MOCK_DELAYS_MS.recheck, options?.signal);
     throwIfMockError(failure);
-    // Engine verdicts are not recomputed in mock mode; the corrected extraction is echoed back.
+    // Engine verdicts are not recomputed in mock mode; the corrected extraction and its saved checks are echoed back.
+    const checked = new Set(request.extraction.checked_contradictions ?? []);
     return withScenario(
-      freshResult({ lang: request.lang, extraction: structuredClone(request.extraction), reports: structuredClone(reportsFor(request.profiles)) }),
+      freshResult({
+        lang: request.lang,
+        extraction: structuredClone(request.extraction),
+        reports: structuredClone(reportsFor(request.profiles)),
+        contradictions: (fixtureScanResult.contradictions ?? []).map((item) => ({ ...item, checked: checked.has(item.key ?? "") })),
+      }),
       request.profiles,
     );
   },

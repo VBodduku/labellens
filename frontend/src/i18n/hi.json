@@ -417,6 +417,7 @@
   "contradictions.affects": "असर: {list}",
   "contradictions.fix": "ग़लत पढ़ाई ठीक करें",
   "contradictions.check": "मैंने पैक देख लिया",
+  "contradictions.confirmValue": "पैकेट पर {value} लिखा है",
   "contradictions.checked": "आपने जाँचा",
   "contradictions.open": "अभी जाँचा नहीं",
   "confirm.question": "पैक देखें: क्या {term} में {category} है?",

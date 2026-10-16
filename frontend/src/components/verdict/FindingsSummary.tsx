@@ -6,11 +6,11 @@ import type { Contradiction, ProfileReport } from "../../shared/contract";
  * confirmed (a conflict or "not listed" the label itself establishes), uncertain ("Check this"),
  * missing (unknown) and disagreements not yet checked on the pack.
  */
-export function FindingsSummary({ report, contradictions, checked }: { report: ProfileReport; contradictions: Contradiction[]; checked: string[] }) {
+export function FindingsSummary({ report, contradictions }: { report: ProfileReport; contradictions: Contradiction[] }) {
   const { t } = useTranslation();
   const count = (states: string[]) => report.results.filter((result) => states.includes(result.state)).length;
   const open = contradictions.filter(
-    (item) => !checked.includes(item.id) && item.affects.some((ref) => ref.profile_id === report.profile_id),
+    (item) => !item.checked && item.affects.some((ref) => ref.profile_id === report.profile_id),
   ).length;
   const items = [
     { key: "confirmed", value: count(["conflict", "not_listed"]), className: "text-text" },

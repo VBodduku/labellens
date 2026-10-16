@@ -417,6 +417,7 @@
   "contradictions.affects": "ప్రభావం: {list}",
   "contradictions.fix": "తప్పు చదువు సరిచేయండి",
   "contradictions.check": "నేను ప్యాక్ చూశాను",
+  "contradictions.confirmValue": "ప్యాకెట్‌పై {value} ఉంది",
   "contradictions.checked": "మీరు తనిఖీ చేశారు",
   "contradictions.open": "ఇంకా తనిఖీ చేయలేదు",
   "confirm.question": "ప్యాక్ చూడండి: {term}లో {category} ఉందా?",

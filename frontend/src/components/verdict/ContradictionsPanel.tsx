@@ -1,8 +1,8 @@
 import { CircleCheck, GitCompareArrows, Pencil } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { EditTarget } from "../label/CorrectionEditor";
-import { editTargetFor } from "../../lib/confirmations";
-import { joinWithAnd } from "../../lib/format";
+import { confirmsPrintedNumber, editTargetFor } from "../../lib/confirmations";
+import { formatNumber, joinWithAnd } from "../../lib/format";
 import { restrictionLabel } from "../../lib/restrictionLabel";
 import type { Contradiction, LabelExtraction, Profile } from "../../shared/contract";
 import { useUiStore } from "../../store/ui";
@@ -13,17 +13,16 @@ interface ContradictionsPanelProps {
   contradictions: Contradiction[];
   extraction: LabelExtraction;
   profiles: Profile[];
-  checked: string[];
-  onCheck: (id: string) => void;
+  onCheck: (contradiction: Contradiction) => void;
   onFix: (target: EditTarget) => void;
 }
 
 /**
  * "These don't agree": every contradiction the engine found, with both sides' words on the photo, the
- * verdicts it touches, and two ways to settle it — correct a misread (rechecks everything) or mark it
- * checked on the pack. Until then it is shown as not checked.
+ * verdicts it touches, and two ways to settle it — correct a misread, or say it was checked on the pack (for a
+ * disputed number: "the pack says this number"). Both are saved with the scan and recheck every verdict.
  */
-export function ContradictionsPanel({ contradictions, extraction, profiles, checked, onCheck, onFix }: ContradictionsPanelProps) {
+export function ContradictionsPanel({ contradictions, extraction, profiles, onCheck, onFix }: ContradictionsPanelProps) {
   const { t } = useTranslation();
   const lang = useUiStore((state) => state.lang);
   if (contradictions.length === 0) return null;
@@ -51,7 +50,8 @@ export function ContradictionsPanel({ contradictions, extraction, profiles, chec
       </header>
       <ul className="divide-y divide-line">
         {contradictions.map((item) => {
-          const done = checked.includes(item.id);
+          const done = item.checked === true;
+          const printed = confirmsPrintedNumber(extraction, item);
           const target = item.field_path ? editTargetFor(extraction, item.field_path) : null;
           const affects = affected(item);
           return (
@@ -84,11 +84,13 @@ export function ContradictionsPanel({ contradictions, extraction, profiles, chec
                 {!done && (
                   <button
                     type="button"
-                    onClick={() => onCheck(item.id)}
+                    onClick={() => onCheck(item)}
                     className="inline-flex min-h-9 items-center gap-1.5 rounded-chip bg-surface-2 px-3 text-xs font-semibold touch:min-h-11"
                   >
                     <CircleCheck className="size-3.5" aria-hidden="true" />
-                    {t("contradictions.check")}
+                    {printed
+                      ? t("contradictions.confirmValue", { value: formatNumber(printed.value, lang) })
+                      : t("contradictions.check")}
                   </button>
                 )}
               </div>

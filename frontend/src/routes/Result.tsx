@@ -23,7 +23,6 @@ import { FamilyStrip } from "../components/verdict/FamilyStrip";
 import { FindingsSummary } from "../components/verdict/FindingsSummary";
 import { ProfileVerdictCard } from "../components/verdict/ProfileVerdictCard";
 import { makeCorrection } from "../lib/corrections";
-import { useCheckedContradictions } from "../lib/useCheckedContradictions";
 import { useLatch } from "../lib/useLatch";
 import { sortByStateWorstFirst } from "../lib/verdict";
 import type { Box, ScanResult } from "../shared/contract";
@@ -67,7 +66,8 @@ function EmptyResult() {
 
 function ResultView({ result, panels }: { result: ScanResult; panels: Panel[] }) {
   const { t } = useTranslation();
-  const { scanProfiles, isDemo, status, corrections, changedVerdicts, recheckError, addCorrection, recheck } = useScanStore();
+  const { scanProfiles, isDemo, status, corrections, changedVerdicts, recheckError, addCorrection, recheck, checkContradiction } =
+    useScanStore();
   const { profiles: savedProfiles, hydrated: profilesHydrated } = useProfilesStore();
   const { lang, selectedProfileId, selectProfile } = useUiStore();
   const [tab, setTab] = useState<TabKey>("nutrition");
@@ -75,7 +75,6 @@ function ResultView({ result, panels }: { result: ScanResult; panels: Panel[] })
   const [explaining, setExplaining] = useState<string | null>(null);
   const editorMounted = useLatch(editing !== null);
   const contradictions = result.contradictions ?? [];
-  const { checked, check } = useCheckedContradictions(result.scan_id);
   const explainMounted = useLatch(explaining !== null);
 
   // Summaries are generated per language: after a switch, recheck (engine only) and show the template meanwhile.
@@ -161,13 +160,12 @@ function ResultView({ result, panels }: { result: ScanResult; panels: Panel[] })
           {reports.length > 0 && selected && (
             <FamilyStrip reports={reports} profiles={scanProfiles} selectedId={selected.profile_id} onSelect={selectProfile} />
           )}
-          {selected && <FindingsSummary report={selected} contradictions={contradictions} checked={checked} />}
+          {selected && <FindingsSummary report={selected} contradictions={contradictions} />}
           <ContradictionsPanel
             contradictions={contradictions}
             extraction={result.extraction}
             profiles={scanProfiles}
-            checked={checked}
-            onCheck={check}
+            onCheck={(item) => void checkContradiction(item, lang)}
             onFix={setEditing}
           />
           <Tabs tabs={tabs} value={tab} onChange={setTab} label={t("result.tabs.label")} idPrefix={TAB_PREFIX} />

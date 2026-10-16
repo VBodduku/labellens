@@ -1,5 +1,13 @@
 import type { EditTarget } from "../components/label/CorrectionEditor";
-import type { Correction, Ingredient, LabelExtraction, NutrientRow, NutrientValue, RestrictionResult } from "../shared/contract";
+import type {
+  Contradiction,
+  Correction,
+  Ingredient,
+  LabelExtraction,
+  NutrientRow,
+  NutrientValue,
+  RestrictionResult,
+} from "../shared/contract";
 import { makeCorrection } from "./corrections";
 import { formatPath, getAtPath, parsePath } from "./fieldPath";
 
@@ -67,4 +75,15 @@ export function editTargetFor(extraction: LabelExtraction, fieldPath: string): E
       : null;
   }
   return null;
+}
+
+/**
+ * For a disputed number (the AI vs the photo's text, or two photos), checking the pack means "the pack says
+ * this number": the value in use is confirmed as a correction, which makes it usable for every check.
+ * Disagreements between two printed things (veg mark, "free from", claims) are only marked checked.
+ */
+export function confirmsPrintedNumber(extraction: LabelExtraction, contradiction: Contradiction): { fieldPath: string; value: number } | null {
+  if ((contradiction.kind !== "ai_vs_print" && contradiction.kind !== "panels") || !contradiction.field_path) return null;
+  const value = getAtPath(extraction, contradiction.field_path);
+  return typeof value === "number" ? { fieldPath: contradiction.field_path, value } : null;
 }

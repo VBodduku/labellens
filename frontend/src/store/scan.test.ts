@@ -75,3 +75,35 @@ describe("scan store recheck", () => {
     useScanStore.setState({ isDemo: false });
   });
 });
+
+describe("scan store checkContradiction", () => {
+  const disputed = (path: string) => ({
+    id: "ctr_0", kind: "ai_vs_print" as const, key: "ai_vs_print:ai_value=15|nutrient=sodium_mg|value=150",
+    message_key: "contradiction.ai_vs_print", message_params: {}, explanation: "", evidence: [], affects: [], field_path: path,
+  });
+
+  beforeEach(() => {
+    recheck.mockReset();
+    recheck.mockImplementation(async (request: RecheckRequest) => ({ ...fixtureScanResult, extraction: request.extraction }));
+    useScanStore.setState({ result: structuredClone(fixtureScanResult), scanProfiles: fixtureProfiles, status: "done", recheckError: null, corrections: [] });
+  });
+
+  it("saves a label-vs-label check with the scan and rechecks, without touching any value", async () => {
+    const item = { ...disputed("ingredients[10].name"), kind: "veg_mark" as const, key: "veg_mark:term=x" };
+    await useScanStore.getState().checkContradiction(item, "en");
+    const request = recheck.mock.calls[0]?.[0] as RecheckRequest;
+    expect(request.extraction.checked_contradictions).toEqual(["veg_mark:term=x"]);
+    expect(useScanStore.getState().corrections).toEqual([]);
+  });
+
+  it("confirms a disputed number as printed, which makes it usable", async () => {
+    const extraction = fixtureScanResult.extraction;
+    const row = extraction.nutrition!.rows.findIndex((r) => r.values[0]?.amount != null);
+    const path = `nutrition.rows[${row}].values[0].amount`;
+    await useScanStore.getState().checkContradiction(disputed(path), "en");
+    const request = recheck.mock.calls[0]?.[0] as RecheckRequest;
+    const value = request.extraction.nutrition!.rows[row]!.values[0]!;
+    expect(value).toMatchObject({ amount: extraction.nutrition!.rows[row]!.values[0]!.amount, corrected_by_user: true, readability: "clear" });
+    expect(request.extraction.checked_contradictions).toContain(disputed(path).key);
+  });
+});

@@ -408,6 +408,7 @@
   "contradictions.affects": "Affects: {list}",
   "contradictions.fix": "Fix a misread",
   "contradictions.check": "I checked the pack",
+  "contradictions.confirmValue": "The pack says {value}",
   "contradictions.checked": "Checked by you",
   "contradictions.open": "Not checked yet",
   "confirm.question": "Check the pack: does {term} contain {category}?",
