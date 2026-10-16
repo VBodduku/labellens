@@ -152,6 +152,8 @@
   "scan.retakeMode": "Retaking photo {n} — get close to the part that was hard to read.",
   "scan.captured": "Photo {n} added",
   "scan.close": "Close camera",
+  "scan.reader.local": "The AI reader is unavailable. Scans use the slower on-device reader and may fall back to basic reading — you'll be asked to check more on the pack.",
+  "scan.reader.basic": "The AI reader is unavailable, so scans get a basic reading only. You'll be asked to check more on the pack.",
   "analysing.reading": "Reading the text…",
   "analysing.understanding": "Understanding the label…",
   "analysing.verifying": "Double-checking unclear parts…",

@@ -9,6 +9,7 @@ import { CaptureButton } from "../components/capture/CaptureButton";
 import { DebugOverlay } from "../components/capture/DebugOverlay";
 import { PanelTray } from "../components/capture/PanelTray";
 import { QualityHints } from "../components/capture/QualityHints";
+import { ReaderNotice } from "../components/capture/ReaderNotice";
 import { TorchToggle } from "../components/capture/TorchToggle";
 import { UploadFallback } from "../components/capture/UploadFallback";
 import { useCamera } from "../components/capture/useCamera";
@@ -174,6 +175,7 @@ export default function Scan() {
 
       <div className="relative z-10 space-y-3 bg-gradient-to-t from-black/85 via-black/50 to-transparent px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-8">
         {live && <QualityHints issues={issues} ready={monitor.latest !== null} />}
+        <ReaderNotice />
         {userProfiles.length === 0 && resultRetake === null && (
           <Link
             to="/profiles"
