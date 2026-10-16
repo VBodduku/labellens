@@ -1,0 +1,27 @@
+# Phase 1 decisions
+
+- Implement only inside engine; the supplied folder initially had no Git metadata. After the human supplied VBodduku/labellens, attach the initial local part-3-engine branch to its existing remote commit without checking out or rewriting project files.
+- Phase 1 delivers the complete ingredient/statement/completeness rows plus usable basic threshold/nutrition APIs; full consistency and suspect-value diagnosis remain Phase 2.
+- Copy all frozen catalog entries unchanged and append celery, lupin and mollusc restrictions so all 15 allergen categories are selectable.
+- Cache typed KB records once; use frozen term models/tuple fields, read-only lookup indexes and defensive public catalog/vocabulary copies.
+- Retain exact INS suffixes and explicitly list known variants; unknown variants remain unresolved rather than silently inheriting a base code.
+- In addition to token_sort_ratio >=92, remove OCR-inserted spaces for a second ratio at the same threshold; this resolves the specified pea nuts and whey pow der examples.
+- Whole-word matching collects non-overlapping aliases longest first, preserving separate signals in a compound ingredient while protecting plant milk/butter names.
+- A generic plant-source qualifier does not exclude soy; only a specific sunflower source resolves lecithin away from soy.
+- Negated source phrases never become affirmative qualifiers; keep the additive ambiguous and expose unresolved residual wording for review.
+- Preference trace warnings cannot produce not_listed from an incomplete ingredient section; retain the trace as supporting evidence on unknown.
+- Missing evidence produces a verbatim unverified Evidence record; no box or verified location is invented.
+- Partially readable ingredients may supply a positive signal but prevent absence; fully unreadable parents and children are skipped.
+- Unresolved residual text remains available for model interpretation even when other parts of the ingredient matched; resolved KB ingredients cannot be reclassified by model input.
+- Model interpretations must match the unresolved term, use only CATEGORIES, and have finite confidence within 0..1; invalid input is ignored and stays unresolved.
+- Unknown terms on a complete ingredient list follow the specified completeness semantics; an unmapped term alone does not imply a particular restriction category. unresolved_terms exposes that limitation.
+- Green marks resolve only the exact slaughter-derived category set in the master spec, never milk/dairy, honey, insects or Jain plant categories.
+- Mark dried ginger/turmeric diet-practice ambiguity as possible root_vegetable with notes; fresh ginger is definite per the spec.
+- Use the requested sugar-signal taxonomy for maltodextrin/date paste, with notes that this is not a chemical or regulatory added-sugars classification.
+- Use the requested milk-origin mapping for lactitol, with explicit notes that origin does not establish residual allergenic protein or lactose content.
+- Avoid uncertain vernacular equivalents for celery, lupin and molluscs; English aliases are supported and regional-name review is still needed.
+- INS 441 is retained as the specified legacy gelatin label code; code recognition does not assert current regulatory authorization. E472f likewise is a label identifier, not an authorization claim.
+- No mass/volume conversion without density; only matching g/ml serving and pack bases can be converted. Invalid units, unreadable, negative or nonfinite amounts are not compared.
+- Inconsistent duplicate nutrition readings stay unusable; later duplicates cannot silently restore a conflicting value.
+- Start the evaluation harness with offline saved responses; exclude the template and refuse empty-data accuracy reports. Backend upload mode is Phase 2.
+- Evaluation uses one-to-one ingredient matching, a documented 2%/0.05-unit nutrient tolerance, exact normalized statement sets and unknown for missing profile reports; undefined rates are null.

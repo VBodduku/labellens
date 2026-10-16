@@ -1,0 +1,9 @@
+{
+  "product": "Replace with the printed product name",
+  "ingredients": [],
+  "ingredients_complete_in_photos": false,
+  "allergen_statements": {"contains": [], "may_contain": []},
+  "veg_mark": "not_found",
+  "nutrition_per_100": {},
+  "expected": []
+}

@@ -1,0 +1,15 @@
+# Integration and review notes
+
+- Part 2: import engine's five functions directly using the frozen interface. Run from repo root and install engine/requirements.txt. All returns use shared contract models; report summary fields remain empty.
+- Part 2: interpretations are keyed by unresolved term text; normalization permits different casing. Only unresolved fragments can receive LLM signals, capped at possible. Invalid categories or confidence are rejected without changing the deterministic result.
+- Part 1: English explanations humanize canonical category/nutrient/basis IDs, while message_params retain the frozen translation conventions. Missing source locations are explicit unverified evidence without invented coordinates.
+- Catalog adds celery/lupin/mollusc after all 26 unchanged fixture entries. These need normal catalog/i18n handling; no frozen contract change is needed.
+- Nutrition is a Phase 1 normalization implementation. It deliberately does not claim the macro-energy consistency check is complete; consistency.status is insufficient_data. Complete the checks and suspect-key generation in Phase 2 before claiming the full nutrition feature.
+- The frozen lactose catalog maps to milk, which cannot distinguish lactose-free milk, low-lactose cheeses or low-lactose clarified butter. This is a broad origin screen; correcting that clinically imprecise taxonomy needs a human-approved contract/catalog design decision on main.
+- The requested sugar_alias/added_sugar taxonomy includes maltodextrin and date paste; neither should be presented as a precise chemical or regulatory added-sugar claim. Existing message template says "a form of sugar"; a more accurate future template would say "an ingredient to check against the sugar value". Request for main only; shared files were not changed.
+- Albumin without an explicit source is conventionally matched to egg per the spec, but albumin can refer to other proteins; generic albumin terminology merits review. Explicit egg white/ovalbumin are unambiguous.
+- Lactitol is lactose-derived but its inclusion under milk does not establish allergenic protein; confirm whether broad milk-origin screening is the intended profile behavior.
+- Regional names for celery/lupin/molluscs remain intentionally unfilled rather than inventing ambiguous translations. Hindi/Telugu names exist for common Indian allergens; native-speaker review is still needed.
+- Dried ginger/turmeric Jain acceptance, ambiguous additive origins, spice blends and flavour sources carry medium-confidence notes and possible categories for review. Lecithin without source includes possible soy/egg; plant source alone leaves possible soy.
+- The shared fixture's Lakshmi prose summary says "Probably fine"; engine does not copy or generate that summary. Part 2 should use the approved four-state wording when it generates its own summaries.
+- Evaluation has no real packet data yet. The offline runner and synthetic tests work, but backend upload mode, photo provenance, human truth review and >=10 real packet measurements remain outstanding. No accuracy numbers should be used in the pitch yet.

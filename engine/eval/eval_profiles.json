@@ -1,0 +1,140 @@
+[
+  {
+    "profile_id": "peanut",
+    "name": "Peanut allergy",
+    "color": null,
+    "restrictions": [
+      {
+        "id": "eval_peanut",
+        "kind": "allergy",
+        "key": "peanut",
+        "label": "Peanut allergy",
+        "severity": "strict",
+        "threshold": null,
+        "source_text": null
+      }
+    ]
+  },
+  {
+    "profile_id": "milk",
+    "name": "Milk allergy",
+    "color": null,
+    "restrictions": [
+      {
+        "id": "eval_milk",
+        "kind": "allergy",
+        "key": "milk",
+        "label": "Milk allergy",
+        "severity": "strict",
+        "threshold": null,
+        "source_text": null
+      }
+    ]
+  },
+  {
+    "profile_id": "gluten",
+    "name": "Gluten-free (coeliac)",
+    "color": null,
+    "restrictions": [
+      {
+        "id": "eval_gluten",
+        "kind": "intolerance",
+        "key": "gluten",
+        "label": "Gluten-free (coeliac)",
+        "severity": "strict",
+        "threshold": null,
+        "source_text": null
+      }
+    ]
+  },
+  {
+    "profile_id": "vegetarian",
+    "name": "Vegetarian (no egg)",
+    "color": null,
+    "restrictions": [
+      {
+        "id": "eval_vegetarian",
+        "kind": "diet",
+        "key": "vegetarian",
+        "label": "Vegetarian (no egg)",
+        "severity": "strict",
+        "threshold": null,
+        "source_text": null
+      }
+    ]
+  },
+  {
+    "profile_id": "vegan",
+    "name": "Vegan",
+    "color": null,
+    "restrictions": [
+      {
+        "id": "eval_vegan",
+        "kind": "diet",
+        "key": "vegan",
+        "label": "Vegan",
+        "severity": "strict",
+        "threshold": null,
+        "source_text": null
+      }
+    ]
+  },
+  {
+    "profile_id": "jain",
+    "name": "Jain",
+    "color": null,
+    "restrictions": [
+      {
+        "id": "eval_jain",
+        "kind": "diet",
+        "key": "jain",
+        "label": "Jain",
+        "severity": "strict",
+        "threshold": null,
+        "source_text": null
+      }
+    ]
+  },
+  {
+    "profile_id": "diabetes_sugar",
+    "name": "Diabetic: limit sugar",
+    "color": null,
+    "restrictions": [
+      {
+        "id": "eval_diabetes_sugar",
+        "kind": "health_limit",
+        "key": "diabetes_sugar",
+        "label": "Diabetic: limit sugar",
+        "severity": "strict",
+        "threshold": {
+          "nutrient": "total_sugars_g",
+          "max_value": 22.5,
+          "basis": "per_100g",
+          "source_note": "UK FSA front-of-pack 'high' threshold"
+        },
+        "source_text": null
+      }
+    ]
+  },
+  {
+    "profile_id": "low_sodium",
+    "name": "Low sodium (BP)",
+    "color": null,
+    "restrictions": [
+      {
+        "id": "eval_low_sodium",
+        "kind": "health_limit",
+        "key": "low_sodium",
+        "label": "Low sodium (BP)",
+        "severity": "strict",
+        "threshold": {
+          "nutrient": "sodium_mg",
+          "max_value": 600.0,
+          "basis": "per_100g",
+          "source_note": "UK FSA front-of-pack 'high' threshold"
+        },
+        "source_text": null
+      }
+    ]
+  }
+]
