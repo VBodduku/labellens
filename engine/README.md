@@ -6,7 +6,14 @@ model calls occur when importing or evaluating the engine. The offline evaluatio
 runner uses saved JSON by default; its explicit `--backend` option captures HTTP
 responses outside the public engine API.
 
-Create/activate a Python 3.11+ environment, then:
+Create a Python 3.11+ environment from the repository root:
+
+```
+python -m venv engine/.venv
+```
+
+Activate it with `source engine/.venv/bin/activate` on macOS/Linux, or
+`engine\.venv\Scripts\activate` on Windows. Then run from the repository root:
 
 ```
 python -m pip install -r engine/requirements.txt
@@ -16,8 +23,9 @@ python -c "import engine; print(len(engine.restriction_catalog()))"
 
 On this machine the task environment is `engine/.venv` (macOS/Linux activation:
 `source engine/.venv/bin/activate`; Windows: `engine\.venv\Scripts\activate`).
-No virtual environment, downloaded dependency, cache, or generated report belongs
-in a commit. `engine/.gitignore` excludes these.
+Environments, downloaded dependencies, caches, real photos and local scan responses
+are ignored by Git. The three explicitly tracked report artifacts and the benchmark
+artifact carry their provenance; synthetic artifacts must remain labelled synthetic.
 
 ## API
 
@@ -53,6 +61,55 @@ the ingredient section supports absence; otherwise the trace is preserved as
 supporting evidence on an unknown result. All signals are kept in matches, with
 worst-state evidence first. Missing locations become explicit unverified evidence.
 Confidence follows the shared rules, including the 0.2 unverified-only penalty.
+
+## How the four states are decided (master spec §9)
+
+For every restriction, collect all relevant signals and choose the worst:
+**conflict → possible → unknown → not_listed**. A positive readable signal still
+counts when another part of the label is missing. The first signal of the worst
+state in the table order supplies the main reason. Its evidence comes first;
+other supporting evidence and all matches remain available.
+
+| Signal or situation | Decision in plain words |
+| --- | --- |
+| Readable ingredient or child with a definite matching KB category | **Conflict**. The named ingredient conflicts with the restriction. |
+| An unresolved possible source in the KB | **Check this** (`possible`). Resolve it only with an applicable printed source qualifier or the limited green-mark rule. |
+| Unknown term interpreted by the LLM as a relevant category | **Check this**, never conflict. Interpretation cannot replace a resolved KB ingredient. |
+| Sugar/hidden-sugar ingredient for `diabetes_sugar` | **Check this**; the quantitative threshold can supply conflict. |
+| “Contains” statement with a definite matching item | **Conflict**. Ambiguous mappings retain possible categories, e.g. “nuts” does not definitely identify peanut. |
+| “May contain” or “facility” statement, strict severity | **Check this**. |
+| “May contain” or “facility” statement, preference severity | **Not listed** plus the trace note, only when ingredient-section completeness supports absence; otherwise unknown. |
+| Brown/non-veg mark and a restriction covering meat, poultry, fish-derived, egg-derived, gelatin or animal-derived categories | **Conflict**. |
+| Green/veg mark | Resolves ambiguity only for those six categories. It says nothing about dairy, honey, insects, onion, garlic or root vegetables. |
+| Readable, nonsuspect nutrient above the requested maximum at the requested basis | **Conflict**. Convert compatible per-serving/per-100 bases when needed. |
+| Readable, nonsuspect nutrient equal to or below the maximum | **Not listed / within limit** for that threshold signal. |
+| Required nutrient row/value missing or unreadable | **Unknown / can't determine** (`undeterminable`). |
+| Required nutrient flagged as suspect by the consistency check | **Unknown / can't determine**; do not use the number for a threshold. |
+| No nutrition table | **Unknown / can't determine** for a threshold. |
+| Unknown restriction key or information not available from labels | **Unknown / can't determine**; never guess or crash. |
+| No deciding signal and ingredient section missing | **Unknown / can't determine**. |
+| No deciding signal, complete ingredient section and every ingredient readable | **Not listed**. For vegetarian/eggetarian with a green mark, include that evidence. |
+| No deciding signal and the section is truncated | **Unknown / not detected**: nothing relevant found in the readable part. |
+| No deciding signal and some ingredients are unreadable | **Unknown / not detected**. |
+
+An explicit conflict always beats a green mark. If the list says egg while the
+mark is green, the result remains conflict with an “internally inconsistent label”
+note. A green mark alone cannot establish absence from an incomplete list.
+
+Threshold-only restrictions such as low sodium use threshold rows only.
+`diabetes_sugar` combines the threshold with sugar ingredients: a sugar alias can
+keep the result possible even if a separate threshold signal is within limit or
+unknown. A missing allergen statement produces an informative UnknownItem; it does
+not by itself negate an otherwise complete ingredient-section assessment.
+
+Each profile's overall state is the worst restriction result. With no profiles,
+reports are empty but extraction analysis is still returned. A profile with no
+restrictions has no results and uses not_listed as the empty aggregation identity;
+the UI should say “no restrictions configured.” It is not a substantive food check.
+
+Confidence is 1.0 for KB/statement/threshold signals, 0.7 for source ambiguity and
+model confidence ×0.8 for model interpretations. Deduct 0.2 when all collected
+evidence is unverified. These are engine signal scores, not calibrated probabilities.
 
 Green marks resolve only the specified slaughter-derived ambiguities. They cannot
 override explicit egg or other conflicting ingredients. Milk, honey, insects,
@@ -110,11 +167,40 @@ See `eval/dataset/README.md` for human truth collection and fixed profiles. Run:
 python -m engine.eval.run_eval --responses engine/eval/responses
 ```
 
+For the final live capture (backend must already run with `ENGINE_MODE=real`):
+
+```
+python -m engine.eval.run_eval --backend http://localhost:8000 --responses engine/eval/responses/final_live
+```
+
+Real packet folders are `engine/eval/dataset/<case_id>/truth.json` plus contiguous
+`img_0.jpg`–`img_2.jpg` panels, at most 2000 px on the longest edge and 400 KB each.
+Keep clean and deliberately imperfect photos in separate cases. Human truth must
+come from the packet/photos, not from engine predictions. The dataset guide contains
+the complete JSON format and the eight fixed profiles.
+
 Saved responses must use the profile IDs in `eval/eval_profiles.json`. The runner
 writes report.json, report.md and metrics.json. It scores ingredient precision/recall,
 nutrients, statements, veg marks, four-state verdicts, dangerous misses, evidence,
 unknowns and latency, with its present scoring limitations recorded in the report.
 It rejects empty and mixed real/synthetic datasets. Annotated printed rounding and per-100 mass/volume units are supported. No real-packet accuracy has been measured yet.
+
+`report.md` has extraction-accuracy tables, a four-state confusion matrix, dangerous
+misses, evidence/unknown rates, measured request latency, error attribution and scope.
+`report.json` retains full audit metrics, per-case scores, fingerprints and reviews.
+The small `metrics.json` is the About-page handoff: `{status, metrics, generated_at}`.
+The numeric fields inside `metrics` are packets, ingredient_recall,
+ingredient_precision, nutrient_accuracy, verdict_accuracy, dangerous_miss_rate,
+evidence_verified_rate, unknown_rate and avg_latency_s. Rates are fractions, time is
+seconds, and null means unmeasured. generated_at is UTC artifact-generation time.
+See `NOTES_FOR_OTHERS.md` for the exact owner handoff and UI formatting requirements.
+
+Only nonempty real runs publish `status: ready`. Synthetic runs publish pending,
+zero real packets and null headline values; their detailed software-check scores
+remain in report.json/report.md. Request latency comes from capture_manifest.json,
+including cache hits (counted in the detailed report). Extraction-only duration_ms
+and offline replay do not measure the complete backend request, so their headline
+latency is null. Failed capture/missing response files abort scoring.
 
 Two fixture-derived cases and their reports are checked in under `eval/synthetic/` and `eval/reports/`. To reproduce:
 
@@ -126,6 +212,54 @@ python -m engine.eval.run_eval --dataset engine/eval/synthetic/dataset --respons
 
 The report is labelled synthetic, has zero real packets, and includes a deliberate carbohydrate misread. Real collection uses `engine/eval/dataset/<case_id>/truth.json` with `img_0.jpg` (up to three panels), plus `engine/eval/responses/<case_id>.json`; see the dataset guide for the complete format and clean/imperfect pairing.
 
-See [Phase 3 measurement status](eval/PHASE3_STATUS.md) for the unresolved data/backend
-blockers and actual measurement scope. Real accuracy and engine-caused dangerous
-misses remain unmeasured until the humans provide the integrated server and packet cases.
+## Performance
+
+Benchmark the largest saved real extraction after capture:
+
+```
+python -m engine.eval.benchmark --responses engine/eval/responses/final_live --output engine/eval/performance.json
+```
+
+Largest means most ingredient-name characters, including children. The benchmark
+uses eight fixed profiles, 10 warmups and 300 timed calls, and reports median, p95,
+maximum, Python version and platform. The <50 ms target is checked at p95. Timing
+excludes import, JSON parsing, HTTP, OCR, models and browser work.
+
+No real extraction is currently available, so that target is **unmeasured**.
+The explicit fixture-only check (`python -m engine.eval.benchmark --fixture`) measured
+**5.28 ms median, 5.87 ms p95, 6.26 ms maximum** for 11 ingredient nodes and eight
+profiles on macOS arm64 / Python 3.13.9. Raw measurements and method are in
+`eval/performance.json`. A fixture timing does not satisfy the largest-real-label check.
+
+## Honest limitations and feature freeze
+
+- No real-packet accuracy, dangerous-miss or live latency claim is supported yet.
+  The checked-in detailed report uses two synthetic cases; a zero synthetic miss
+  count does not establish zero engine-caused misses on real food labels.
+- The engine trusts section completeness, extracted words and evidence status
+  supplied by Part 2. A false “complete” list can hide an extraction omission.
+  Verified evidence means OCR alignment, not independent confirmation of the packet's composition.
+- The 260-entry KB and >=92 fuzzy matching are finite coverage, not exhaustive
+  language or ingredient understanding. Unknown fragments remain unresolved.
+  Hindi/Telugu aliases and 38 source/taxonomy/practice review entries need human review.
+- The frozen lactose catalog is a broad milk-origin screen; it does not distinguish
+  lactose-free milk or residual milk protein. Spec-required maltodextrin/date-paste
+  sugar categories and lactitol milk categories have taxonomy limits recorded in
+  KB_REVIEW.md. They are not chemical, regulatory or clinical measurements.
+- Community practice differs for some Jain ingredients and additive sources.
+  Possible categories remain possible; no additive code establishes manufacturing origin.
+- Nutrition checks identify inconsistencies and suspect fields; they never repair
+  readings automatically. Missing macros limit the check, and compatible erroneous
+  numbers can pass 4/4/9. No density or unreadable quantity is inferred.
+- Evaluation currently scores top-level ingredient text with one-to-one fuzzy >=85,
+  nutrients within max(2%, human-annotated rounding), exact statement sets and
+  profile-overall verdicts. It does not prove image-coordinate accuracy or count
+  distinct physical products. Human truth/provenance is not independently certified.
+- Panel deduplication belongs to Part 2. Engine tests preserve duplicate evidence
+  from both panels and independently readable children under an unreadable parent.
+- No verdict rules or KB entries changed during Phase 4. The public API remains
+  deterministic and offline; clock/network access exists only in evaluation tooling.
+
+See [Phase 4 measurement status](eval/PHASE4_STATUS.md) for current blockers and
+what can honestly go into the pitch. This package reports label evidence and its
+limits; none of its four states is a guarantee about the food.

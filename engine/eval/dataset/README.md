@@ -172,7 +172,16 @@ extraction findings into `engine/NOTES_FOR_OTHERS.md` for Part 2.
 The markdown report defines each rate and shows the four-by-four confusion matrix.
 The dangerous-miss rate is expected conflict predicted not_listed divided by all
 expected conflicts. Also inspect conflict-to-unknown and conflict-to-possible errors.
-Undefined rates are null; latency uses positive saved extraction durations.
+Undefined rates are null. Request latency uses positive capture-client timings
+from capture_manifest.json, including cache hits. Saved extraction-only durations
+and offline replays do not measure a backend request; their latency is null.
+
+The small metrics.json handed to the About page retains its existing
+`{status, metrics, generated_at}` envelope. Only nonempty real runs publish ready;
+synthetic runs publish pending with metrics.packets=0 and null rates/latency.
+Detailed scores and provenance remain in report.json/report.md. Rates are fractions,
+avg_latency_s is seconds, and generated_at is UTC artifact-generation time. See
+engine/NOTES_FOR_OTHERS.md for the exact frontend handoff.
 
 ## Synthetic verification
 

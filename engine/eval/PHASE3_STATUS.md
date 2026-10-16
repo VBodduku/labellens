@@ -1,5 +1,8 @@
 # Phase 3 measurement status — incomplete
 
+Historical Phase 3 record. Phase 4's current report/metrics format, test count and
+performance scope are recorded in [PHASE4_STATUS.md](PHASE4_STATUS.md).
+
 Real-packet accuracy is **unmeasured**. This checkout has zero real packet cases.
 It contains only `dataset/_template/truth.json`, and `localhost:8000/api/health`
 refuses connections both inside and outside the sandbox. No backend Python files
