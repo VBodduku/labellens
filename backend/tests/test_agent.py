@@ -161,6 +161,20 @@ def test_tools_ground_answers() -> None:
     ("How much sugar is in it?", "en", "Total Sugars: 38 g (per 100g), as printed on the label."),
     ("how much sodium?", "en", "The Sodium value could not be read on the photo."),
     ("hello", "en", "I can tell you whether this suits"),
+    ("Why is it a conflict for Thatha?", "en",
+     "For Thatha: Conflict. Diabetic: limit sugar: Conflict. Total sugars is 38.0 g per 100 g, above your limit of 22.5 g."),
+    ("Lakshmi కి ఎందుకు?", "te", "Lakshmi కోసం: ఇది తనిఖీ చేయండి. Jain: ఇది తనిఖీ చేయండి (“Natural”)."),
+    ("Is this vegan?", "en", "Vegan: Conflict. The label shows “Milk Solids (12%)”."),
+    ("Is it gluten free?", "en", "Gluten-free (coeliac): Conflict. The label shows “Refined Wheat”."),
+    ("Is it okay for a vegan?", "en", "Vegan: Conflict."),
+    ("ఇది శాకాహారమా?", "te", "Vegetarian (no egg): జాబితాలో లేదు."),
+    ("What allergens does it have?", "en",
+     "The label's allergen information: “CONTAINS: PEANUT, MILK, WHEAT, SOY”; “MAY CONTAIN TRACES OF TREE NUTS”."),
+    ("What are the ingredients?", "en", "Ingredients read from the label: Sugar, Peanuts (22%), Milk Solids (12%),"),
+    ("What is INS 471?", "en", "mono and diglycerides: Fatty acid feedstock can be vegetable or animal"),
+    ("What is zorbex?", "en", "“zorbex” is not in our ingredient database."),
+    ("How much sugar per serving?", "en", "Total Sugars: 15.2 g (per serving), as printed on the label."),
+    ("How much sugar in the whole pack?", "en", "Total Sugars: about 45.6 g for the whole pack, worked out"),
 ])
 def test_keyword_router(question: str, lang: Lang, expected: str) -> None:
     assert fallback.answer(ctx(lang), question).answer.startswith(expected)
@@ -188,3 +202,18 @@ def test_overloaded_model_falls_through_to_the_next_gemini_client() -> None:
                                  intent="suitability", profile_ids=["p_aarav"])], label="gemini:primary:lite")
     response = asyncio.run(agent.ask(request("Is this okay for Aarav?"), LLMRouter([busy, lite], 5)))
     assert response.answer.startswith("For Aarav: Conflict. \u201cPeanuts") and len(lite.seen) == 1
+
+
+def test_a_diet_question_is_the_engine_verdict_with_its_trace_and_evidence() -> None:
+    response = fallback.answer(ctx(), "Is this vegan?")
+    assert [t.tool for t in response.tool_calls] == ["check_restriction"]
+    assert any(e.text.startswith("Milk Solids") for e in response.evidence)
+    assert not any(word in response.answer.casefold() for word in ("yes", "safe", "suitable"))
+
+
+def test_an_ingredient_list_read_partly_says_there_may_be_more() -> None:
+    c = ctx()
+    section = c.scan.extraction.ingredients_section.model_copy(update={"complete": False})
+    extraction = c.scan.extraction.model_copy(update={"ingredients_section": section})
+    c = AgentContext(scan=c.scan.model_copy(update={"extraction": extraction}), profiles=PROFILES, lang="en")
+    assert fallback.answer(c, "What are the ingredients?").answer.endswith("so there may be more.")

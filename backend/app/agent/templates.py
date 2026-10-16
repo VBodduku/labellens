@@ -60,18 +60,93 @@ MESSAGES: dict[str, dict[Lang, str]] = {
         "hi": "{label}: {amount} {unit} ({basis}), जैसा लेबल पर छपा है।",
         "te": "{label}: {amount} {unit} ({basis}), లేబుల్‌పై ముద్రించినట్లు.",
     },
+    "nutrient_computed": {
+        "en": "{label}: about {amount} {unit} for the whole pack, worked out from the printed values.",
+        "hi": "{label}: पूरे पैक में लगभग {amount} {unit}, छपे हुए मानों से निकाला गया।",
+        "te": "{label}: మొత్తం ప్యాక్‌లో సుమారు {amount} {unit}, ముద్రించిన విలువల నుండి లెక్కించాము.",
+    },
     "nutrient_unreadable": {
         "en": "The {label} value could not be read on the photo.",
         "hi": "फ़ोटो पर {label} का मान पढ़ा नहीं जा सका।",
         "te": "ఫోటోలో {label} విలువను చదవలేకపోయాము.",
     },
+    "reason": {
+        "en": "{restriction}: {state} (“{evidence}”).",
+        "hi": "{restriction}: {state} (“{evidence}”)।",
+        "te": "{restriction}: {state} (“{evidence}”).",
+    },
+    "reason_bare": {
+        "en": "{restriction}: {state}.",
+        "hi": "{restriction}: {state}।",
+        "te": "{restriction}: {state}.",
+    },
+    "allergens": {
+        "en": "The label's allergen information: {statements}.",
+        "hi": "लेबल पर एलर्जी की जानकारी: {statements}।",
+        "te": "లేబుల్‌పై అలెర్జీ సమాచారం: {statements}.",
+    },
+    "no_allergens": {
+        "en": "No allergen statement could be read on this label.",
+        "hi": "इस लेबल पर एलर्जी की कोई जानकारी पढ़ी नहीं जा सकी।",
+        "te": "ఈ లేబుల్‌పై అలెర్జీ సమాచారం ఏదీ చదవలేకపోయాము.",
+    },
+    "ingredients": {
+        "en": "Ingredients read from the label: {items}.",
+        "hi": "लेबल से पढ़ी गई सामग्री: {items}।",
+        "te": "లేబుల్ నుండి చదివిన పదార్థాలు: {items}.",
+    },
+    "ingredients_incomplete": {
+        "en": "The list was not read completely, so there may be more.",
+        "hi": "सूची पूरी नहीं पढ़ी जा सकी, इसलिए और भी हो सकती हैं।",
+        "te": "జాబితా పూర్తిగా చదవలేదు, కాబట్టి ఇంకా ఉండవచ్చు.",
+    },
+    "no_ingredients": {
+        "en": "No ingredient list could be read on this label.",
+        "hi": "इस लेबल पर सामग्री सूची पढ़ी नहीं जा सकी।",
+        "te": "ఈ లేబుల్‌పై పదార్థాల జాబితా చదవలేకపోయాము.",
+    },
+    "explained": {
+        "en": "{name}: {description}",
+        "hi": "{name}: {description} (हमारे डेटाबेस से, अंग्रेज़ी में)",
+        "te": "{name}: {description} (మా డేటాబేస్ నుండి, ఆంగ్లంలో)",
+    },
+    "not_explained": {
+        "en": "“{term}” is not in our ingredient database.",
+        "hi": "“{term}” हमारे सामग्री डेटाबेस में नहीं है।",
+        "te": "“{term}” మా పదార్థాల డేటాబేస్‌లో లేదు.",
+    },
     "help": {
-        "en": "I can tell you whether this suits someone in your family, whether it contains an ingredient, "
-              "or how much of a nutrient it has.",
-        "hi": "मैं बता सकता हूँ कि यह आपके परिवार में किसी के लिए ठीक है या नहीं, इसमें कोई सामग्री है या नहीं, "
-              "या इसमें कोई पोषक तत्व कितना है।",
-        "te": "ఇది మీ కుటుంబంలో ఎవరికైనా సరిపోతుందా, ఇందులో ఏదైనా పదార్థం ఉందా, లేదా ఏదైనా పోషకం ఎంత ఉందో "
-              "చెప్పగలను.",
+        "en": "I can tell you whether this suits someone in your family and why, whether it is vegetarian, vegan, "
+              "Jain or gluten-free, whether it contains an ingredient, what its allergens and ingredients are, "
+              "what an ingredient is, or how much of a nutrient it has.",
+        "hi": "मैं बता सकता हूँ कि यह आपके परिवार में किसी के लिए ठीक है या नहीं और क्यों, यह शाकाहारी, वीगन, जैन या "
+              "ग्लूटेन-फ्री है या नहीं, इसमें कोई सामग्री है या नहीं, इसकी एलर्जी जानकारी और सामग्री क्या है, कोई सामग्री "
+              "क्या होती है, या इसमें कोई पोषक तत्व कितना है।",
+        "te": "ఇది మీ కుటుంబంలో ఎవరికైనా సరిపోతుందా, ఎందుకు, ఇది శాకాహారమా, వీగనా, జైనమా లేదా గ్లూటెన్-ఫ్రీనా, ఇందులో "
+              "ఏదైనా పదార్థం ఉందా, అలెర్జీ సమాచారం, పదార్థాలు ఏమిటి, ఒక పదార్థం అంటే ఏమిటి, లేదా ఏదైనా పోషకం ఎంత "
+              "ఉందో చెప్పగలను.",
+    },
+}
+
+
+DIET: dict[Lang, dict[VerdictState, str]] = {
+    "en": {
+        "conflict": "{label}: {state}. The label shows “{evidence}”.",
+        "possible": "{label}: {state}. “{evidence}” needs checking.",
+        "not_listed": "{label}: {state}. Nothing on the readable label conflicts with it.",
+        "unknown": "{label}: {state}. Part of the label needed for this could not be read or is not printed.",
+    },
+    "hi": {
+        "conflict": "{label}: {state}। लेबल पर लिखा है: “{evidence}”।",
+        "possible": "{label}: {state}। “{evidence}” की जाँच ज़रूरी है।",
+        "not_listed": "{label}: {state}। पढ़े जा सके लेबल पर इससे टकराने वाला कुछ नहीं मिला।",
+        "unknown": "{label}: {state}। इसके लिए ज़रूरी हिस्सा पढ़ा नहीं जा सका या छपा नहीं है।",
+    },
+    "te": {
+        "conflict": "{label}: {state}. లేబుల్‌పై ఇలా ఉంది: “{evidence}”.",
+        "possible": "{label}: {state}. “{evidence}” ను తనిఖీ చేయాలి.",
+        "not_listed": "{label}: {state}. చదవగలిగిన లేబుల్‌లో దీనికి విరుద్ధమైనది ఏదీ లేదు.",
+        "unknown": "{label}: {state}. దీనికి అవసరమైన భాగం చదవలేకపోయాము లేదా ముద్రించలేదు.",
     },
 }
 
@@ -89,6 +164,19 @@ def suitability(lang: Lang, name: str, state: VerdictState, evidence: str = "") 
     if "{evidence}" in template and not evidence:
         template = BARE_SUITABILITY[lang]
     return template.format(name=name, state=STATE_WORDS[lang][state], evidence=quoted(evidence))
+
+
+def verdict_line(lang: Lang, name: str, state: VerdictState) -> str:
+    """"For Thatha: Conflict." with no reason attached (the reasons follow)."""
+    return BARE_SUITABILITY[lang].format(name=name, state=STATE_WORDS[lang][state])
+
+
+def diet(lang: Lang, label: str, state: VerdictState, evidence: str = "") -> str:
+    """A diet question's verdict ("Vegan: Conflict. ..."): the engine's state word, never a yes or no."""
+    template = DIET[lang][state]
+    if "{evidence}" in template and not evidence:
+        template = MESSAGES["reason_bare"][lang].replace("{restriction}", "{label}")
+    return template.format(label=label, state=STATE_WORDS[lang][state], evidence=quoted(evidence))
 
 
 def quoted(text: str) -> str:

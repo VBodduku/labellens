@@ -18,6 +18,7 @@ from shared.contract import (
     NUTRIENT_KEYS,
     Profile,
     ProfileReport,
+    Restriction,
     ScanResult,
 )
 
@@ -145,6 +146,21 @@ def get_nutrition(ctx: AgentContext, key: str, basis: str = "per_100g") -> ToolO
         result["ref"] = ctx.ref(value.evidence)
     shown = "unreadable" if value.amount is None else f"{value.amount:g} {value.unit}"
     return ToolOutput(result, f"{rows[0].raw_label} {value.basis}: {shown}")
+
+
+def check_restriction(ctx: AgentContext, key: str) -> ToolOutput:
+    """The engine's verdict for one catalog restriction ("vegetarian", "gluten") that no family profile asked
+    for, with the catalog's default severity and threshold. Used for "is it vegetarian?" questions."""
+    item = next((c for c in engine_adapter.restriction_catalog() if c.key == key), None)
+    if item is None:
+        return ToolOutput({"error": f"no restriction {key!r}"}, f"no restriction {key}")
+    restriction = Restriction(id="question", kind=item.kind, key=item.key, label=item.label_en,
+                              severity=item.default_severity, threshold=item.default_threshold)
+    asked = Profile(profile_id="question", name=item.label_en, restrictions=[restriction])
+    result = engine_adapter.evaluate(ctx.scan.extraction, [asked]).reports[0].results[0]
+    evidence = [{"ref": ctx.ref(e), "text": e.text} for e in result.evidence[:3]]
+    return ToolOutput({"key": key, "label": item.label_en, "state": result.state, "explanation": result.explanation,
+                       "evidence": evidence}, _short(f"{item.label_en}: {result.state}"))
 
 
 STRING = {"type": "string"}
