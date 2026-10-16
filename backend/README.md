@@ -44,6 +44,10 @@ context small (BuildKit). On a Mac without Docker Desktop: `brew install colima 
 ## Deploy to Render (free web service)
 Hugging Face Docker Spaces now need a paid PRO plan, so the public backend runs on Render's free tier
 (512 MB RAM; the service sleeps after 15 min idle and takes about a minute to wake up).
+
+Quickest: Dashboard -> **New** -> **Blueprint** -> pick the repository. `render.yaml` at the repo root
+sets everything below; Render then asks only for `GEMINI_API_KEY`, `GEMINI_API_KEY_BACKUP` and
+`CORS_ORIGINS`. The manual steps below do the same by hand.
 1. Sign up at https://render.com with GitHub and allow access to the `labellens` repository.
 2. Dashboard -> **New** -> **Web Service** -> pick the repository.
    - **Branch**: `main` (or `part-2-backend` before the merge)

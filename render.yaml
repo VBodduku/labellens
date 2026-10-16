@@ -1,0 +1,21 @@
+# Render blueprint for the LabelLens backend (free web service). Render -> New -> Blueprint -> this repo.
+# Secrets (sync: false) are asked for once in the Render dashboard; they are never stored in git.
+services:
+  - type: web
+    name: labellens-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/catalog
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY_BACKUP
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: ENGINE_MODE
+        value: real
+      - key: OCR_WORKERS
+        value: "1"
