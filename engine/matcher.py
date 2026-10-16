@@ -233,7 +233,18 @@ def _segment(text: str) -> TextMatches:
             if len(alias) >= 5 and len(cleaned) >= 5
         ]
         score, alias, term_id = max(candidates, default=(0.0, "", ""))
-        if score >= 92 and len(alias) > sum(end - start for start, end in occupied):
+        compact_alias = alias.replace(" ", "")
+        protects_exact_hits = all(
+            cleaned[start:end].replace(" ", "") in compact_alias
+            for start, end in occupied
+        )
+        if (
+            score >= 92
+            and protects_exact_hits
+            and len(alias) > sum(end - start for start, end in occupied)
+        ):
+            # Compound repair may replace shorter words within that compound
+            # (e.g. butter in "co coa butter"), never an unrelated exact allergen.
             return TextMatches(
                 (_resolve(BY_ID[term_id], raw, "fuzzy", score / 100),), ()
             )
