@@ -108,3 +108,15 @@ def test_unknown_inside_partially_resolved_compound():
     result = match_text('Chocolate (sugar, zyx mystery)')
     assert any('added_sugar' in hit.categories for hit in result.matches)
     assert result.unresolved
+
+
+@pytest.mark.parametrize('text,possible', [
+    ('INS 471 (not vegetable origin)', {'animal_derived'}),
+    ('INS 322 (not from sunflower)', {'soy','egg','egg_derived'}),
+    ('INS 322 (not from soy)', {'soy','egg','egg_derived'}),
+    ('INS 322 (soy free)', {'soy','egg','egg_derived'}),
+])
+def test_negated_source_does_not_become_affirmative_qualifier(text,possible):
+    matched=match_text(text)
+    assert not {category for hit in matched.matches for category in hit.categories}
+    assert {category for hit in matched.matches for category in hit.possible_categories}==possible

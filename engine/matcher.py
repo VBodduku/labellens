@@ -48,7 +48,7 @@ def _resolve(entry: Term, context: str, kind: Literal["code", "exact", "containe
         if entry.id not in qualifier.term_ids:
             continue
         matched_qualifier = next((phrase for phrase in qualifier.phrases
-                                  if re.search(r"(?<!\w)" + re.escape(normalize(phrase)) + r"(?!\w)", context)), None)
+                                  if _affirmed_phrase(context, phrase)), None)
         if matched_qualifier is None:
             continue
         categories.extend(c for c in qualifier.add_categories if c not in categories)
@@ -57,6 +57,17 @@ def _resolve(entry: Term, context: str, kind: Literal["code", "exact", "containe
         note = "Source resolved by the printed qualifier."
         break
     return TermMatch(entry, tuple(categories), tuple(possible), origin, kind, score, note, matched_qualifier)
+
+
+def _affirmed_phrase(context: str, phrase: str) -> bool:
+    for occurrence in re.finditer(r"(?<!\w)" + re.escape(normalize(phrase)) + r"(?!\w)", context):
+        before, after = context[:occurrence.start()], context[occurrence.end():]
+        if re.search(r"\b(?:not|no|without|non)\s+(?:(?:of|from)\s+)?$", before):
+            continue
+        if re.match(r"\s+free\b", after):
+            continue
+        return True
+    return False
 
 
 # These are label grammar, never ingredient aliases. Unknown content inside a compound
@@ -89,6 +100,16 @@ def _segment(text: str) -> TextMatches:
                 for phrase_match in re.finditer(r"(?<!\w)" + re.escape(hit.qualifier) + r"(?!\w)", context):
                     start, stop = span.end + phrase_match.start(), span.end + phrase_match.end()
                     without_codes[start:stop] = " " * (stop - start)
+            else:
+                # A negated source phrase is not an independent ingredient declaration.
+                for qualifier in QUALIFIERS:
+                    if entry.id not in qualifier.term_ids:
+                        continue
+                    for phrase in qualifier.phrases:
+                        for phrase_match in re.finditer(r"(?<!\w)" + re.escape(phrase) + r"(?!\w)", context):
+                            if not _affirmed_phrase(normalize(context), phrase):
+                                start, stop = span.end + phrase_match.start(), span.end + phrase_match.end()
+                                without_codes[start:stop] = " " * (stop - start)
             code_ids.add(entry.id)
         without_codes[span.start:span.end] = " " * (span.end - span.start)
     cleaned = normalize("".join(without_codes))
