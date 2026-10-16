@@ -75,6 +75,8 @@
 - Freeze follow-up: a full-fragment fuzzy compound repair may replace exact spans only if those spans are part of the candidate compound. It must not discard an unrelated exact allergen such as egg after a long misspelled additive name.
 - Mark a capture batch pending before writing any responses. Interrupted recaptures must block offline scoring even if a previous successful manifest and old responses exist.
 
+- Allergen-name gaps found by probing common label words: added दुग्ध / दुग्ध ठोस (formal Hindi milk), सोयाबीन / సోయాబీన్, పల్లీలు / వేరుశనగలు (peanut), అక్రోట్ (walnut), పాల పొడి (milk powder) and the oblique Telugu forms నువ్వుల / ఆవాల / ఆవ నూనె (sesame, mustard). Unmatched, these stayed unresolved and a complete list read "Not listed". They join the native-speaker list in KB_REVIEW.md.
+
 ## Known taxonomy limitations (need human review)
 - The frozen lactose catalog maps to milk, which cannot distinguish lactose-free milk, low-lactose cheeses or low-lactose clarified butter. This is a broad origin screen; correcting that clinically imprecise taxonomy needs a human-approved contract/catalog design decision on main.
 - The requested sugar_alias/added_sugar taxonomy includes maltodextrin and date paste; neither should be presented as a precise chemical or regulatory added-sugar claim. Existing message template says "a form of sugar"; a more accurate future template would say "an ingredient to check against the sugar value". Request for main only; shared files were not changed.
