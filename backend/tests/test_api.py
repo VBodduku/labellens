@@ -8,7 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 from PIL import Image
 
-from backend.app import fixtures
+from backend.tests import fixture_data as fixtures
 from shared.contract import (
     AskResponse,
     ErrorResponse,
@@ -153,30 +153,40 @@ def test_recheck_rejects_malformed_body(client: TestClient) -> None:
 
 
 # ---------------------------------------------------------------- ask / parse / explain
-def test_ask_returns_fixture_in_requested_lang(client: TestClient) -> None:
+def test_ask_answers_from_engine_verdict_in_requested_lang(client: TestClient) -> None:
     body = {"question": "Is this okay for Thatha?", "lang": "te",
             "scan": fixtures.scan_result().model_dump(), "profiles": json.loads(PROFILES_JSON)}
     response = client.post("/api/ask", json=body)
     assert response.status_code == 200
     answer = AskResponse.model_validate(response.json())
-    assert answer.lang == "te" and answer.tool_calls
+    assert answer.lang == "te" and answer.tool_calls[0].tool == "get_verdict"
+    assert answer.answer.startswith("Thatha కోసం") and answer.grounded
+
+
+def test_ask_refuses_medical_questions(client: TestClient) -> None:
+    body = {"question": "How much insulin should I take after this?", "lang": "en",
+            "scan": fixtures.scan_result().model_dump(), "profiles": json.loads(PROFILES_JSON)}
+    answer = AskResponse.model_validate(client.post("/api/ask", json=body).json())
+    assert answer.refusal == "medical_advice" and answer.grounded is False
 
 
 def test_ask_rejects_missing_scan(client: TestClient) -> None:
     assert_error(client.post("/api/ask", json={"question": "hi", "profiles": []}), 400, "VALIDATION")
 
 
-def test_profile_parse_returns_fixture(client: TestClient) -> None:
+def test_profile_parse_needs_confirmation(client: TestClient) -> None:
     response = client.post("/api/profile/parse", json={"text": "My son is allergic to peanuts", "lang": "en"})
     assert response.status_code == 200
-    assert ProfileParseResponse.model_validate(response.json()).needs_confirmation is True
+    parsed = ProfileParseResponse.model_validate(response.json())
+    assert parsed.needs_confirmation is True
+    assert [r.key for r in parsed.profiles[0].restrictions] == ["peanut"]
     assert_error(client.post("/api/profile/parse", json={"lang": "en"}), 400, "VALIDATION")
 
 
-def test_explain_returns_fixture(client: TestClient) -> None:
+def test_explain_uses_knowledge_base(client: TestClient) -> None:
     response = client.post("/api/explain", json={"term": "INS 322"})
     assert response.status_code == 200
-    ExplainResponse.model_validate(response.json())
+    assert ExplainResponse.model_validate(response.json()).source == "kb"
     assert_error(client.post("/api/explain", json={"term": "x", "lang": "de"}), 400, "VALIDATION")
 
 

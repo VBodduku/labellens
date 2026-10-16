@@ -38,3 +38,11 @@ def has_banned_word(text: str) -> bool:
         elif word in text:
             return True
     return False
+
+
+# REVIEW: native speaker (hi, te)
+AI_EXPLANATION_NOTE: dict[Lang, str] = {
+    "en": "AI explanation, not from our checked database; it may vary by product.",
+    "hi": "यह AI द्वारा दी गई जानकारी है, हमारे जाँचे गए डेटाबेस से नहीं; उत्पाद के अनुसार बदल सकती है।",
+    "te": "ఇది AI ఇచ్చిన వివరణ, మా తనిఖీ చేసిన డేటాబేస్ నుండి కాదు; ఉత్పత్తిని బట్టి మారవచ్చు.",
+}

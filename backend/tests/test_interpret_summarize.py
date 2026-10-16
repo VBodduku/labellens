@@ -5,7 +5,7 @@ import json
 
 import pytest
 
-from backend.app import fixtures
+from backend.tests import fixture_data as fixtures
 from backend.app.llm.base import ProviderUnavailableError
 from backend.app.llm.router import LLMRouter
 from backend.app.pipeline import summarize

@@ -6,7 +6,7 @@ import json
 
 from fastapi.testclient import TestClient
 
-from backend.app import fixtures
+from backend.tests import fixture_data as fixtures
 from backend.tests.fakes import SUMMARIZE, FakeLLM
 from shared.contract import ScanResult
 

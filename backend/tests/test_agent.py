@@ -6,7 +6,8 @@ import json
 
 import pytest
 
-from backend.app import engine_adapter, fixtures
+from backend.app import engine_adapter
+from backend.tests import fixture_data as fixtures
 from backend.app.agent import agent, fallback, guard
 from backend.app.agent.tools import AgentContext, find_evidence, get_nutrition, get_verdict
 from backend.app.llm.base import ChatMessage, RateLimitedError, ToolCall

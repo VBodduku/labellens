@@ -5,7 +5,8 @@ import types
 
 import pytest
 
-from backend.app import engine_adapter, fixtures
+from backend.app import engine_adapter
+from backend.tests import fixture_data as fixtures
 from backend.app.config import get_settings
 from shared.contract import Profile
 

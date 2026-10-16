@@ -3,9 +3,12 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends
 
-from backend.app import engine_adapter, fixtures
+from backend.app import engine_adapter
 from backend.app.config import get_settings
 from backend.app.llm.router import LLMRouter, get_router
+from backend.app.logging_setup import stage
+from backend.app.pipeline.explain import explain as explain_term
+from backend.app.pipeline.profile_parse import parse_profiles
 from backend.app.provider_probe import probe_providers
 from shared.contract import (
     ExplainRequest,
@@ -37,10 +40,12 @@ def catalog() -> list[RestrictionCatalogItem]:
 
 
 @router.post("/profile/parse", response_model=ProfileParseResponse)
-def parse_profile(body: ProfileParseRequest) -> ProfileParseResponse:
-    return fixtures.profile_parse()
+async def parse_profile(body: ProfileParseRequest, router: LLMRouter = Depends(get_router)) -> ProfileParseResponse:
+    with stage("parse"):
+        return await parse_profiles(body.text, body.lang, router)
 
 
 @router.post("/explain", response_model=ExplainResponse)
-def explain(body: ExplainRequest) -> ExplainResponse:
-    return fixtures.explain()
+async def explain(body: ExplainRequest, router: LLMRouter = Depends(get_router)) -> ExplainResponse:
+    with stage("explain"):
+        return await explain_term(body.term, body.lang, router)

@@ -10,7 +10,7 @@ from PIL import Image
 
 from backend.app.cache import ExtractionCache
 from backend.app.errors import ApiError
-from backend.app.fixtures import FIXTURES_DIR
+from backend.tests.fixture_data import FIXTURES_DIR
 from backend.app.llm.base import ProviderUnavailableError, RateLimitedError
 from backend.app.pipeline import orchestrator
 from backend.app.pipeline.align import union_box
