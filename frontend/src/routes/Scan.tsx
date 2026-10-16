@@ -1,8 +1,8 @@
-import { ArrowRight, X } from "lucide-react";
+import { ArrowRight, Users, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { CameraStateCard } from "../components/capture/CameraStateCard";
 import { CameraView } from "../components/capture/CameraView";
 import { CaptureButton } from "../components/capture/CaptureButton";
@@ -180,6 +180,15 @@ export default function Scan() {
 
       <div className="relative z-10 space-y-3 bg-gradient-to-t from-black/85 via-black/50 to-transparent px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-8">
         {live && <QualityHints issues={issues} ready={monitor.latest !== null} />}
+        {userProfiles.length === 0 && resultRetake === null && (
+          <Link
+            to="/profiles"
+            className="mx-auto flex min-h-10 w-fit items-center gap-2 rounded-chip bg-black/55 px-4 text-xs font-semibold text-white backdrop-blur-md"
+          >
+            <Users className="size-4" aria-hidden="true" />
+            {t("scan.noProfilesChip")}
+          </Link>
+        )}
         {panels.length > 0 && resultRetake === null && (
           <PanelTray
             panels={panels}

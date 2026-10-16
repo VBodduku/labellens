@@ -10,6 +10,8 @@ interface SheetProps {
   title: string;
   onClose: () => void;
   children: ReactNode;
+  /** Wider panel for forms (profile editor, confirmation lists). */
+  wide?: boolean;
 }
 
 const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -18,7 +20,7 @@ const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select
  * Modal sheet: slides up from the bottom on phones, a centred dialog on larger screens. Traps focus,
  * closes on Escape or backdrop tap, and returns focus to whatever opened it.
  */
-export function Sheet({ open, title, onClose, children }: SheetProps) {
+export function Sheet({ open, title, onClose, children, wide = false }: SheetProps) {
   const { t } = useTranslation();
   const titleId = useId();
   const panel = useRef<HTMLDivElement>(null);
@@ -74,13 +76,15 @@ export function Sheet({ open, title, onClose, children }: SheetProps) {
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
-            className="relative w-full max-w-md rounded-t-[22px] bg-surface p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-[inset_0_0_0_1px_var(--line)] sm:m-4 sm:rounded-[22px]"
+            className={`relative max-h-[92svh] w-full overflow-y-auto overscroll-contain rounded-t-[22px] bg-surface p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-[inset_0_0_0_1px_var(--line)] sm:m-4 sm:rounded-[22px] ${
+              wide ? "max-w-xl" : "max-w-md"
+            }`}
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 40 }}
             transition={{ duration: 0.26, ease: [0.2, 0.8, 0.2, 1] }}
           >
-            <div className="mb-4 flex items-center gap-3">
+            <div className="sticky -top-5 z-10 -mx-5 -mt-5 mb-4 flex items-center gap-3 bg-surface px-5 pb-2 pt-5">
               <h2 id={titleId} className="flex-1 text-lg font-bold">
                 {title}
               </h2>

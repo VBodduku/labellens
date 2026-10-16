@@ -2,9 +2,11 @@ import { Camera, ImagePlus, ScanText, Users } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
+import { AskBar } from "../components/ask/AskBar";
 import { EvidenceViewer } from "../components/evidence/EvidenceViewer";
 import type { OverlayItem } from "../components/evidence/EvidenceOverlay";
 import { CorrectionEditor, type EditTarget } from "../components/label/CorrectionEditor";
+import { ExplainSheet } from "../components/label/ExplainSheet";
 import { ExtractionMetaBadges } from "../components/label/ExtractionMetaBadges";
 import { IngredientsList } from "../components/label/IngredientsList";
 import { NutritionTable } from "../components/label/NutritionTable";
@@ -22,6 +24,7 @@ import { ProfileVerdictCard } from "../components/verdict/ProfileVerdictCard";
 import { makeCorrection } from "../lib/corrections";
 import { sortByStateWorstFirst } from "../lib/verdict";
 import type { Box, ScanResult } from "../shared/contract";
+import { useProfilesStore } from "../store/profiles";
 import { useScanStore, type Panel } from "../store/scan";
 import { useUiStore } from "../store/ui";
 
@@ -57,10 +60,23 @@ function EmptyResult() {
 
 function ResultView({ result, panels }: { result: ScanResult; panels: Panel[] }) {
   const { t } = useTranslation();
-  const { scanProfiles, isDemo, status, corrections, changedVerdicts, addCorrection } = useScanStore();
+  const { scanProfiles, isDemo, status, corrections, changedVerdicts, recheckError, addCorrection, recheck } = useScanStore();
+  const { profiles: savedProfiles, hydrated: profilesHydrated } = useProfilesStore();
   const { lang, selectedProfileId, selectProfile } = useUiStore();
   const [tab, setTab] = useState<TabKey>("verdicts");
   const [editing, setEditing] = useState<EditTarget | null>(null);
+  const [explaining, setExplaining] = useState<string | null>(null);
+
+  // Summaries are generated per language: after a switch, recheck (engine only) and show the template meanwhile.
+  useEffect(() => {
+    if (status === "done" && !recheckError && result.lang !== lang) void recheck(lang);
+  }, [status, recheckError, result.lang, lang, recheck]);
+
+  // Real scans follow the saved family: editing profiles rechecks the open result (the demo keeps its fixture family).
+  useEffect(() => {
+    if (isDemo || !profilesHydrated || status !== "done" || recheckError) return;
+    if (JSON.stringify(savedProfiles) !== JSON.stringify(scanProfiles)) void recheck(lang, savedProfiles);
+  }, [isDemo, profilesHydrated, status, recheckError, savedProfiles, scanProfiles, recheck, lang]);
 
   const reports = useMemo(() => sortByStateWorstFirst(result.reports, (report) => report.overall), [result.reports]);
   const selected = reports.find((report) => report.profile_id === selectedProfileId) ?? reports[0];
@@ -92,7 +108,7 @@ function ResultView({ result, panels }: { result: ScanResult; panels: Panel[] })
   ];
 
   return (
-    <div className="page-gutter mx-auto max-w-page pb-16 pt-4 lg:pt-8">
+    <div className="page-gutter mx-auto max-w-page pb-32 pt-4 lg:pt-8">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <h1 className="text-2xl font-bold sm:text-3xl">{result.extraction.product_name ?? t("result.unnamedProduct")}</h1>
         {isDemo && <span className="rounded-chip bg-surface-2 px-3 py-1 text-xs font-semibold text-beam">{t("result.demoBadge")}</span>}
@@ -109,6 +125,21 @@ function ResultView({ result, panels }: { result: ScanResult; panels: Panel[] })
       <div className="mt-2">
         <ExtractionMetaBadges meta={result.extraction.meta} />
       </div>
+      {result.extraction.meta.provider === "ocr_only" && (
+        <p role="status" className="hatch mt-3 rounded-xl p-3 text-sm shadow-[inset_0_0_0_1px_var(--unknown)]">
+          {t("result.ocrOnly")}
+        </p>
+      )}
+      {recheckError && (
+        <div role="alert" className="mt-3 flex flex-wrap items-center gap-3 rounded-xl bg-conflict/10 p-3 text-sm">
+          <span className="flex-1">
+            {t("result.recheckFailed")} {t(`errors.${recheckError.code}`)}
+          </span>
+          <Button variant="secondary" onClick={() => void recheck(lang)}>
+            {t("common.retry")}
+          </Button>
+        </div>
+      )}
 
       <div className="mt-4 grid gap-5 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-8">
         <div className="sticky top-16 z-20 -mx-4 bg-bg/95 px-4 pb-2 pt-1 backdrop-blur lg:top-24 lg:mx-0 lg:h-[calc(100svh-7.5rem)] lg:self-start lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
@@ -137,7 +168,9 @@ function ResultView({ result, panels }: { result: ScanResult; panels: Panel[] })
                   </ButtonLink>
                 </div>
               ))}
-            {tab === "ingredients" && <IngredientsList result={result} corrections={corrections} onEdit={setEditing} />}
+            {tab === "ingredients" && (
+              <IngredientsList result={result} corrections={corrections} onEdit={setEditing} onExplain={setExplaining} />
+            )}
             {tab === "nutrition" && <NutritionTable result={result} onEdit={setEditing} />}
             {tab === "unknowns" && <UnknownsPanel unknowns={result.unknowns} panels={panels} />}
           </div>
@@ -145,6 +178,8 @@ function ResultView({ result, panels }: { result: ScanResult; panels: Panel[] })
       </div>
 
       <CorrectionEditor target={editing} onClose={() => setEditing(null)} onSave={saveCorrection} />
+      <ExplainSheet term={explaining} onClose={() => setExplaining(null)} />
+      <AskBar result={result} profiles={scanProfiles} />
     </div>
   );
 }

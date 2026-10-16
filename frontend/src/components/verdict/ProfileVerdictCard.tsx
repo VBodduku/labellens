@@ -1,10 +1,13 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslation } from "react-i18next";
+import { restrictionLabel } from "../../lib/restrictionLabel";
 import { verdictKey } from "../../lib/resultDiff";
+import { speechScript } from "../../lib/speechScript";
 import { profileSummary } from "../../lib/templateSummary";
 import { sortWorstFirst } from "../../lib/verdict";
 import type { Profile, ProfileReport } from "../../shared/contract";
 import { useUiStore } from "../../store/ui";
+import { ReadAloudButton } from "../speech/ReadAloudButton";
 import { ResultCard } from "./ResultCard";
 import { StateBadge } from "./StateBadge";
 
@@ -24,6 +27,10 @@ export function ProfileVerdictCard({ report, profile, changed }: ProfileVerdictC
   const results = sortWorstFirst(report.results);
   const worst = results[0];
   const name = profile?.name ?? report.profile_id;
+  const restrictionName = (restrictionId: string) => {
+    const restriction = profile?.restrictions.find((candidate) => candidate.id === restrictionId);
+    return restriction ? restrictionLabel(restriction.key, restriction.label, lang) : restrictionId;
+  };
 
   return (
     <article className="card overflow-hidden" aria-labelledby={`verdict-${report.profile_id}`}>
@@ -53,10 +60,13 @@ export function ProfileVerdictCard({ report, profile, changed }: ProfileVerdictC
           </motion.span>
         </AnimatePresence>
       </header>
-      <p className="border-b border-line px-4 py-3 text-sm leading-relaxed sm:px-5">
-        <span className="sr-only">{t("result.summary.label")}: </span>
-        {profileSummary(report, name, lang)}
-      </p>
+      <div className="space-y-3 border-b border-line px-4 py-3 sm:px-5">
+        <p className="text-sm leading-relaxed">
+          <span className="sr-only">{t("result.summary.label")}: </span>
+          {profileSummary(report, name, lang)}
+        </p>
+        <ReadAloudButton getText={(mode, readLang) => speechScript(report, profile, readLang, mode)} />
+      </div>
       <motion.ul
         key={report.profile_id}
         className="divide-y divide-line"
@@ -68,7 +78,7 @@ export function ProfileVerdictCard({ report, profile, changed }: ProfileVerdictC
           <ResultCard
             key={result.restriction_id}
             result={result}
-            label={profile?.restrictions.find((candidate) => candidate.id === result.restriction_id)?.label ?? result.restriction_id}
+            label={restrictionName(result.restriction_id)}
             changed={changed.includes(verdictKey(report.profile_id, result.restriction_id))}
           />
         ))}

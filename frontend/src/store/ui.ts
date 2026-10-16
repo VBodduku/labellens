@@ -24,6 +24,8 @@ interface UiState {
   selectedProfileId: string | null;
   focusedEvidence: FocusedEvidence | null;
   voiceRate: number;
+  /** Which read-aloud control is speaking (one at a time across the app). */
+  speakingId: string | null;
   setLang: (lang: Lang) => void;
   setTheme: (theme: ThemeChoice) => void;
   cycleTheme: () => void;
@@ -31,6 +33,7 @@ interface UiState {
   focusEvidence: (evidence: Evidence, state: VerdictState | null) => void;
   clearFocus: () => void;
   setVoiceRate: (rate: number) => void;
+  setSpeaking: (id: string | null) => void;
 }
 
 export function detectLang(languages: readonly string[] = globalThis.navigator?.languages ?? []): Lang {
@@ -57,6 +60,7 @@ export const useUiStore = create<UiState>()(
       selectedProfileId: null,
       focusedEvidence: null,
       voiceRate: 1,
+      speakingId: null,
       setLang: (lang) => {
         setLanguage(lang);
         set({ lang });
@@ -74,6 +78,7 @@ export const useUiStore = create<UiState>()(
         set({ focusedEvidence: { evidence, state, nonce: (get().focusedEvidence?.nonce ?? 0) + 1 } }),
       clearFocus: () => set({ focusedEvidence: null }),
       setVoiceRate: (voiceRate) => set({ voiceRate: Math.min(1.5, Math.max(0.6, voiceRate)) }),
+      setSpeaking: (speakingId) => set({ speakingId }),
     }),
     {
       name: "labellens.ui",

@@ -23,6 +23,7 @@ export function ErrorNotice({ error, title, actions }: ErrorNoticeProps) {
         {error.retryAfterS !== null && (
           <p className="mt-1 text-sm text-text-dim">{t("common.retryIn", { seconds: error.retryAfterS })}</p>
         )}
+        {error.requestId && <p className="mt-2 font-mono text-xs text-text-dim">{t("errors.reference", { id: error.requestId })}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-3">{actions}</div>}
     </div>
