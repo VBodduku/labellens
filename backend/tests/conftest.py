@@ -19,7 +19,7 @@ from backend.tests.fakes import FakeLLM, recorded
 from shared.contract import OcrToken
 
 TEST_ENV = {
-    "ENGINE_MODE": "stub",
+    "ENGINE_MODE": "real",
     "MAX_IMAGES": "3",
     "MAX_IMAGE_MB": "1",
     "GEMINI_API_KEY": "",
@@ -27,6 +27,20 @@ TEST_ENV = {
     "CORS_ORIGINS": "http://localhost:5173",
     "LOG_LEVEL": "warning",
 }
+
+
+def pytest_configure(config: pytest.Config) -> None:
+    config.addinivalue_line("markers", "live: calls real LLM providers; opt in with -m live")
+
+
+def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
+    """Live tests run only when asked for (-m live), whichever pytest.ini is in effect."""
+    if "live" in (config.getoption("-m") or ""):
+        return
+    skip = pytest.mark.skip(reason="live test: run with -m live")
+    for item in items:
+        if "live" in item.keywords:
+            item.add_marker(skip)
 
 
 @pytest.fixture(autouse=True)

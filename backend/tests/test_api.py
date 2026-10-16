@@ -18,7 +18,7 @@ from shared.contract import (
     RestrictionCatalogItem,
     ScanResult,
 )
-from shared.engine_stub import restriction_catalog
+from engine import restriction_catalog
 
 PROFILES_JSON = (fixtures.FIXTURES_DIR / "profiles.json").read_text(encoding="utf-8")
 
@@ -44,7 +44,7 @@ def test_health_reports_degraded_when_no_provider(client: TestClient) -> None:
     body = HealthResponse.model_validate(client.get("/api/health").json())
     assert body.status == "degraded"
     assert body.providers == {"gemini": False, "ollama": False}
-    assert body.engine_mode == "stub"
+    assert body.engine_mode == "real"
 
 
 def test_health_ok_when_a_provider_is_up(client: TestClient, providers: dict[str, bool]) -> None:
@@ -139,8 +139,11 @@ def test_recheck_runs_engine_on_posted_extraction(client: TestClient) -> None:
     result = ScanResult.model_validate(response.json())
     assert result.lang == "hi"
     assert result.scan_id == extraction.scan_id
-    assert [r.profile_id for r in result.reports] == ["p_aarav", "p_thatha", "p_lakshmi"]
-    assert all(r.results[0].explanation.startswith("[stub]") for r in result.reports)
+    overall = {r.profile_id: r.overall for r in result.reports}
+    assert list(overall) == ["p_aarav", "p_thatha", "p_lakshmi"]
+    assert overall["p_aarav"] == "conflict"                     # "Peanuts (22%)" on the label
+    assert all(r.state in {"conflict", "possible", "not_listed", "unknown"}
+               for report in result.reports for r in report.results)
 
 
 def test_recheck_rejects_malformed_body(client: TestClient) -> None:
