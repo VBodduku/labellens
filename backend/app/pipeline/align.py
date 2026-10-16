@@ -29,6 +29,7 @@ from backend.app.pipeline.textnorm import (
     clean_item_text,
     compact,
     norm,
+    number_digits,
     numbers_differ,
     parse_number,
     parse_percentage,
@@ -203,7 +204,10 @@ def single_evidence(alignment: Alignment) -> Evidence:
 def _checked_amount(
     key: str, value: LLMNutrientValue, alignment: Alignment, issues: list[str],
 ) -> tuple[float | None, Readability]:
-    """The number the engine may use: printed OCR text wins; a number not on the photo is dropped."""
+    """The number the engine may use. The model and the OCR text must agree; a number not on the photo is
+    dropped. Same digits with the decimal point lost by OCR ("8.8" read as "88") is agreement: the model's
+    reading stands. Any other disagreement leaves the value unusable ("partial") and recorded, so the user is
+    asked to check the pack instead of a misread number deciding a verdict."""
     if value.readability == "unreadable":
         return None, "unreadable"
     if alignment.ocr_text is not None:
@@ -211,7 +215,10 @@ def _checked_amount(
         if ocr_amount is None:
             return None, "unreadable"
         if value.amount is not None and numbers_differ(value.amount, ocr_amount):
-            issues.append(f"{MISMATCH_ISSUE}:{key}")
+            if number_digits(f"{value.amount:g}") == number_digits(alignment.ocr_text):
+                return value.amount, value.readability
+            issues.append(f"{MISMATCH_ISSUE}:{key}:{value.basis}:{value.amount:g}")   # the engine reports it
+            return ocr_amount, "partial"
         return ocr_amount, value.readability
     if alignment.status == "approximate":
         return value.amount, "partial"      # located only by the model's own box: not cross-checked

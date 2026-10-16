@@ -47,7 +47,7 @@ from shared.contract import (
     Provider,
     ScanResult,
 )
-from shared.engine_interface import EngineOutput, TermInterpretation
+from shared.engine_interface import EngineOutput, TermInterpretation, UnresolvedTerm
 
 SCAN_BUDGET_S = 45.0
 STRUCTURE_RESERVE_S = 12.0      # kept back from structuring for verify, interpretation and summaries
@@ -202,6 +202,12 @@ async def extract(scan: ScanInput, router: LLMRouter, cache: ExtractionCache, de
     return extraction
 
 
+def _whole_ingredients_first(output: EngineOutput) -> list[UnresolvedTerm]:
+    """Ingredients the KB does not know at all block "not listed"; leftover words of matched ones do not."""
+    unknown = {a.ingredient_id for a in output.annotations if a.source == "unresolved"}
+    return sorted(output.unresolved_terms, key=lambda t: t.ingredient_id not in unknown)
+
+
 async def _interpretations(extraction: LabelExtraction, output: EngineOutput, extras: CacheExtras,
                            router: LLMRouter, deadline: Deadline) -> dict[str, TermInterpretation]:
     wanted = {t.term for t in output.unresolved_terms}
@@ -213,7 +219,7 @@ async def _interpretations(extraction: LabelExtraction, output: EngineOutput, ex
     if not budget or not router.can_generate():
         return {}
     with stage("interpret"):
-        found = await interpret(output.unresolved_terms, router, budget)
+        found = await interpret(_whole_ingredients_first(output), router, budget)
     if found is None:                                    # no model answered: try again next time
         return {}
     extras.interpretations.update(found)

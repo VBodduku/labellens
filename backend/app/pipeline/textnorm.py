@@ -42,6 +42,12 @@ def parse_number(text: str) -> float | None:
     return _to_float(match.group(0)) if match else None
 
 
+def number_digits(text: str) -> str | None:
+    """Digits of the first number in the text, without its decimal point or leading zeros ("08.8" -> "88")."""
+    match = _NUMBER.search(_O_AS_ZERO.sub("0", text))
+    return (re.sub(r"\D", "", match.group(0)).lstrip("0") or "0") if match else None
+
+
 def parse_percentage(text: str) -> float | None:
     match = _PERCENT.search(_O_AS_ZERO.sub("0", text))
     return _to_float(match.group(1)) if match else None

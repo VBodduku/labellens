@@ -18,4 +18,5 @@ def build_scan_result(extraction: LabelExtraction, output: EngineOutput, lang: L
         nutrition_analysis=output.nutrition_analysis,
         reports=output.reports,
         unknowns=output.unknowns,
+        contradictions=output.contradictions,
     )

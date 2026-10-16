@@ -17,7 +17,7 @@ from shared.engine_interface import TermInterpretation, UnresolvedTerm
 
 logger = logging.getLogger("labellens.interpret")
 
-MAX_TERMS = 10
+MAX_TERMS = 16
 PROMPT = Path(__file__).resolve().parents[1] / "llm" / "prompts" / "interpret.md"
 
 

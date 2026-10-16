@@ -148,7 +148,14 @@ def test_nutrient_amount_is_parsed_from_ocr_text_not_llm() -> None:
     assert value.amount == 520
     assert value.raw_text == "520 kcal"
     assert value.evidence is not None and value.evidence.token_ids == ids(16, 17)
-    assert "llm_ocr_number_mismatch:energy_kcal" in p.nutrition_section.issues
+    assert "llm_ocr_number_mismatch:energy_kcal:per_100g:502" in p.nutrition_section.issues
+    assert value.readability == "partial"           # the two readings disagree: not used until the user checks
+
+
+def test_ocr_that_only_lost_the_decimal_point_agrees_with_the_model() -> None:
+    from backend.app.pipeline.textnorm import number_digits
+    assert number_digits("88") == number_digits("8.8") == "88"
+    assert number_digits("520 kcal") != number_digits("502")
 
 
 def test_smudged_value_is_unreadable_even_if_llm_guessed() -> None:

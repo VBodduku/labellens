@@ -97,13 +97,20 @@ def test_readable_nutrient_value_beats_unreadable() -> None:
     assert merged.nutrition_section.issues == []
 
 
+def test_two_rows_for_one_nutrient_on_one_photo_are_not_a_photo_disagreement() -> None:
+    a = panel("img_0", rows=[NutrientRow(key="saturated_fat_g", raw_label="Saturated fat ^", values=[value("img_0", 10.9)]),
+                             NutrientRow(key="saturated_fat_g", raw_label="Saturated fat ^^", values=[value("img_0", 5.6)])])
+    merged = merge_panels([a])
+    assert not any(i.startswith("panel_disagreement") for i in merged.nutrition_section.issues)
+
+
 def test_disagreeing_values_keep_higher_confidence_and_flag() -> None:
     a = panel("img_0", rows=[NutrientRow(key="total_sugars_g", raw_label="Sugars",
                                          values=[value("img_0", 38.0, status="approximate")])])
     b = panel("img_1", rows=[NutrientRow(key="total_sugars_g", raw_label="Sugars", values=[value("img_1", 36.0)])])
     merged = merge_panels([a, b])
     assert merged.nutrition.rows[0].values[0].amount == 36.0  # type: ignore[union-attr]
-    assert "panel_disagreement:total_sugars_g" in merged.nutrition_section.issues
+    assert "panel_disagreement:total_sugars_g:per_100g:36:38" in merged.nutrition_section.issues
 
 
 def test_values_within_two_percent_agree() -> None:

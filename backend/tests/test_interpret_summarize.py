@@ -9,7 +9,7 @@ from backend.tests import fixture_data as fixtures
 from backend.app.llm.base import ProviderUnavailableError
 from backend.app.llm.router import LLMRouter
 from backend.app.pipeline import summarize
-from backend.app.pipeline.interpret import interpret
+from backend.app.pipeline.interpret import MAX_TERMS, interpret
 from backend.app.pipeline.summarize import valid_summary
 from backend.app.wording import has_banned_word
 from backend.tests.fakes import INTERPRET, SUMMARIZE, FakeLLM
@@ -44,8 +44,8 @@ def test_interpretations_keep_only_vocabulary_categories_and_known_terms() -> No
 
 def test_interpretation_caps_terms_and_survives_llm_failure() -> None:
     llm = FakeLLM([ProviderUnavailableError("down")])
-    assert asyncio.run(interpret(terms(*[f"term {n}" for n in range(15)]), LLMRouter([llm], 5))) is None
-    assert llm.prompts[0].count("- term ") == 10
+    assert asyncio.run(interpret(terms(*[f"term {n}" for n in range(MAX_TERMS + 5)]), LLMRouter([llm], 5))) is None
+    assert llm.prompts[0].count("- term ") == MAX_TERMS
     assert asyncio.run(interpret([], LLMRouter([llm], 5))) == {}
 
 
@@ -90,3 +90,18 @@ def test_summaries_are_never_taken_from_a_local_model() -> None:
     local = FakeLLM(routes={SUMMARIZE: ['{"summaries": []}']}, name="ollama")
     assert asyncio.run(summarize.summarize(REPORTS, PROFILES, "en", LLMRouter([local], 5))) == {}
     assert local.prompts == []
+
+
+def test_wholly_unknown_ingredients_are_interpreted_before_leftover_words() -> None:
+    from backend.app.pipeline.orchestrator import _whole_ingredients_first
+    from shared.contract import IngredientAnnotation
+    from shared.engine_interface import EngineOutput, UnresolvedTerm
+
+    output = EngineOutput(
+        annotations=[IngredientAnnotation(ingredient_id="ing_0", source="kb"),
+                     IngredientAnnotation(ingredient_id="ing_1", source="unresolved")],
+        nutrition_analysis=None, reports=[], unknowns=[],
+        unresolved_terms=[UnresolvedTerm(ingredient_id="ing_0", term="flour"),
+                          UnresolvedTerm(ingredient_id="ing_1", term="glycerin")],
+    )
+    assert [t.term for t in _whole_ingredients_first(output)] == ["glycerin", "flour"]

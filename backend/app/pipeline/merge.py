@@ -88,12 +88,21 @@ def _value_rank(value: NutrientValue) -> tuple[int, int, float]:
     )
 
 
+def _image_of(value: NutrientValue) -> str | None:
+    return value.evidence.image_id if value.evidence else None
+
+
 def _merge_values(key: str, values: Sequence[NutrientValue], issues: list[str]) -> NutrientValue:
     readable = [v for v in values if v.amount is not None]
-    if any(numbers_differ(a.amount, b.amount, DISAGREEMENT) for a in readable for b in readable
-           if a.amount is not None and b.amount is not None):
-        issues.append(f"{DISAGREEMENT_ISSUE}:{key}")
-    return max(values, key=_value_rank)
+    chosen = max(values, key=_value_rank)
+    # Only photo vs photo: one photo can print the same nutrient twice (variant rows such as "Saturated fat ^/^^").
+    differing = [b for a in readable for b in readable
+                 if a.amount is not None and b.amount is not None and numbers_differ(a.amount, b.amount, DISAGREEMENT)
+                 and _image_of(a) != _image_of(b)]
+    if differing:
+        other = next(v for v in differing if v.amount != chosen.amount)
+        issues.append(f"{DISAGREEMENT_ISSUE}:{key}:{chosen.basis}:{chosen.amount:g}:{other.amount:g}")   # the engine reports it
+    return chosen
 
 
 def merge_nutrition(panels: Sequence[PanelExtraction]) -> tuple[NutritionTable | None, SectionStatus]:
