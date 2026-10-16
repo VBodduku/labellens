@@ -28,14 +28,25 @@ function staticClosure(key, seen = new Set()) {
   return seen;
 }
 
+/**
+ * Manifest key for a guarded entry. A route chunk that also hosts code shared with its lazy children has no
+ * facade module, so Vite keys it `_<Name>-<hash>.js` instead of its source path; find it by chunk name then.
+ */
+function manifestKey(entry) {
+  if (manifest[entry]) return entry;
+  const name = entry.split("/").pop().replace(/\.[jt]sx?$/, "");
+  return Object.keys(manifest).find((key) => manifest[key].isDynamicEntry && manifest[key].name === name);
+}
+
 let failed = false;
 for (const entry of GUARDED) {
-  if (!manifest[entry]) {
-    console.error(`[check-chunks] ${entry} missing from the manifest`);
+  const key = manifestKey(entry);
+  if (!key) {
+    console.error(`[check-chunks] FAIL ${entry} missing from the manifest`);
     failed = true;
     continue;
   }
-  const files = [...staticClosure(entry)].map((key) => manifest[key].file);
+  const files = [...staticClosure(key)].map((chunk) => manifest[chunk].file);
   const leaks = files.flatMap((file) =>
     Object.entries(MARKERS)
       .filter(([, pattern]) => pattern.test(read(file)))

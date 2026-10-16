@@ -13,6 +13,12 @@
 - `ocr_only` results show a banner: "Basic reading only — the AI reader was unavailable, so missing items can't be confirmed."
 - `/api/ask`: the UI renders `tool_calls` for `get_profiles`, `get_verdict` (`args.profile_id`), `find_evidence` (`args.query`), `explain_ingredient` (`args.term`) and `get_nutrition` (`args.key`) in plain language; any other tool shows "Used <tool>". `refusal: "medical_advice"` and `grounded: false` get their own styling.
 
+- **Deploy (Phase 4):** the Vercel build calls `VITE_API_BASE_URL` directly (cross-origin), so the backend's `CORS_ORIGINS` must include the Vercel production domain and any preview domains being tested. Errors should keep `X-Request-ID` in `Access-Control-Expose-Headers` so the UI can show "Reference: …".
+- `RATE_LIMITED` responses: please include `retry_after_s` in the error body (the header alone is not read); the UI counts it down and keeps Retry disabled until zero.
+
+## For Part 3 (engine)
+- The About page reads `frontend/public/metrics.json` in the shape of `engine/eval/reports/metrics.json` (`dataset_kind`, `packets`, `real_packets`, rates as 0–1 fractions, `confusion_matrix[expected][given]` over the four states, `average_latency_ms`, `limitations`). It is shown as measured accuracy **only** when `dataset_kind` is `"real"` and `real_packets > 0`. When the real evaluation is done, copy the file over `frontend/public/metrics.json` (or ask a human to).
+
 ## For native speakers — please review these 20 strings first
 `src/i18n/hi.json` and `src/i18n/te.json` contain full drafts of every key (marked NEEDS HUMAN REVIEW). The strings below are what families read first and must be exactly right. Check meaning, tone (respectful, plain), and that `{placeholders}` still read naturally once filled in (e.g. `{category}` = "मूँगफली" / "వేరుశనగ", `{basis}` = "100 ग्राम" / "100 గ్రా").
 
