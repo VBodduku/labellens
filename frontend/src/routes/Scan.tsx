@@ -1,7 +1,7 @@
 import { ImagePlus, ScanText, Trash2 } from "lucide-react";
 import { useRef, type ChangeEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/Button";
 import { IconButton } from "../components/ui/IconButton";
 import type { PanelHint } from "../shared/contract";
@@ -15,6 +15,7 @@ const HINTS: PanelHint[] = ["front", "back", "side"];
 export default function Scan() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { search } = useLocation();
   const input = useRef<HTMLInputElement>(null);
   const { panels: storedPanels, isDemo, addPanel, removePanel, setPanelHint, analyse } = useScanStore();
   const profiles = useProfilesStore((state) => state.profiles);
@@ -30,7 +31,8 @@ export default function Scan() {
 
   function onAnalyse() {
     void analyse({ profiles, lang });
-    navigate("/result");
+    // Keep the query string so dev switches such as ?mockError=RATE_LIMITED survive into the result view.
+    navigate({ pathname: "/result", search });
   }
 
   return (

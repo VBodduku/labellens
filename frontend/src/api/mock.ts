@@ -54,8 +54,8 @@ export function mockErrorFromUrl(search: string = globalThis.location?.search ??
   return isServerErrorCode(value) ? value : null;
 }
 
-function throwIfMockError(): void {
-  const code = mockErrorFromUrl();
+/** Reads ?mockError when the call starts (the app may navigate away while the mock is "working"). */
+function throwIfMockError(code: ServerErrorCode | null): void {
   if (!code) return;
   throw new ApiError(code, MOCK_ERROR_MESSAGES[code], {
     status: code === "RATE_LIMITED" ? 429 : code === "INTERNAL" || code === "LLM_UNAVAILABLE" ? 503 : 400,
@@ -83,15 +83,17 @@ export const mockApi: LabelLensApi = {
     return structuredClone(fixtureCatalog);
   },
   async scan(input, options) {
+    const failure = mockErrorFromUrl();
     await delay(MOCK_DELAYS_MS.scan, options?.signal);
-    throwIfMockError();
+    throwIfMockError(failure);
     if (input.images.length === 0) throw new ApiError("VALIDATION", "Add at least one photo.", { status: 422 });
     if (input.images.length > 3) throw new ApiError("TOO_MANY_IMAGES", MOCK_ERROR_MESSAGES.TOO_MANY_IMAGES, { status: 400 });
     return freshResult({ lang: input.lang, reports: structuredClone(reportsFor(input.profiles)) });
   },
   async recheck(request, options) {
+    const failure = mockErrorFromUrl();
     await delay(MOCK_DELAYS_MS.recheck, options?.signal);
-    throwIfMockError();
+    throwIfMockError(failure);
     // Engine verdicts are not recomputed in mock mode; the corrected extraction is echoed back.
     return freshResult({
       lang: request.lang,
@@ -100,18 +102,21 @@ export const mockApi: LabelLensApi = {
     });
   },
   async ask(request, options) {
+    const failure = mockErrorFromUrl();
     await delay(MOCK_DELAYS_MS.ask, options?.signal);
-    throwIfMockError();
+    throwIfMockError(failure);
     return { ...structuredClone(fixtureAsk), lang: request.lang };
   },
   async parseProfile(_request, options) {
+    const failure = mockErrorFromUrl();
     await delay(MOCK_DELAYS_MS.parseProfile, options?.signal);
-    throwIfMockError();
+    throwIfMockError(failure);
     return structuredClone(fixtureProfileParse);
   },
   async explain(_request, options) {
+    const failure = mockErrorFromUrl();
     await delay(MOCK_DELAYS_MS.explain, options?.signal);
-    throwIfMockError();
+    throwIfMockError(failure);
     return structuredClone(fixtureExplain);
   },
 };

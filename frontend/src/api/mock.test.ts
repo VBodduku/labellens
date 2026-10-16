@@ -50,6 +50,16 @@ describe("mock API", () => {
     await expect(pending).rejects.toBeInstanceOf(ApiError);
   });
 
+  it("keeps the simulated error even if the app navigates while the call is pending", async () => {
+    vi.useFakeTimers();
+    setSearch("?mockError=LLM_UNAVAILABLE");
+    const pending = mockApi.scan({ images: [new Blob(["x"])], profiles: [], lang: "en" });
+    const assertion = expect(pending).rejects.toMatchObject({ code: "LLM_UNAVAILABLE" });
+    setSearch("");
+    await vi.advanceTimersByTimeAsync(MOCK_DELAYS_MS.scan);
+    await assertion;
+  });
+
   it("rejects with ABORTED when the caller cancels", async () => {
     vi.useFakeTimers();
     const controller = new AbortController();
