@@ -22,6 +22,8 @@ def test_reads_fixture_label_honestly(label_tokens: list[OcrToken]) -> None:
         ("per_100g", 520.0, "kcal"), ("per_serving", 208.0, "kcal")]
     assert rows["total_sugars_g"].values[0].amount == 38.0
     assert [v.amount for v in rows["sodium_mg"].values] == [None, None]
+    # The energy adds up and both columns agree through the 40 g serving, so the numbers are usable.
+    assert all(v.readability == "clear" for key in ("energy_kcal", "total_sugars_g") for v in rows[key].values)
 
     for section in (panel.ingredients_section, panel.allergen_section, panel.nutrition_section):
         assert section.complete is False and "ocr_only" in section.issues

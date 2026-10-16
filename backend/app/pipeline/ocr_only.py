@@ -1,21 +1,21 @@
 """Degraded mode when every LLM fails: keyword rules over OCR tokens only (spec §4.9).
 
-Everything found here is `partial` and every section is `complete=False`, so the engine can never
-answer "Not listed" from an OCR-only reading.
+Ingredients and statements found here are `partial` and every section is `complete=False`, so the engine
+can never answer "Not listed" from an OCR-only reading. Nutrition values are usable only when the label
+backs them up (ocr_nutrition.py).
 """
 from __future__ import annotations
 
 import re
+import statistics
 from collections.abc import Sequence
 
 from backend.app.pipeline.align import PanelExtraction, line_evidence, split_lines
-from backend.app.pipeline.textnorm import clean_item_text, compact, norm, parse_number, parse_percentage
+from backend.app.pipeline.ocr_nutrition import find_nutrition
+from backend.app.pipeline.textnorm import clean_item_text, compact, norm, parse_percentage
 from shared.contract import (
     AllergenStatement,
     Ingredient,
-    NutrientRow,
-    NutrientValue,
-    NutritionTable,
     OcrToken,
     SectionPresence,
     SectionStatus,
@@ -28,25 +28,11 @@ PARTIAL_CONFIDENCE = 0.6
 _INGREDIENT_HEADING = re.compile(r"^(ingredients?|ingredents|सामग्री|पदार्थ|సామగ్రి|పదార్థాలు|కావలసినవి)", re.IGNORECASE)
 _STOP_HEADINGS = ("contains", "maycontain", "allergen", "nutrition", "mfd", "manufactured", "marketed",
                   "bestbefore", "storage", "netwt", "netweight")
-_UNIT = re.compile(r"^(kcal|kj|mg|mcg|µg|g)\b", re.IGNORECASE)
-_NUTRIENT_LABELS: list[tuple[str, str, str]] = [   # (normalised label prefix, key, default unit)
-    ("added sugar", "added_sugars_g", "g"),
-    ("total sugar", "total_sugars_g", "g"),
-    ("sugar", "total_sugars_g", "g"),
-    ("saturated", "saturated_fat_g", "g"),
-    ("trans", "trans_fat_g", "g"),
-    ("total fat", "total_fat_g", "g"),
-    ("fat", "total_fat_g", "g"),
-    ("energy", "energy_kcal", "kcal"),
-    ("calories", "energy_kcal", "kcal"),
-    ("protein", "protein_g", "g"),
-    ("carbohydrate", "carbohydrate_g", "g"),
-    ("cholesterol", "cholesterol_mg", "mg"),
-    ("sodium", "sodium_mg", "mg"),
-    ("dietary fib", "fibre_g", "g"),
-    ("fibre", "fibre_g", "g"),
-    ("fiber", "fibre_g", "g"),
-]
+NAME_MIN_HEIGHT = 3.0           # a product name is printed at least this x the photo's usual text height
+NAME_MIN_CONFIDENCE = 0.9
+NAME_MAX_WORDS = 4
+_NOT_A_NAME = re.compile(r"net|weight|quantity|mrp|price|tax|date|batch|lot|useby|bestbefore|mfg|pkd|fssa|lic|"
+                         r"ingredient|nutrition|allergen|contains|storage|manufactured|marketed")
 
 
 def _section(presence: SectionPresence) -> SectionStatus:
@@ -140,46 +126,25 @@ def find_statements(tokens: Sequence[OcrToken]) -> list[AllergenStatement]:
     return statements
 
 
-def _row_values(line: list[OcrToken], label_end: int, default_unit: str, per_100: bool) -> list[NutrientValue]:
-    values: list[NutrientValue] = []
-    n = label_end
-    while n < len(line):
-        token = line[n]
-        if "%" in token.text or (not any(c.isdigit() for c in token.text) and "?" not in token.text):
-            n += 1
-            continue
-        span = [token]
-        unit_match = _UNIT.search(re.sub(r"^[\d.,?Oo]+\s*", "", token.text))
-        if unit_match is None and n + 1 < len(line) and _UNIT.match(line[n + 1].text):
-            span.append(line[n + 1])
-            unit_match = _UNIT.match(line[n + 1].text)
-        amount = parse_number(token.text)
-        basis = "per_100g" if per_100 and not values else "per_serving"
-        raw = " ".join(t.text for t in span)
-        values.append(NutrientValue(
-            basis=basis, amount=amount, unit=unit_match.group(1) if unit_match else default_unit, raw_text=raw,
-            evidence=line_evidence(span, 1.0)[0], readability="partial" if amount is not None else "unreadable",
-        ))
-        n += len(span)
-    return values
-
-
-def find_nutrition(tokens: Sequence[OcrToken]) -> NutritionTable | None:
-    """Nutrient rows by label; only below a "Nutrition" heading when the photo has one."""
-    heading = next((n for n, t in enumerate(tokens) if compact(t.text).startswith("nutrition")), 0)
-    tokens = tokens[heading:]
-    per_100 = "per 100" in norm(" ".join(t.text for t in tokens))
-    rows: list[NutrientRow] = []
-    for line in split_lines(tokens):
-        line_text = norm(" ".join(t.text for t in line))
-        match = next((m for m in _NUTRIENT_LABELS if line_text.startswith(m[0])), None)
-        if match is None:
-            continue
-        label_end = next((n for n, t in enumerate(line) if any(c.isdigit() for c in t.text)), len(line))
-        values = _row_values(line, label_end, match[2], per_100)
-        if values and match[1] not in {r.key for r in rows}:
-            rows.append(NutrientRow(key=match[1], raw_label=" ".join(t.text for t in line[:label_end]), values=values))
-    return NutritionTable(rows=rows) if rows else None
+def product_name(tokens: Sequence[OcrToken]) -> str | None:
+    """The brand or product line: printed far larger than the rest, read confidently, words only. Back
+    labels rarely have one (their largest print is the price or net-weight box), and then there is none."""
+    if not tokens:
+        return None
+    usual = statistics.median(t.box.h for t in tokens)
+    candidates = [
+        line for line in split_lines(tokens)
+        if statistics.median(t.box.h for t in line) >= NAME_MIN_HEIGHT * usual
+        and min(t.confidence for t in line) >= NAME_MIN_CONFIDENCE
+        and len(line) <= NAME_MAX_WORDS
+        and not any(c.isdigit() for t in line for c in t.text)
+        and len(compact(" ".join(t.text for t in line))) >= 3
+        and not _NOT_A_NAME.search(compact(" ".join(t.text for t in line)))
+    ]
+    if not candidates:
+        return None
+    best = max(candidates, key=lambda line: statistics.median(t.box.h for t in line))
+    return clean_item_text(" ".join(t.text for t in best))
 
 
 def extract_panel(image_id: str, tokens: Sequence[OcrToken]) -> PanelExtraction:

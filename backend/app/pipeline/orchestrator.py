@@ -108,8 +108,10 @@ def _from_llm(extraction: LLMExtraction, citations: Citations, images: list[Prep
 
 
 def _ocr_only(images: list[PreparedImage], tokens: list[OcrToken]) -> Structured:
-    panels = [ocr_only.extract_panel(i.image_id, [t for t in tokens if t.image_id == i.image_id]) for i in images]
-    return Structured(merge_panels(panels), "ocr_only", "rapidocr", 0)
+    by_image = [[t for t in tokens if t.image_id == i.image_id] for i in images]
+    panels = [ocr_only.extract_panel(i.image_id, image_tokens) for i, image_tokens in zip(images, by_image)]
+    name = next((found for image_tokens in by_image if (found := ocr_only.product_name(image_tokens))), None)
+    return Structured(merge_panels(panels), "ocr_only", "rapidocr", 0, product_name=name)
 
 
 async def _structure(scan: ScanInput, tokens: list[OcrToken], router: LLMRouter, budget_s: float) -> Structured:

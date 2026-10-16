@@ -123,7 +123,7 @@ To fill this in: photograph packets and write a `truth.json` for each (`engine/e
 
 **Reading the label**
 - RapidOCR reads Latin script well. Hindi and Telugu print is read by the model only, so its evidence is `approximate` (the model's own box), not `verified` against OCR words.
-- OCR-only mode (every model down) marks all sections incomplete, so it can never say "not listed". It finds far fewer items and always reports the veg mark as unclear.
+- OCR-only mode (every model down) marks all sections incomplete, so it can never say "not listed" from the ingredient list, and it always reports the veg mark as unclear. Its nutrition numbers are used only when the label corroborates them (energy adds up, or per-100 and per-serving agree); on 10 real photos that gave usable values for 7. A "Contains" graphic on the front of a pack can be misread as an allergen statement.
 - A list cut off at the photo edge cannot be fixed by re-reading. The user is asked to retake.
 
 **Knowledge base**
