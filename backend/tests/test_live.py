@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import os
 
 import pytest
 from dotenv import dotenv_values
@@ -28,7 +29,7 @@ def gemini() -> GeminiClient:
     key = env.get("GEMINI_API_KEY")
     if not key:
         pytest.skip("GEMINI_API_KEY not set in .env")
-    return GeminiClient(key, env.get("GEMINI_MODEL") or "gemini-flash-latest", "gemini:primary")
+    return GeminiClient(key, os.environ.get("LIVE_GEMINI_MODEL") or env.get("GEMINI_MODEL") or "gemini-flash-latest", "gemini:primary")
 
 
 def test_gemini_reads_and_grounds_the_fixture_label(label_image: Image.Image, label_tokens: list[OcrToken]) -> None:
