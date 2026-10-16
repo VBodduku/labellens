@@ -53,6 +53,7 @@
   "unknown.retake_region": "Take a closer photo of this area.",
   "unknown.ingredients_truncated": "The ingredient list continues beyond the photo.",
   "unknown.unreadable_span": "Part of the text is unreadable (blur, glare or a fold).",
+  "unknown.basic_reading": "The AI reader was unavailable, so this label got a basic reading. Check these on the pack:",
   "unknown.no_allergen_statement": "No allergen statement was found.",
   "unknown.veg_mark_unclear": "The veg / non-veg mark could not be read clearly.",
 

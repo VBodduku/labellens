@@ -402,9 +402,37 @@ def merge_unknowns(engine: Sequence[UnknownItem], pipeline: Sequence[UnknownItem
 def scan_unknowns(extraction: LabelExtraction, profiles: Sequence[Profile],
                   engine: Sequence[UnknownItem]) -> list[UnknownItem]:
     """Everything the user should know we could not read. When anything is missing, the photo problems
-    that explain it come first, each with a retake for that photo."""
-    found = merge_unknowns(engine, pending_unknowns(extraction, profiles))
-    return [*photo_unknowns(extraction), *found] if found else []
+    that explain it come first, each with a retake for that photo; after a basic (OCR-only) reading, the
+    unavailable AI reader comes before them, as one line listing what to check."""
+    found = basic_reading_unknowns(extraction, merge_unknowns(engine, pending_unknowns(extraction, profiles)))
+    if not found:
+        return []
+    basic = [u for u in found if u.message_key == BASIC_READING]
+    return [*basic, *photo_unknowns(extraction), *(u for u in found if u.message_key != BASIC_READING)]
+
+
+BASIC_READING = "unknown.basic_reading"
+
+
+def basic_reading_unknowns(extraction: LabelExtraction, found: Sequence[UnknownItem]) -> list[UnknownItem]:
+    """After an OCR-only reading every ingredient (and every uncorroborated number) is `partial`: read, but not
+    confirmed. Listing each as "unreadable" repeats one cause and misnames it; they become one line naming the
+    cause, with the items as printed. Values that really were unreadable keep their own lines."""
+    if extraction.meta.provider != "ocr_only":
+        return list(found)
+
+    def walk(items: Sequence[Ingredient]) -> list[Ingredient]:
+        return [x for i in items for x in (i, *walk(i.sub_ingredients))]
+
+    read = [i.raw_text for i in walk(extraction.ingredients) if i.readability == "partial"]
+    read += [r.raw_label for r in (extraction.nutrition.rows if extraction.nutrition else [])
+             if any(v.readability == "partial" and v.amount is not None for v in r.values)]
+    grouped = [u for u in found if u.message_key == "unknown.unreadable_span" and u.detail in read]
+    if not grouped:
+        return list(found)
+    line = UnknownItem(section="ingredients" if any(u.section == "ingredients" for u in grouped) else "nutrition",
+                       message_key=BASIC_READING, detail=", ".join(dict.fromkeys(read)))
+    return [line, *(u for u in found if u not in grouped)]
 
 
 def photo_unknowns(extraction: LabelExtraction) -> list[UnknownItem]:

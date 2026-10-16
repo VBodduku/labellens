@@ -446,6 +446,7 @@
   "unknown.retake_region": "इस हिस्से की पास से फ़ोटो लें।",
   "unknown.ingredients_truncated": "सामग्री-सूची फ़ोटो से आगे जारी है।",
   "unknown.unreadable_span": "टेक्स्ट का कुछ हिस्सा पढ़ा नहीं जा सकता (धुंधलापन, चमक या मोड़)।",
+  "unknown.basic_reading": "AI रीडर उपलब्ध नहीं था, इसलिए इस लेबल की सिर्फ़ बुनियादी पढ़ाई हुई। इन्हें पैकेट पर जाँचें:",
   "unknown.no_allergen_statement": "कोई एलर्जन कथन नहीं मिला।",
   "unknown.veg_mark_unclear": "वेज / नॉन-वेज निशान साफ़ नहीं पढ़ा जा सका।",
   "quality.blurry": "फ़ोटो धुंधली है। स्थिर रखें।",

@@ -194,3 +194,36 @@ def test_photo_problems_lead_the_list_only_when_something_could_not_be_read(monk
 
     monkeypatch.setattr(verify_module, "pending_unknowns", lambda extraction, profiles: [])
     assert scan_unknowns(e, PROFILES, []) == []
+
+
+def test_a_basic_reading_lists_what_to_check_in_one_line_and_keeps_real_gaps() -> None:
+    from backend.app.pipeline.verify import BASIC_READING, scan_unknowns
+    from shared.contract import Ingredient, NutrientRow, NutrientValue, NutritionTable, UnknownItem
+
+    extraction = fixtures.scan_result().extraction.model_copy(deep=True)
+    extraction.meta.provider = "ocr_only"
+    extraction.ingredients = [Ingredient(id=f"ing_{n}", raw_text=t, name=t, readability="partial")
+                              for n, t in enumerate(["Sugar", "Honey", "Peanut Butter"])]
+    extraction.nutrition = NutritionTable(rows=[
+        NutrientRow(key="sodium_mg", raw_label="Sodium", values=[NutrientValue(basis="per_100g", unit="mg",
+                                                                               raw_text="1?5", readability="unreadable")]),
+        NutrientRow(key="protein_g", raw_label="Protein", values=[NutrientValue(basis="per_100g", amount=9.0, unit="g",
+                                                                                raw_text="9", readability="partial")]),
+    ])
+    engine = [UnknownItem(section="ingredients", message_key="unknown.unreadable_span", detail=t)
+              for t in ("Sugar", "Peanut Butter")]
+    engine += [UnknownItem(section="nutrition", message_key="unknown.unreadable_span", detail=label)
+               for label in ("Sodium", "Protein")]
+    found = scan_unknowns(extraction, [], engine)
+    assert found[0].message_key == BASIC_READING
+    assert found[0].detail == "Sugar, Honey, Peanut Butter, Protein"        # every unconfirmed item, once
+    assert [(u.message_key, u.detail) for u in found if u.detail == "Sodium"] == [("unknown.unreadable_span", "Sodium")]
+    assert not any(u.message_key == "unknown.unreadable_span" and u.detail in ("Sugar", "Protein") for u in found)
+
+
+def test_an_ai_reading_keeps_its_unreadable_items_as_they_are() -> None:
+    from backend.app.pipeline.verify import basic_reading_unknowns
+    from shared.contract import UnknownItem
+
+    found = [UnknownItem(section="ingredients", message_key="unknown.unreadable_span", detail="Sugar")]
+    assert basic_reading_unknowns(fixtures.scan_result().extraction, found) == found
