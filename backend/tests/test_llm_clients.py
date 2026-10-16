@@ -10,8 +10,14 @@ import httpx
 import pytest
 from google.genai import errors
 
-from backend.app.llm.base import InvalidOutputError, LLMImage, ProviderUnavailableError, RateLimitedError
-from backend.app.llm.gemini import GeminiClient, retry_after_from
+from backend.app.llm.base import (
+    InvalidOutputError,
+    LLMImage,
+    ModelOverloadedError,
+    ProviderUnavailableError,
+    RateLimitedError,
+)
+from backend.app.llm.gemini import OVERLOAD_COOLDOWN_S, GeminiClient, retry_after_from
 from backend.app.llm.ollama import OllamaClient
 
 IMAGE = LLMImage("image/jpeg", b"\xff\xd8jpeg")
@@ -93,6 +99,13 @@ def test_gemini_failures_become_unavailable(monkeypatch: pytest.MonkeyPatch, out
     with pytest.raises(ProviderUnavailableError) as info:
         asyncio.run(client.generate_json("p", [], SCHEMA, 10))
     assert "test-key" not in str(info.value)
+
+
+def test_gemini_503_is_overloaded_with_a_cooldown(monkeypatch: pytest.MonkeyPatch) -> None:
+    client, _ = gemini_with(monkeypatch, errors.ServerError(503, {"error": {"code": 503, "status": "UNAVAILABLE"}}))
+    with pytest.raises(ModelOverloadedError) as info:
+        asyncio.run(client.generate_json("p", [], SCHEMA, 10))
+    assert info.value.retry_after_s == OVERLOAD_COOLDOWN_S
 
 
 def test_gemini_empty_text_is_invalid_output(monkeypatch: pytest.MonkeyPatch) -> None:

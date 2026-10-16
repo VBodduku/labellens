@@ -5,7 +5,13 @@ import json
 
 import pytest
 
-from backend.app.llm.base import InvalidOutputError, LLMImage, ProviderUnavailableError, RateLimitedError
+from backend.app.llm.base import (
+    InvalidOutputError,
+    LLMImage,
+    ModelOverloadedError,
+    ProviderUnavailableError,
+    RateLimitedError,
+)
 from backend.app.llm.router import AllProvidersFailedError, LLMRouter
 from backend.app.pipeline.llm_schema import LLMExtraction
 from backend.tests.fakes import FakeLLM, recorded
@@ -48,6 +54,23 @@ def test_rate_limit_cools_down_and_falls_through_to_backup_then_ollama() -> None
     assert len(primary.prompts) == 1 and len(backup.prompts) == 1
     clock.now += 11
     assert router.provider_status()["gemini"] is True
+
+
+def test_overloaded_model_is_skipped_for_its_cooldown_without_counting_as_rate_limit() -> None:
+    clock = Clock()
+    main = FakeLLM([ModelOverloadedError(60), GOOD], label="gemini:primary:main")
+    lite = FakeLLM([GOOD, GOOD], label="gemini:primary:lite", model="lite")
+    router = LLMRouter([main, lite], 5, clock=clock)
+    assert run(router).model == "lite"
+    assert run(router).model == "lite" and len(main.prompts) == 1      # overloaded model not asked again
+    clock.now += 61
+    assert run(router).model == main.model
+
+
+def test_only_overloaded_models_is_not_reported_as_rate_limited() -> None:
+    with pytest.raises(AllProvidersFailedError) as info:
+        run(LLMRouter([FakeLLM([ModelOverloadedError(60)])], 5))
+    assert info.value.rate_limited is False
 
 
 def test_invalid_json_gets_one_repair_attempt() -> None:
@@ -120,3 +143,7 @@ def test_each_key_gets_main_then_fallback_model(monkeypatch: pytest.MonkeyPatch)
     monkeypatch.setenv("GEMINI_FALLBACK_MODEL", "main-model")
     get_settings.cache_clear()
     assert len(gemini_clients()) == 2
+    monkeypatch.setenv("GEMINI_API_KEY_BACKUP", "")
+    monkeypatch.setenv("GEMINI_FALLBACK_MODEL", "older-model, lite-model,")
+    get_settings.cache_clear()
+    assert [c.model for c in gemini_clients()] == ["main-model", "older-model", "lite-model"]

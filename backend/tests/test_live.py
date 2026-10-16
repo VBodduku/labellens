@@ -25,13 +25,15 @@ LIVE_TIMEOUT_S = 60
 
 
 def gemini() -> list[GeminiClient]:
-    """The real key with the configured model, then the fallback model (as the app does)."""
+    """The real key with the configured model, then the fallback models (as the app does)."""
     env = dotenv_values(REPO_ROOT / ".env")
     key = env.get("GEMINI_API_KEY")
     if not key:
         pytest.skip("GEMINI_API_KEY not set in .env")
-    models = dict.fromkeys(m for m in (os.environ.get("LIVE_GEMINI_MODEL"), env.get("GEMINI_MODEL") or "gemini-flash-latest",
-                                       env.get("GEMINI_FALLBACK_MODEL") or "gemini-flash-lite-latest") if m)
+    fallbacks = (env.get("GEMINI_FALLBACK_MODEL") or "gemini-flash-lite-latest").split(",")
+    models = dict.fromkeys(m.strip() for m in (os.environ.get("LIVE_GEMINI_MODEL"),
+                                               env.get("GEMINI_MODEL") or "gemini-flash-latest", *fallbacks)
+                           if m and m.strip())
     return [GeminiClient(key, m, f"gemini:{m}") for m in models]
 
 

@@ -76,5 +76,13 @@ class ProviderUnavailableError(LLMError):
     """Network failure, timeout, auth problem or server error."""
 
 
+class ModelOverloadedError(ProviderUnavailableError):
+    """The model is up but refusing load (Gemini 503): skip it for a while instead of paying for it every call."""
+
+    def __init__(self, retry_after_s: int, message: str = "model overloaded") -> None:
+        super().__init__(message)
+        self.retry_after_s = retry_after_s
+
+
 class InvalidOutputError(LLMError):
     """The provider answered, but not with usable JSON."""

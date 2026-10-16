@@ -12,7 +12,15 @@ from typing import Generic, TypeVar
 from pydantic import BaseModel, ValidationError
 
 from backend.app.config import get_settings
-from backend.app.llm.base import LLMClient, LLMError, LLMImage, ProviderName, RateLimitedError, ToolChatClient
+from backend.app.llm.base import (
+    LLMClient,
+    LLMError,
+    LLMImage,
+    ModelOverloadedError,
+    ProviderName,
+    RateLimitedError,
+    ToolChatClient,
+)
 from backend.app.llm.gemini import GeminiClient
 from backend.app.llm.ollama import OllamaClient
 from backend.app.llm.schema_utils import inline_schema
@@ -121,6 +129,10 @@ class LLMRouter:
                     retry_after.append(exc.retry_after_s)
                     self._fail(state, f"rate limited for {exc.retry_after_s}s")
                     break
+                except ModelOverloadedError as exc:
+                    state.cooldown_until = self._clock() + exc.retry_after_s
+                    self._fail(state, f"overloaded, skipped for {exc.retry_after_s}s")
+                    break
                 except TimeoutError:
                     if images and timeout >= self._timeout_s:   # too slow for photos, not a short caller budget
                         state.slow_until = self._clock() + TIMEOUT_COOLDOWN_S
@@ -151,9 +163,9 @@ def get_router() -> LLMRouter:
 
 
 def gemini_clients() -> list[LLMClient]:
-    """Each key with the main model, then the fallback model: Google's overload (503) and free quota
-    (429) apply per model, so a second model on the same key often still answers."""
+    """Each key with the main model, then the fallback models in order: Google's overload (503) and free
+    quota (429) apply per model, so another model on the same key often still answers."""
     settings = get_settings()
-    models = list(dict.fromkeys(m for m in (settings.gemini_model, settings.gemini_fallback_model) if m))
+    models = list(dict.fromkeys(m for m in (settings.gemini_model, *settings.gemini_fallback_models) if m))
     keys = [("primary", settings.gemini_api_key), ("backup", settings.gemini_api_key_backup)]
     return [GeminiClient(key, model, f"gemini:{name}:{model}") for name, key in keys if key for model in models]

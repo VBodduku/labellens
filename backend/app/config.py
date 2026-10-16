@@ -19,7 +19,7 @@ class Settings:
     gemini_api_key: str
     gemini_api_key_backup: str
     gemini_model: str
-    gemini_fallback_model: str          # tried on the same key when gemini_model is overloaded or out of quota
+    gemini_fallback_models: tuple[str, ...]     # tried in order on the same key when gemini_model is overloaded or out of quota
     ollama_base_url: str
     ollama_model: str
     ollama_text_model: str
@@ -61,7 +61,8 @@ def get_settings() -> Settings:
         gemini_api_key=_env("GEMINI_API_KEY", ""),
         gemini_api_key_backup=_env("GEMINI_API_KEY_BACKUP", ""),
         gemini_model=_env("GEMINI_MODEL", "gemini-flash-latest"),
-        gemini_fallback_model=_env("GEMINI_FALLBACK_MODEL", "gemini-flash-lite-latest"),
+        gemini_fallback_models=tuple(m.strip() for m in _env("GEMINI_FALLBACK_MODEL", "gemini-flash-lite-latest")
+                                     .split(",") if m.strip()),
         ollama_base_url=_env("OLLAMA_BASE_URL", "http://localhost:11434").rstrip("/"),
         ollama_model=_env("OLLAMA_MODEL", "gemma3:4b"),
         ollama_text_model=_env("OLLAMA_TEXT_MODEL", "gemma3:4b"),

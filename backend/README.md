@@ -10,7 +10,7 @@ self-verification -> rules engine -> term interpretation -> grounded summaries.
 python3.12 -m venv .venv            # Python 3.12: rapidocr-onnxruntime does not support 3.13
 .venv/bin/pip install -r backend/requirements.txt -r engine/requirements.txt
 cp .env.example .env                # GEMINI_API_KEY (Google AI Studio), ENGINE_MODE=real
-                                    # optional: GEMINI_FALLBACK_MODEL (default gemini-flash-lite-latest)
+                                    # optional: GEMINI_FALLBACK_MODEL, comma-separated (default gemini-flash-lite-latest)
 .venv/bin/uvicorn backend.app.main:app --reload --port 8000
 .venv/bin/python -m pytest engine/tests backend/tests            # add -m live for real Gemini calls
 ```
