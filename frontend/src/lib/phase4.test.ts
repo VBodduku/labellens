@@ -71,4 +71,12 @@ describe("unreadable mock scenario", () => {
     expect(result.unknowns.length).toBeGreaterThan(fixtureScanResult.unknowns.length);
     expect(fixtureScanResult.extraction.meta.provider).toBe("fixture");
   });
+
+  it("gives profiles created in the app (not in the fixture) an unknown card for every restriction", () => {
+    const mine = { ...fixtureProfiles[0]!, profile_id: "p_new", name: "Meera" };
+    const result = unreadableScenario(fixtureScanResult, [mine]);
+    expect(result.reports).toHaveLength(1);
+    expect(result.reports[0]).toMatchObject({ profile_id: "p_new", overall: "unknown" });
+    expect(result.reports[0]?.results).toHaveLength(mine.restrictions.length);
+  });
 });

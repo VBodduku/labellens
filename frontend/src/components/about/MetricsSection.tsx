@@ -81,7 +81,7 @@ export function MetricsSection() {
 
       {view.confusion && (
         <div className="card overflow-x-auto p-4">
-          <table className="w-full min-w-[28rem] text-sm">
+          <table className="w-full text-sm">
             <caption className="mb-3 text-left font-semibold">{t("about.metrics.confusion")}</caption>
             <thead>
               <tr>
@@ -89,8 +89,8 @@ export function MetricsSection() {
                   {t("about.metrics.expected")} ↓ / {t("about.metrics.given")} →
                 </th>
                 {VERDICT_ORDER.map((state) => (
-                  <th key={state} scope="col" className="pb-2">
-                    <StateBadge state={state} size="sm" />
+                  <th key={state} scope="col" className="px-1 pb-2">
+                    <StateBadge state={state} size="sm" compact />
                   </th>
                 ))}
               </tr>

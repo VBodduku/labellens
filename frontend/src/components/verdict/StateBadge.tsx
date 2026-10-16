@@ -23,19 +23,23 @@ interface StateBadgeProps {
   state: VerdictState;
   unknownKind?: UnknownKind | null;
   size?: BadgeSize;
+  /** Icon only on phones (the label stays for screen readers and as a tooltip) — for tight table headers. */
+  compact?: boolean;
   className?: string;
 }
 
-export function StateBadge({ state, unknownKind, size = "md", className = "" }: StateBadgeProps) {
+export function StateBadge({ state, unknownKind, size = "md", compact = false, className = "" }: StateBadgeProps) {
   const { t } = useTranslation();
   const sizes = SIZE_STYLES[size];
+  const label = t(stateLabelKey(state, unknownKind));
   return (
     <span
       className={`inline-flex shrink-0 items-center rounded-chip font-bold tracking-wide ${STATE_STYLES[state]} ${sizes.badge} ${className}`}
       data-state={state}
+      title={compact ? label : undefined}
     >
       <StateIcon state={state} className={sizes.icon} />
-      <span>{t(stateLabelKey(state, unknownKind))}</span>
+      <span className={compact ? "max-sm:sr-only" : undefined}>{label}</span>
     </span>
   );
 }

@@ -1,4 +1,4 @@
-import { CATEGORIES, type Profile, type ScanResult } from "../shared/contract";
+import { CATEGORIES, type Profile, type Restriction, type RestrictionResult, type ScanResult } from "../shared/contract";
 
 /** Restriction key → category ids for an "unreadable" message (allergen keys are their own category). */
 function categoriesFor(key: string): string {
@@ -6,6 +6,22 @@ function categoriesFor(key: string): string {
   if (key === "jain" || key === "no_onion_garlic") return "onion|garlic|root_vegetable";
   if (key === "vegetarian" || key === "eggetarian" || key === "vegan") return "meat|egg_derived|gelatin";
   return "";
+}
+
+function unknownResult(restriction: Restriction): RestrictionResult {
+  const nutrient = restriction.threshold?.nutrient;
+  return {
+    restriction_id: restriction.id,
+    state: "unknown",
+    unknown_kind: nutrient ? "undeterminable" : "not_detected",
+    reason_code: nutrient ? "UNKNOWN_NUTRIENT_MISSING" : "UNKNOWN_UNREADABLE",
+    message_key: nutrient ? "verdict.unknown.nutrient_missing" : "verdict.unknown.unreadable",
+    message_params: nutrient ? { nutrient } : { category: categoriesFor(restriction.key) },
+    explanation: "The label could not be read well enough to check this.",
+    evidence: [],
+    matches: [],
+    confidence: 0.4,
+  };
 }
 
 /**
@@ -25,31 +41,14 @@ export function unreadableScenario(result: ScanResult, profiles: Profile[]): Sca
   }
   extraction.veg_mark = { value: "unclear", evidence: null };
   copy.annotations = copy.annotations.map((annotation) => ({ ...annotation, source: "unresolved" }));
-  copy.reports = copy.reports.map((report) => {
-    const profile = profiles.find((candidate) => candidate.profile_id === report.profile_id);
-    return {
-      ...report,
-      overall: "unknown",
-      summary: null,
-      summary_lang: null,
-      results: report.results.map((item) => {
-        const restriction = profile?.restrictions.find((candidate) => candidate.id === item.restriction_id);
-        const nutrient = restriction?.threshold?.nutrient;
-        const params: Record<string, string> = nutrient ? { nutrient } : { category: categoriesFor(restriction?.key ?? "") };
-        return {
-          ...item,
-          state: "unknown",
-          unknown_kind: nutrient ? "undeterminable" : "not_detected",
-          reason_code: nutrient ? "UNKNOWN_NUTRIENT_MISSING" : "UNKNOWN_UNREADABLE",
-          message_key: nutrient ? "verdict.unknown.nutrient_missing" : "verdict.unknown.unreadable",
-          message_params: params,
-          evidence: [],
-          matches: [],
-          confidence: 0.4,
-        };
-      }),
-    };
-  });
+  // Built from the profiles sent (not the fixture's reports), so families created in the app get cards too.
+  copy.reports = profiles.map((profile) => ({
+    profile_id: profile.profile_id,
+    overall: "unknown",
+    summary: null,
+    summary_lang: null,
+    results: profile.restrictions.map((restriction) => unknownResult(restriction)),
+  }));
   copy.unknowns = [
     ...copy.unknowns,
     { section: "ingredients", message_key: "unknown.ingredients_truncated", detail: null, region: null },
