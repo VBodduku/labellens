@@ -65,4 +65,36 @@ describe("renderMessage", () => {
     expect(text).toContain("Natural Flavours");
     expect(text).not.toContain("{");
   });
+
+  describe("edge cases", () => {
+    it("formats zero instead of treating it as missing", () => {
+      expect(
+        renderMessage("verdict.not_listed.within_limit", { nutrient: "trans_fat_g", value: 0, unit: "g", basis: "per_100g", limit: 0.2 }, "en"),
+      ).toBe("Trans fat is 0 g per 100 g, within your limit of 0.2 g.");
+    });
+
+    it("keeps numeric strings as given (they are label text, not numbers)", () => {
+      expect(renderMessage("nutrition.serving_small", { servings: "3" }, "en")).toBe(
+        "This pack holds 3 servings. Values per pack are much higher than per serving.",
+      );
+    });
+
+    it("ignores empty segments in a category list", () => {
+      expect(renderMessage("verdict.unknown.unreadable", { category: "onion|" }, "en")).toBe(
+        "Some ingredients are unreadable. No onion found in the readable part.",
+      );
+    });
+
+    it("shows an unknown nutrient key as-is rather than failing", () => {
+      expect(renderMessage("verdict.unknown.nutrient_missing", { nutrient: "vitamin_q" }, "en")).toBe(
+        "vitamin_q is not readable on this label.",
+      );
+    });
+
+    it("formats numbers for Telugu with Indian grouping", () => {
+      expect(
+        renderMessage("verdict.conflict.threshold", { nutrient: "sodium_mg", value: 1250, unit: "mg", basis: "per_pack", limit: 600 }, "te"),
+      ).toContain("1,250");
+    });
+  });
 });
