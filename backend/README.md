@@ -1,4 +1,4 @@
-# LabelLens backend (Part 2)
+# LabelLens backend
 
 FastAPI service that turns label photos into an evidence-linked `ScanResult`
 (see `docs/PART2_BACKEND_SPEC.md`). Pipeline: quality -> OCR (word boxes) -> LLM structuring

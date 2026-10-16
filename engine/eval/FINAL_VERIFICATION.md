@@ -60,7 +60,7 @@ The actual backend is still unreachable outside the sandbox and the real dataset
 still contains only its template. Live extraction accuracy, real dangerous misses,
 live request latency, largest-real-label timing and integrated About-page verification
 remain outstanding. The engine cannot complete those checks without the real input
-folders and running backend. See PHASE4_STATUS.md and dataset/README.md for commands.
+folders and running backend. See dataset/README.md for commands.
 
 Re-run code checks from the repository root in the project Python environment:
 

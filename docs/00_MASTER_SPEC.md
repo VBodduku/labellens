@@ -281,7 +281,7 @@ Video (≤ 3 min unless told otherwise): problem in 20 s (real packet close-up) 
 ---
 
 ## 15. Global definition of done
-- Runs from a clean clone on both laptops following `docs/SETUP_AND_GIT.md`.
+- Runs from a clean clone on both laptops following the root `README.md`.
 - No paid service, no key in git, `.env.example` complete.
 - Each part's checks pass; integration smoke test passes on 3 real packets.
 - Works on Chrome + Edge desktop and an Android phone; iPhone works except voice input.

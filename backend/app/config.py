@@ -66,7 +66,7 @@ def get_settings() -> Settings:
         ollama_model=_env("OLLAMA_MODEL", "gemma3:4b"),
         ollama_text_model=_env("OLLAMA_TEXT_MODEL", "gemma3:4b"),
         llm_timeout_s=float(_env("LLM_TIMEOUT_S", "30")),
-        engine_mode=_engine_mode(_env("ENGINE_MODE", "stub")),
+        engine_mode=_engine_mode(_env("ENGINE_MODE", "real")),
         cors_origins=tuple(o.strip() for o in _env("CORS_ORIGINS", "").split(",") if o.strip()),
         cache_dir=cache_dir if cache_dir.is_absolute() else REPO_ROOT / cache_dir,
         max_images=int(_env("MAX_IMAGES", "3")),
