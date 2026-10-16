@@ -87,14 +87,22 @@ describe("auto-capture streak", () => {
     expect(step.shouldCapture).toBe(false);
   });
 
-  it("stays disarmed after a capture until the camera moves", () => {
-    let step = nextCaptureState({ goodSince: 0, captured: false }, [], 700);
+  it("stays disarmed after a capture until the camera really moves", () => {
+    let step = nextCaptureState({ goodSince: 0, captured: false, badSince: null }, [], 700);
     expect(step.shouldCapture).toBe(true);
     step = nextCaptureState(step.state, [], 5000);
     expect(step.shouldCapture).toBe(false);
+
+    // One jittery frame while holding still does not re-arm.
     step = nextCaptureState(step.state, ["blurry"], 5100);
     step = nextCaptureState(step.state, [], 5200);
-    expect(nextCaptureState(step.state, [], 5900).shouldCapture).toBe(true);
+    expect(nextCaptureState(step.state, [], 6000).shouldCapture).toBe(false);
+
+    // Sustained movement (at least 800 ms of bad frames) re-arms; then a new steady 700 ms captures.
+    step = nextCaptureState(step.state, ["blurry"], 7000);
+    step = nextCaptureState(step.state, ["blurry"], 7900);
+    step = nextCaptureState(step.state, [], 8000);
+    expect(nextCaptureState(step.state, [], 8700).shouldCapture).toBe(true);
   });
 
   it("restarts the window when a frame turns bad", () => {

@@ -17,6 +17,8 @@ export type QualityThresholds = { [K in keyof typeof QUALITY_THRESHOLDS]: number
 
 /** How long every check must pass continuously before auto-capture fires. */
 export const GOOD_HOLD_MS = 700;
+/** After a capture, issues must persist this long (a real move to the next panel) before auto-capture re-arms. */
+export const REARM_MS = 800;
 /** Frames analysed per second. */
 export const SAMPLE_FPS = 7;
 /** Width of the analysed frame in pixels (height follows the video aspect). */

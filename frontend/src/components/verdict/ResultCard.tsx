@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useTranslation } from "react-i18next";
 import type { RestrictionResult } from "../../shared/contract";
 import { EvidenceChips } from "../evidence/EvidenceChip";
+import { RetakeLink } from "../label/RetakeLink";
 import { Message } from "../ui/Message";
 import { ConfidenceMeter } from "./ConfidenceMeter";
 import { StateBadge } from "./StateBadge";
@@ -23,6 +24,7 @@ interface ResultCardProps {
 export function ResultCard({ result, label, changed }: ResultCardProps) {
   const { t } = useTranslation();
   const stateKey = `${result.state}:${result.unknown_kind ?? ""}`;
+  const unreadableRegion = result.state === "unknown" ? result.evidence.find((item) => item.box && item.status !== "unverified") : undefined;
   return (
     <motion.li variants={resultItemVariants} className="relative p-4 sm:p-5">
       <AnimatePresence>
@@ -57,6 +59,7 @@ export function ResultCard({ result, label, changed }: ResultCardProps) {
         <Message messageKey={result.message_key} params={result.message_params} />
       </p>
       <EvidenceChips evidence={result.evidence} state={result.state} className="mt-3" />
+      {unreadableRegion && <RetakeLink imageId={unreadableRegion.image_id} className="mt-3" />}
       <div className="flex flex-wrap items-end justify-between gap-x-4">
         <WhyDisclosure matches={result.matches} />
         <ConfidenceMeter value={result.confidence} />

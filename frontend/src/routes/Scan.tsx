@@ -123,7 +123,12 @@ export default function Scan() {
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-black text-white">
-      <CameraView videoRef={videoRef} live={live} ready={issues !== null && issues.length === 0} />
+      <CameraView
+        videoRef={videoRef}
+        live={live}
+        ready={issues !== null && issues.length === 0}
+        withTray={panels.length > 0 && resultRetake === null}
+      />
       {debug && live && <DebugOverlay latest={monitor.latest} fps={monitor.fps} streakMs={monitor.streakMs} />}
       <AnimatePresence>
         {flash > 0 && (

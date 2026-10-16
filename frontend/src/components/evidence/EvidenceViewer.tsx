@@ -29,13 +29,15 @@ export function EvidenceViewer({ panels, images, items, className = "" }: Eviden
   const { t } = useTranslation();
   const reduce = useReducedMotion();
   const focused = useUiStore((store) => store.focusedEvidence);
+  /** Focus requests left over from a previous visit must not replay when the viewer mounts. */
+  const mountNonce = useRef(focused?.nonce ?? 0);
   const zoomRef = useRef<ReactZoomPanPinchRef>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const [viewport, setViewport] = useState<Size>({ width: 0, height: 0 });
   const [loaded, setLoaded] = useState<Record<number, Size>>({});
   const [active, setActive] = useState(0);
   const [collapsed, setCollapsed] = useState(false);
-  const [zoomed, setZoomed] = useState(false);
+  const [zoom, setZoom] = useState(1);
   const [pending, setPending] = useState<FocusedEvidence | null>(null);
   const [focus, setFocus] = useState<{ box: Box; state: VerdictState | null; pulse: number } | null>(null);
   const [announcement, setAnnouncement] = useState("");
@@ -58,7 +60,7 @@ export function EvidenceViewer({ panels, images, items, className = "" }: Eviden
 
   // A chip somewhere asked for evidence: open the viewer on the right panel, then zoom once it is laid out.
   useEffect(() => {
-    if (!focused) return;
+    if (!focused || focused.nonce <= mountNonce.current) return;
     setCollapsed(false);
     setActive(imageIndex(focused.evidence.image_id));
     setPending(focused);
@@ -78,6 +80,12 @@ export function EvidenceViewer({ panels, images, items, className = "" }: Eviden
     setFocus({ box, state: pending.state, pulse: pending.nonce });
     setPending(null);
   }, [pending, panelIndex, image, viewport, reduce]);
+
+  // A different family member was selected: drop the old highlight and show the whole photo again.
+  useEffect(() => {
+    setFocus(null);
+    void zoomRef.current?.resetTransform(0);
+  }, [items]);
 
   const panelItems = useMemo(
     () => items.filter((item) => imageIndex(item.evidence.image_id) === panelIndex),
@@ -133,8 +141,8 @@ export function EvidenceViewer({ panels, images, items, className = "" }: Eviden
               disablePadding
               doubleClick={{ mode: "toggle", step: 1.2 }}
               wheel={{ step: 0.12 }}
-              panning={{ disabled: !zoomed, velocityDisabled: true }}
-              onTransform={(_ref, state) => setZoomed(state.scale > 1.01)}
+              panning={{ disabled: zoom <= 1.01, velocityDisabled: true }}
+              onTransformed={(_ref, state) => setZoom(state.scale)}
             >
               <TransformComponent
                 wrapperStyle={{ width: "100%", height: "100%" }}
@@ -152,7 +160,7 @@ export function EvidenceViewer({ panels, images, items, className = "" }: Eviden
                         if (!info && naturalWidth > 0) setLoaded((sizes) => ({ ...sizes, [panelIndex]: { width: naturalWidth, height: naturalHeight } }));
                       }}
                     />
-                    <EvidenceOverlay items={panelItems} focus={focus} />
+                    <EvidenceOverlay items={panelItems} focus={focus} zoom={zoom} />
                   </div>
                 </div>
               </TransformComponent>

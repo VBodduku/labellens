@@ -95,6 +95,12 @@
     );
   }
 
+  /* Keyboard focus on an evidence box drawn over the photo. */
+  .evidence-hotspot:focus-visible {
+    stroke: var(--text);
+    stroke-opacity: 1;
+  }
+
   .evidence-text {
     font-family: var(--font-mono), var(--font-indic);
     font-feature-settings: "calt" 0;

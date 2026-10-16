@@ -1,6 +1,6 @@
 import { useMotionValue } from "motion/react";
 import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
-import { INITIAL_CAPTURE_STATE, nextCaptureState, type QualityRequest, type QualityResponse } from "../../lib/quality";
+import { CAPTURED_STATE, INITIAL_CAPTURE_STATE, nextCaptureState, type QualityRequest, type QualityResponse } from "../../lib/quality";
 import { FRAME_WIDTH, SAMPLE_FPS } from "../../lib/qualityThresholds";
 
 /**
@@ -81,7 +81,7 @@ export function useQualityMonitor(
 
   /** After a manual capture: disarm until the camera moves, like an auto-capture. */
   const markCaptured = useCallback(() => {
-    captureState.current = { goodSince: null, captured: true };
+    captureState.current = CAPTURED_STATE;
     progress.set(0);
   }, [progress]);
 

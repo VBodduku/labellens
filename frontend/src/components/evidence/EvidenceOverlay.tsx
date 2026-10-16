@@ -13,6 +13,8 @@ export interface OverlayItem {
 interface EvidenceOverlayProps {
   items: OverlayItem[];
   focus: { box: Box; state: VerdictState | null; pulse: number } | null;
+  /** Current CSS zoom of the photo: strokes are divided by it so outlines stay hairline-thin when zoomed in. */
+  zoom: number;
 }
 
 /**
@@ -20,11 +22,13 @@ interface EvidenceOverlayProps {
  * verified = solid, approximate = dashed. Each box is a keyboard/screen-reader hotspot. The focused box
  * gets a mask that dims everything else and an outline that pulses twice in the state colour.
  */
-export function EvidenceOverlay({ items, focus }: EvidenceOverlayProps) {
+export function EvidenceOverlay({ items, focus, zoom }: EvidenceOverlayProps) {
   const { t } = useTranslation();
   const maskId = useId();
   const reduce = useReducedMotion();
   const focusEvidence = useUiStore((store) => store.focusEvidence);
+  // non-scaling-stroke cancels the viewBox stretch but not the zoom transform on the parent, so undo that too.
+  const px = (value: number) => value / Math.max(zoom, 1);
 
   function onKey(event: KeyboardEvent<SVGRectElement>, item: OverlayItem) {
     if (event.key === "Enter" || event.key === " ") {
@@ -64,14 +68,14 @@ export function EvidenceOverlay({ items, focus }: EvidenceOverlayProps) {
             rx="0.004"
             fill="transparent"
             stroke={stateColor(item.state)}
-            strokeWidth={1.5}
+            strokeWidth={px(1.5)}
             strokeOpacity={0.9}
-            strokeDasharray={item.evidence.status === "approximate" ? "5 4" : undefined}
+            strokeDasharray={item.evidence.status === "approximate" ? `${px(5)} ${px(4)}` : undefined}
             vectorEffect="non-scaling-stroke"
             role="button"
             tabIndex={0}
             aria-label={label}
-            className="cursor-pointer outline-none focus-visible:[stroke-width:3]"
+            className="evidence-hotspot cursor-pointer outline-none"
             onClick={() => focusEvidence(item.evidence, item.state)}
             onKeyDown={(event) => onKey(event, item)}
           />
@@ -87,7 +91,7 @@ export function EvidenceOverlay({ items, focus }: EvidenceOverlayProps) {
           height={focus.box.h}
           fill="none"
           stroke={stateColor(focus.state)}
-          strokeWidth={3}
+          strokeWidth={px(3)}
           vectorEffect="non-scaling-stroke"
           pointerEvents="none"
           initial={{ opacity: reduce ? 1 : 0 }}

@@ -1,17 +1,14 @@
-import { Camera } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useLocation } from "react-router-dom";
 import { cropStyle, imageIndex } from "../../lib/boxMath";
 import type { UnknownItem } from "../../shared/contract";
 import type { Panel } from "../../store/scan";
 import { useUiStore } from "../../store/ui";
-import { ButtonLink } from "../ui/Button";
 import { Message } from "../ui/Message";
+import { RetakeLink } from "./RetakeLink";
 
 /** "What we couldn't read": each gap with a thumbnail of the area and a one-tap retake for that panel. */
 export function UnknownsPanel({ unknowns, panels }: { unknowns: UnknownItem[]; panels: Panel[] }) {
   const { t } = useTranslation();
-  const { search } = useLocation();
   const focusEvidence = useUiStore((state) => state.focusEvidence);
 
   if (unknowns.length === 0) {
@@ -24,8 +21,6 @@ export function UnknownsPanel({ unknowns, panels }: { unknowns: UnknownItem[]; p
         const region = unknown.region?.box ? unknown.region : null;
         const panelIndex = region ? imageIndex(region.image_id) : 0;
         const panel = panels[panelIndex];
-        const retake = new URLSearchParams(search);
-        retake.set("retake", String(Math.min(panelIndex, Math.max(panels.length - 1, 0))));
         return (
           <li key={`${unknown.section}:${index}`} className="card overflow-hidden">
             <div className="hatch flex gap-3 p-4 shadow-[inset_3px_0_0_var(--unknown)]">
@@ -47,13 +42,7 @@ export function UnknownsPanel({ unknowns, panels }: { unknowns: UnknownItem[]; p
             </div>
             {panels.length > 0 && (
               <div className="border-t border-line p-3">
-                <ButtonLink
-                  to={{ pathname: "/scan", search: `?${retake.toString()}` }}
-                  variant="secondary"
-                  icon={<Camera className="size-4" aria-hidden="true" />}
-                >
-                  {t("unknowns.retake")}
-                </ButtonLink>
+                <RetakeLink imageId={region?.image_id ?? `img_${Math.min(panelIndex, panels.length - 1)}`} />
               </div>
             )}
           </li>

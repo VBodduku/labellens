@@ -1,4 +1,4 @@
-import { GLARE_LUMA, GOOD_HOLD_MS, type QualityThresholds } from "./qualityThresholds";
+import { GLARE_LUMA, GOOD_HOLD_MS, REARM_MS, type QualityThresholds } from "./qualityThresholds";
 
 /** Live issues the camera can coach on; motion is reported as `blurry` ("Hold steady"). */
 export type LiveIssue = "too_dark" | "glare" | "blurry";
@@ -85,9 +85,12 @@ export interface CaptureState {
   /** Timestamp (ms) when the current run of good frames began; null while any check fails. */
   goodSince: number | null;
   captured: boolean;
+  /** After a capture: when the current run of bad frames began (re-arm after REARM_MS of it). */
+  badSince: number | null;
 }
 
-export const INITIAL_CAPTURE_STATE: CaptureState = { goodSince: null, captured: false };
+export const INITIAL_CAPTURE_STATE: CaptureState = { goodSince: null, captured: false, badSince: null };
+export const CAPTURED_STATE: CaptureState = { goodSince: null, captured: true, badSince: null };
 
 export interface CaptureStep {
   state: CaptureState;
@@ -98,20 +101,21 @@ export interface CaptureStep {
 
 /**
  * Auto-capture once every check has passed continuously for GOOD_HOLD_MS; any bad frame resets the run.
- * After a capture it stays disarmed until a bad frame (e.g. the motion of moving to the next panel), so
- * holding still never fills the tray with copies of the same shot.
+ * After a capture it stays disarmed until issues persist for REARM_MS — the motion of moving to the next
+ * panel — so holding still (or a single jittery frame) never fills the tray with copies of the same shot.
  */
 export function nextCaptureState(state: CaptureState, issues: LiveIssue[], now: number, holdMs = GOOD_HOLD_MS): CaptureStep {
   if (state.captured) {
-    return issues.length > 0
-      ? { state: INITIAL_CAPTURE_STATE, progress: 0, shouldCapture: false }
-      : { state, progress: 0, shouldCapture: false };
+    if (issues.length === 0) return { state: CAPTURED_STATE, progress: 0, shouldCapture: false };
+    const badSince = state.badSince ?? now;
+    const rearmed = now - badSince >= REARM_MS;
+    return { state: rearmed ? INITIAL_CAPTURE_STATE : { ...CAPTURED_STATE, badSince }, progress: 0, shouldCapture: false };
   }
-  if (issues.length > 0) return { state: { goodSince: null, captured: false }, progress: 0, shouldCapture: false };
+  if (issues.length > 0) return { state: INITIAL_CAPTURE_STATE, progress: 0, shouldCapture: false };
   const goodSince = state.goodSince ?? now;
   const progress = Math.min(1, (now - goodSince) / holdMs);
   const shouldCapture = progress >= 1;
-  return { state: { goodSince, captured: shouldCapture }, progress, shouldCapture };
+  return { state: { goodSince, captured: shouldCapture, badSince: null }, progress, shouldCapture };
 }
 
 /** Main thread → quality worker: one downscaled RGBA frame (buffer transferred), or a reset between sessions. */

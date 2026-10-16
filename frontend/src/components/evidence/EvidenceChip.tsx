@@ -17,11 +17,13 @@ export function EvidenceChip({ evidence, state }: EvidenceChipProps) {
   const { t } = useTranslation();
   const focusEvidence = useUiStore((store) => store.focusEvidence);
   const locatable = evidence.status !== "unverified" && Boolean(evidence.box);
+  /** Unreadable regions have a box but no text; name them instead of showing an empty chip. */
+  const text = evidence.text || t("unknowns.region");
 
   if (!locatable) {
     return (
       <span className="evidence-text inline-flex min-h-8 items-center gap-1.5 rounded-md px-2 text-xs text-text-dim shadow-[inset_0_0_0_1px_var(--line)]">
-        <span lang="">{evidence.text}</span>
+        <span lang="">{text}</span>
         <span className="font-body">· {t("result.evidence.unverified")}</span>
       </span>
     );
@@ -31,7 +33,7 @@ export function EvidenceChip({ evidence, state }: EvidenceChipProps) {
     <button
       type="button"
       onClick={() => focusEvidence(evidence, state)}
-      aria-label={t("result.evidence.show", { text: evidence.text })}
+      aria-label={t("result.evidence.show", { text })}
       title={evidence.status === "approximate" ? t("result.evidence.approximate") : undefined}
       className={`evidence-text group inline-flex min-h-8 items-center gap-1.5 rounded-md bg-surface-2 py-1 pl-2 pr-2.5 text-left text-xs text-text transition-[transform,background-color] duration-fast ease-out hover:bg-line active:scale-[0.97] ${
         evidence.status === "approximate" ? "[outline:1px_dashed_var(--text-dim)] [outline-offset:-1px]" : ""
@@ -39,7 +41,9 @@ export function EvidenceChip({ evidence, state }: EvidenceChipProps) {
       style={{ boxShadow: `inset 2px 0 0 ${stateColor(state)}` }}
     >
       <LocateFixed className="size-3.5 shrink-0 text-text-dim group-hover:text-text" aria-hidden="true" />
-      <span lang="">{evidence.text}</span>
+      <span lang="" className={evidence.text ? undefined : "font-body italic text-text-dim"}>
+        {text}
+      </span>
     </button>
   );
 }
@@ -50,7 +54,7 @@ export function EvidenceChips({ evidence, state, className = "" }: { evidence: E
   const seen = new Set<string>();
   const shown = evidence.filter((item) => {
     const key = `${item.image_id}:${item.text}:${item.box?.x ?? ""}:${item.box?.y ?? ""}`;
-    if (!item.text || seen.has(key)) return false;
+    if ((!item.text && !item.box) || seen.has(key)) return false;
     seen.add(key);
     return true;
   });
