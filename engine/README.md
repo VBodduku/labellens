@@ -1,9 +1,10 @@
-# LabelLens engine — Phase 2
+# LabelLens engine
 
 Pure deterministic Python, with the five functions specified in
 `shared/engine_interface.py`. Run Python from the repository root. No network or
 model calls occur when importing or evaluating the engine. The offline evaluation
-runner also uses saved JSON only.
+runner uses saved JSON by default; its explicit `--backend` option captures HTTP
+responses outside the public engine API.
 
 Create/activate a Python 3.11+ environment, then:
 

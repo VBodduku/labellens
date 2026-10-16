@@ -54,3 +54,9 @@
 - Consistency status follows the specified 15% energy rule. Independent sanity failures still populate suspect_keys even with status consistent; threshold checks always inspect those keys.
 
 - Compile the entire alias-pattern tuple once at import: the expanded KB exceeded Python's implicit regex cache, so per-ingredient string-pattern matching regressed beyond 50 ms. Immutable compiled patterns preserve matching semantics and remove that cost.
+
+- Phase 3: network capture lives only in the explicit evaluation CLI, with bounded requests and real-engine health checks; core engine imports/evaluation remain offline.
+- Preserve raw scan responses for fixed-extraction replay. Require original LLM interpretation sidecars when needed instead of inferring model confidence/categories from verdicts.
+- Before/after comparisons require identical case IDs, truth, photo bytes and profiles. Local code fingerprints cannot attest which code a separate backend process has loaded.
+- Error causes require explicit reviewed explanations; engine-owned classifications require regression-test references. Unreviewed dangerous misses make the engine-caused count unmeasured, not zero.
+- Missing expected profiles always fail verdict accuracy, including expected unknown; confusion-matrix fallback remains unknown and missing IDs are separately counted.
