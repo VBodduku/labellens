@@ -10,6 +10,7 @@ import { IconButton } from "../ui/IconButton";
 import { Message } from "../ui/Message";
 import { ConsistencyBadge } from "./ConsistencyBadge";
 import type { EditTarget } from "./CorrectionEditor";
+import { ProteinRatioCard } from "./ProteinRatioCard";
 
 /** Nutrition table with Per 100 g · Per serving · Whole pack, the calorie cross-check and editable values. */
 export function NutritionTable({ result, onEdit }: { result: ScanResult; onEdit: (target: EditTarget) => void }) {
@@ -32,6 +33,8 @@ export function NutritionTable({ result, onEdit }: { result: ScanResult; onEdit:
 
   return (
     <div className="space-y-4">
+      <ProteinRatioCard analysis={analysis} />
+
       <div role="radiogroup" aria-label={t("nutrition.basis.label")} className="flex rounded-chip bg-surface-2 p-1">
         {options.map((option) => (
           <button
@@ -90,9 +93,14 @@ export function NutritionTable({ result, onEdit }: { result: ScanResult; onEdit:
                       {row.edited && (
                         <span className="rounded-chip bg-beam/15 px-2 py-0.5 text-[0.7rem] font-semibold text-beam">{t("result.edited")}</span>
                       )}
+                      {row.derived && row.amount !== null && view !== "per_pack" && (
+                        <span className="rounded-chip bg-surface-2 px-2 py-0.5 text-[0.7rem] font-semibold text-text-dim">
+                          {t("nutrition.calculated")}
+                        </span>
+                      )}
                       {row.amount === null ? (
                         <span className="hatch rounded-md px-2 py-1 text-xs font-semibold text-unknown shadow-[inset_0_0_0_1px_var(--unknown)]">
-                          {t("nutrition.cantRead")}
+                          {t(row.derived ? "nutrition.cantCalculate" : "nutrition.cantRead")}
                         </span>
                       ) : (
                         <span className="font-semibold tabular-nums">
@@ -135,6 +143,10 @@ export function NutritionTable({ result, onEdit }: { result: ScanResult; onEdit:
           </tbody>
         </table>
       </div>
+
+      {view === "per_100" && rows.some((row) => row.derived && row.amount !== null) && (
+        <p className="text-sm text-text-dim">{t("nutrition.calculatedNote")}</p>
+      )}
 
       {analysis?.notes.map((note) => (
         <p key={note} className="text-sm text-text-dim">

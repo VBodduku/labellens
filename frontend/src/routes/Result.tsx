@@ -67,7 +67,7 @@ function ResultView({ result, panels }: { result: ScanResult; panels: Panel[] })
   const { scanProfiles, isDemo, status, corrections, changedVerdicts, recheckError, addCorrection, recheck } = useScanStore();
   const { profiles: savedProfiles, hydrated: profilesHydrated } = useProfilesStore();
   const { lang, selectedProfileId, selectProfile } = useUiStore();
-  const [tab, setTab] = useState<TabKey>("verdicts");
+  const [tab, setTab] = useState<TabKey>("nutrition");
   const [editing, setEditing] = useState<EditTarget | null>(null);
   const [explaining, setExplaining] = useState<string | null>(null);
   const editorMounted = useLatch(editing !== null);
@@ -107,9 +107,9 @@ function ResultView({ result, panels }: { result: ScanResult; panels: Panel[] })
   }
 
   const tabs = [
-    { id: "verdicts" as const, label: t("result.tabs.verdicts") },
-    { id: "ingredients" as const, label: t("result.tabs.ingredients") },
     { id: "nutrition" as const, label: t("result.tabs.nutrition") },
+    { id: "ingredients" as const, label: t("result.tabs.ingredients") },
+    { id: "verdicts" as const, label: t("result.tabs.verdicts") },
     { id: "unknowns" as const, label: t("result.tabs.unknowns"), badge: result.unknowns.length },
   ];
 

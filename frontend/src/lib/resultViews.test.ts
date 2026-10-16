@@ -52,6 +52,15 @@ describe("nutritionRows", () => {
     expect(sodium).toMatchObject({ amount: 125, edited: true });
   });
 
+  it("shows calculated per-100 values (read-only) when the label prints only per serving", () => {
+    const servingOnly: ScanResult = structuredClone(result);
+    for (const row of servingOnly.extraction.nutrition?.rows ?? []) row.values = row.values.filter((value) => value.basis !== "per_100g");
+    const rows = nutritionRows(servingOnly, "per_100");
+    expect(rows.find((row) => row.key === "energy_kcal")).toMatchObject({ amount: 520, derived: true, fieldPath: null });
+    expect(rows.find((row) => row.key === "sodium_mg")).toMatchObject({ amount: null, derived: true });
+    expect(nutritionRows(result, "per_100").find((row) => row.key === "energy_kcal")?.derived).toBe(false);
+  });
+
   it("flags suspect rows from the consistency check", () => {
     const suspect: ScanResult = structuredClone(result);
     if (suspect.nutrition_analysis) suspect.nutrition_analysis.consistency.suspect_keys = ["total_fat_g"];

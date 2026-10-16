@@ -10,6 +10,8 @@ export interface NutritionCell {
   readability: Readability;
   suspect: boolean;
   edited: boolean;
+  /** Worked out from another basis (serving or pack size), not printed in this column. */
+  derived: boolean;
   /** Field path of the extraction value this cell shows; null for derived (whole-pack) values. */
   fieldPath: string | null;
   rawText: string;
@@ -60,6 +62,7 @@ export function nutritionRows(result: ScanResult, view: NutritionBasisView): Nut
         unit: fallbackUnit,
         readability: amount === undefined ? ("unreadable" as const) : ("clear" as const),
         edited: false,
+        derived: true,
         fieldPath: null,
       };
     }
@@ -72,6 +75,7 @@ export function nutritionRows(result: ScanResult, view: NutritionBasisView): Nut
         unit: fallbackUnit,
         readability: derived === undefined ? ("unreadable" as const) : ("clear" as const),
         edited: false,
+        derived: true,
         fieldPath: null,
       };
     }
@@ -82,6 +86,7 @@ export function nutritionRows(result: ScanResult, view: NutritionBasisView): Nut
       unit: fallbackUnit,
       readability: value.readability,
       edited: value.corrected_by_user,
+      derived: false,
       fieldPath: `nutrition.rows[${rowIndex}].values[${valueIndex}].amount`,
     };
   });
