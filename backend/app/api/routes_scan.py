@@ -1,17 +1,21 @@
 """POST /api/scan and POST /api/recheck."""
 from __future__ import annotations
 
+import asyncio
 from typing import Annotated
 
-from fastapi import APIRouter, File, Form, UploadFile
+from fastapi import APIRouter, Depends, File, Form, UploadFile
 from fastapi.concurrency import run_in_threadpool
 from pydantic import TypeAdapter, ValidationError
 
-from backend.app import engine_adapter, errors, fixtures
+from backend.app import engine_adapter, errors
+from backend.app.cache import ExtractionCache, get_cache
 from backend.app.config import get_settings
+from backend.app.llm.router import LLMRouter, get_router
 from backend.app.logging_setup import stage
 from backend.app.pipeline.assemble import build_scan_result
 from backend.app.pipeline.images import BadImageError, PreparedImage, decode_upload, image_id
+from backend.app.pipeline.orchestrator import SCAN_BUDGET_S, ScanInput, run_scan
 from shared.contract import Lang, PanelHint, Profile, RecheckRequest, ScanResult
 
 router = APIRouter(prefix="/api")
@@ -49,12 +53,13 @@ async def read_limited(upload: UploadFile, limit: int) -> bytes:
     return bytes(data)
 
 
-async def read_images(uploads: list[UploadFile]) -> list[PreparedImage]:
+async def read_images(uploads: list[UploadFile]) -> tuple[list[bytes], list[PreparedImage]]:
     settings = get_settings()
     if not uploads:
         raise errors.validation("Attach at least one photo of the label.")
     if len(uploads) > settings.max_images:
         raise errors.too_many_images(settings.max_images)
+    raw: list[bytes] = []
     prepared: list[PreparedImage] = []
     for index, upload in enumerate(uploads):
         data = await read_limited(upload, settings.max_image_bytes)
@@ -62,7 +67,8 @@ async def read_images(uploads: list[UploadFile]) -> list[PreparedImage]:
             prepared.append(await run_in_threadpool(decode_upload, data, image_id(index)))
         except BadImageError as exc:
             raise errors.bad_image(f"Photo {index + 1}: {exc}") from exc
-    return prepared
+        raw.append(data)
+    return raw, prepared
 
 
 @router.post("/scan", response_model=ScanResult)
@@ -71,14 +77,18 @@ async def scan(
     images: Annotated[list[UploadFile], File()] = [],  # noqa: B006 - FastAPI reads the default, never mutates it
     lang: Annotated[Lang, Form()] = "en",
     panel_hints: Annotated[str | None, Form()] = None,
+    router: LLMRouter = Depends(get_router),
+    cache: ExtractionCache = Depends(get_cache),
 ) -> ScanResult:
-    parse_profiles(profiles)
+    parsed_profiles = parse_profiles(profiles)
     with stage("decode"):
-        prepared = await read_images(images)
-    parse_panel_hints(panel_hints, len(prepared))
-    result = fixtures.scan_result()
-    result.lang = lang
-    return result
+        raw, prepared = await read_images(images)
+    hints = parse_panel_hints(panel_hints, len(prepared))
+    scan_input = ScanInput(images=prepared, raw=raw, hints=hints, profiles=parsed_profiles, lang=lang)
+    try:
+        return await asyncio.wait_for(run_scan(scan_input, router, cache), SCAN_BUDGET_S)
+    except TimeoutError as exc:
+        raise errors.ApiError(503, "LLM_UNAVAILABLE", "Reading the label took too long. Please try again.") from exc
 
 
 @router.post("/recheck", response_model=ScanResult)

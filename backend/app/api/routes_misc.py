@@ -1,10 +1,11 @@
 """GET /api/health, GET /api/catalog, POST /api/profile/parse, POST /api/explain."""
 from __future__ import annotations
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from backend.app import engine_adapter, fixtures
 from backend.app.config import get_settings
+from backend.app.llm.router import LLMRouter, get_router
 from backend.app.provider_probe import probe_providers
 from shared.contract import (
     ExplainRequest,
@@ -19,8 +20,10 @@ router = APIRouter(prefix="/api")
 
 
 @router.get("/health", response_model=HealthResponse)
-async def health() -> HealthResponse:
-    providers = await probe_providers(get_settings())
+async def health(router: LLMRouter = Depends(get_router)) -> HealthResponse:
+    reachable = await probe_providers(get_settings())
+    usable = router.provider_status()
+    providers = {name: reachable.get(name, False) and usable.get(name, False) for name in ("gemini", "ollama")}
     return HealthResponse(
         status="ok" if any(providers.values()) else "degraded",
         providers=providers,

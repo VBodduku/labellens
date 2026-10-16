@@ -49,7 +49,15 @@ def test_health_reports_degraded_when_no_provider(client: TestClient) -> None:
 
 def test_health_ok_when_a_provider_is_up(client: TestClient, providers: dict[str, bool]) -> None:
     providers["ollama"] = True
-    assert client.get("/api/health").json()["status"] == "ok"
+    body = client.get("/api/health").json()
+    assert body["status"] == "ok" and body["providers"] == {"gemini": False, "ollama": True}
+
+
+def test_health_hides_reachable_provider_without_a_configured_client(
+    client: TestClient, providers: dict[str, bool],
+) -> None:
+    providers["gemini"] = True          # reachable, but the router has no Gemini client (no key)
+    assert client.get("/api/health").json()["providers"]["gemini"] is False
 
 
 def test_catalog_comes_from_engine(client: TestClient) -> None:
@@ -67,11 +75,20 @@ def test_scan_returns_scan_result_in_requested_lang(client: TestClient, label_pn
     result = ScanResult.model_validate(response.json())
     assert result.lang == "te"
     assert result.extraction.ocr_tokens
+    assert result.extraction.images[0].panel_hint == "back"
+    assert [r.profile_id for r in result.reports] == ["p_aarav", "p_thatha", "p_lakshmi"]
 
 
-def test_scan_accepts_max_images(client: TestClient) -> None:
-    response = client.post("/api/scan", files=files(png(), png(), png()), data={"profiles": "[]"})
-    assert response.status_code == 200
+def test_scan_accepts_max_images(client: TestClient, label_png: bytes) -> None:
+    response = client.post("/api/scan", files=files(label_png, label_png, label_png), data={"profiles": "[]"})
+    assert response.status_code == 200, response.text
+    assert [i.image_id for i in ScanResult.model_validate(response.json()).extraction.images] == [
+        "img_0", "img_1", "img_2"]
+
+
+def test_scan_with_nothing_readable_is_bad_image(client: TestClient) -> None:
+    response = client.post("/api/scan", files=files(png()), data={"profiles": "[]"})
+    assert_error(response, 422, "BAD_IMAGE")
 
 
 def test_scan_without_images_is_validation_error(client: TestClient) -> None:

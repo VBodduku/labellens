@@ -2,15 +2,21 @@ from __future__ import annotations
 
 import io
 from collections.abc import Iterator
+from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 from PIL import Image
 
 from backend.app import provider_probe
+from backend.app.cache import ExtractionCache, get_cache
 from backend.app.config import get_settings
+from backend.app.llm.router import LLMRouter, get_router
 from backend.app.main import create_app
+from backend.app.pipeline.ocr import ocr_image
 from backend.scripts.make_test_label import fixture_tokens, render_label
+from backend.tests.fakes import FakeLLM, recorded
+from shared.contract import OcrToken
 
 TEST_ENV = {
     "ENGINE_MODE": "stub",
@@ -47,8 +53,27 @@ def providers(monkeypatch: pytest.MonkeyPatch) -> dict[str, bool]:
 
 
 @pytest.fixture
-def client(providers: dict[str, bool]) -> Iterator[TestClient]:
-    with TestClient(create_app()) as test_client:
+def llm() -> FakeLLM:
+    """The structuring model behind /api/scan; tests change its responses as needed."""
+    return FakeLLM([recorded("ollama_test_label.json")], name="ollama", model="gemma3:4b")
+
+
+@pytest.fixture
+def router(llm: FakeLLM) -> LLMRouter:
+    return LLMRouter([llm], timeout_s=5)
+
+
+@pytest.fixture
+def cache(tmp_path: Path) -> ExtractionCache:
+    return ExtractionCache(tmp_path / "extractions")
+
+
+@pytest.fixture
+def client(providers: dict[str, bool], router: LLMRouter, cache: ExtractionCache) -> Iterator[TestClient]:
+    app = create_app()
+    app.dependency_overrides[get_router] = lambda: router
+    app.dependency_overrides[get_cache] = lambda: cache
+    with TestClient(app) as test_client:
         yield test_client
 
 
@@ -63,3 +88,8 @@ def label_png(label_image: Image.Image) -> bytes:
     buffer = io.BytesIO()
     label_image.save(buffer, format="PNG")
     return buffer.getvalue()
+
+
+@pytest.fixture(scope="session")
+def label_tokens(label_image: Image.Image) -> list[OcrToken]:
+    return ocr_image(label_image, "img_0")
