@@ -31,3 +31,15 @@ Also review the `REVIEW`-marked strings in `backend/app/wording.py` and `backend
 | 20 | `quality.blurry` / `scan.hint.good` | The photo is blurry. Hold steady. / Looks sharp — hold still | फ़ोटो धुंधली है। स्थिर रखें। / साफ़ दिख रहा है — स्थिर रखें | ఫోటో మసకగా ఉంది. కదలకుండా పట్టుకోండి. / స్పష్టంగా ఉంది — కదలకుండా ఉంచండి |
 
 Also worth a look: `categories.*` (used inside sentences), `nutrients.*`, `basis.*`, and the voice prompts `speech.*`. Edit the JSON files directly — the tests fail if a key or `{placeholder}` goes missing.
+
+## Automated pre-check (2026-10-16)
+
+Done by script, not by a native speaker; the human review above is still needed.
+- All 450 keys exist in `hi.json` and `te.json`, with the same `{placeholders}` as English.
+- The state words in the app (`state.*`) are identical to `STATE_WORDS` in `backend/app/wording.py`. Keep them identical: an AI summary is dropped unless it contains the exact state word.
+- No banned word ("safe", "healthy", "guaranteed" and their hi/te equivalents) appears in any translation.
+- No hi/te string is left in English except names (LabelLens, English) and label text quoted in examples.
+
+For the reviewer to decide:
+- Telugu `state.possible` "ఇది తనిఖీ చేయండి" uses the subject form ఇది; the object form would be "దీన్ని తనిఖీ చేయండి". If you change it, change `te.json` and `STATE_WORDS["te"]` in `backend/app/wording.py` together.
+- New Hindi/Telugu ingredient names were added to the knowledge base (दुग्ध, सोयाबीन, పల్లీలు, వేరుశనగలు, అక్రోట్, పాల పొడి, నువ్వుల, ఆవాల, ఆవ నూనె). Check them in `engine/KB_REVIEW.md`.
