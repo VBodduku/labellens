@@ -87,6 +87,16 @@ describe("auto-capture streak", () => {
     expect(step.shouldCapture).toBe(false);
   });
 
+  it("stays disarmed after a capture until the camera moves", () => {
+    let step = nextCaptureState({ goodSince: 0, captured: false }, [], 700);
+    expect(step.shouldCapture).toBe(true);
+    step = nextCaptureState(step.state, [], 5000);
+    expect(step.shouldCapture).toBe(false);
+    step = nextCaptureState(step.state, ["blurry"], 5100);
+    step = nextCaptureState(step.state, [], 5200);
+    expect(nextCaptureState(step.state, [], 5900).shouldCapture).toBe(true);
+  });
+
   it("restarts the window when a frame turns bad", () => {
     let step = nextCaptureState(INITIAL_CAPTURE_STATE, [], 0);
     step = nextCaptureState(step.state, [], 600);

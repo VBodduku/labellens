@@ -2,9 +2,16 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { setLanguage } from "../i18n";
 import { isLang } from "../i18n/resources";
-import type { Evidence, Lang } from "../shared/contract";
+import type { Evidence, Lang, VerdictState } from "../shared/contract";
 
 export type ThemeChoice = "system" | "light" | "dark";
+
+/** Evidence the viewer should zoom to; `nonce` re-triggers the focus animation when the same chip is tapped again. */
+export interface FocusedEvidence {
+  evidence: Evidence;
+  state: VerdictState;
+  nonce: number;
+}
 
 const THEME_CYCLE: ThemeChoice[] = ["system", "light", "dark"];
 
@@ -12,13 +19,14 @@ interface UiState {
   lang: Lang;
   theme: ThemeChoice;
   selectedProfileId: string | null;
-  focusedEvidence: Evidence | null;
+  focusedEvidence: FocusedEvidence | null;
   voiceRate: number;
   setLang: (lang: Lang) => void;
   setTheme: (theme: ThemeChoice) => void;
   cycleTheme: () => void;
   selectProfile: (profileId: string | null) => void;
-  focusEvidence: (evidence: Evidence | null) => void;
+  focusEvidence: (evidence: Evidence, state: VerdictState) => void;
+  clearFocus: () => void;
   setVoiceRate: (rate: number) => void;
 }
 
@@ -59,7 +67,9 @@ export const useUiStore = create<UiState>()(
         get().setTheme(next);
       },
       selectProfile: (selectedProfileId) => set({ selectedProfileId }),
-      focusEvidence: (focusedEvidence) => set({ focusedEvidence }),
+      focusEvidence: (evidence, state) =>
+        set({ focusedEvidence: { evidence, state, nonce: (get().focusedEvidence?.nonce ?? 0) + 1 } }),
+      clearFocus: () => set({ focusedEvidence: null }),
       setVoiceRate: (voiceRate) => set({ voiceRate: Math.min(1.5, Math.max(0.6, voiceRate)) }),
     }),
     {

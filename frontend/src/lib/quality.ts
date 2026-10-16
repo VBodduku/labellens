@@ -96,12 +96,29 @@ export interface CaptureStep {
   shouldCapture: boolean;
 }
 
-/** Auto-capture once every check has passed continuously for GOOD_HOLD_MS; any bad frame resets the run. */
+/**
+ * Auto-capture once every check has passed continuously for GOOD_HOLD_MS; any bad frame resets the run.
+ * After a capture it stays disarmed until a bad frame (e.g. the motion of moving to the next panel), so
+ * holding still never fills the tray with copies of the same shot.
+ */
 export function nextCaptureState(state: CaptureState, issues: LiveIssue[], now: number, holdMs = GOOD_HOLD_MS): CaptureStep {
-  if (state.captured) return { state, progress: 1, shouldCapture: false };
+  if (state.captured) {
+    return issues.length > 0
+      ? { state: INITIAL_CAPTURE_STATE, progress: 0, shouldCapture: false }
+      : { state, progress: 0, shouldCapture: false };
+  }
   if (issues.length > 0) return { state: { goodSince: null, captured: false }, progress: 0, shouldCapture: false };
   const goodSince = state.goodSince ?? now;
   const progress = Math.min(1, (now - goodSince) / holdMs);
   const shouldCapture = progress >= 1;
   return { state: { goodSince, captured: shouldCapture }, progress, shouldCapture };
+}
+
+/** Main thread → quality worker: one downscaled RGBA frame (buffer transferred), or a reset between sessions. */
+export type QualityRequest = { kind: "frame"; buffer: ArrayBuffer; width: number; height: number } | { kind: "reset" };
+
+/** Quality worker → main thread. */
+export interface QualityResponse {
+  metrics: FrameMetrics;
+  issues: LiveIssue[];
 }

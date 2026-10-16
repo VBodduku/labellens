@@ -3,6 +3,7 @@ import { create } from "zustand";
 import { api, ApiError, isApiError } from "../api";
 import { applyCorrections } from "../lib/corrections";
 import { createId } from "../lib/ids";
+import { changedVerdicts } from "../lib/resultDiff";
 import type { Correction, Lang, PanelHint, Profile, ScanResult } from "../shared/contract";
 
 export const MAX_PANELS = 3;
@@ -36,6 +37,8 @@ interface ScanState {
   corrections: Correction[];
   isDemo: boolean;
   hydrated: boolean;
+  /** `profile:restriction` keys whose verdict changed in the last recheck (drives the change animation). */
+  changedVerdicts: string[];
   addPanel: (file: Blob, hint?: PanelHint) => void;
   retakePanel: (index: number, file: Blob) => void;
   setPanelHint: (index: number, hint: PanelHint) => void;
@@ -99,6 +102,7 @@ export const useScanStore = create<ScanState>()((set, get) => {
     corrections: [],
     isDemo: false,
     hydrated: false,
+    changedVerdicts: [],
 
     addPanel: (file, hint = "unknown") => {
       const { panels, isDemo } = get();
@@ -117,7 +121,7 @@ export const useScanStore = create<ScanState>()((set, get) => {
       if (!previous) return;
       URL.revokeObjectURL(previous.url);
       panels[index] = makePanel(file, previous.hint);
-      set({ panels });
+      set({ panels, isDemo: false });
     },
 
     setPanelHint: (index, hint) => {
@@ -134,7 +138,7 @@ export const useScanStore = create<ScanState>()((set, get) => {
     analyse: async ({ profiles, lang }) => {
       const { panels } = get();
       const signal = startRequest();
-      set({ status: "analysing", error: null, corrections: [], isDemo: false });
+      set({ status: "analysing", error: null, corrections: [], isDemo: false, changedVerdicts: [] });
       try {
         const result = await api.scan(
           { images: panels.map((panel) => panel.file), profiles, lang, panelHints: panels.map((panel) => panel.hint) },
@@ -160,7 +164,7 @@ export const useScanStore = create<ScanState>()((set, get) => {
       try {
         const extraction = applyCorrections({ ...result.extraction, user_corrections: [] }, corrections);
         const next = await api.recheck({ extraction, profiles: scanProfiles, lang }, { signal });
-        set({ result: next, status: "done" });
+        set({ result: next, status: "done", changedVerdicts: changedVerdicts(result, next) });
         await persist(get());
       } catch (error) {
         failWith(error);
@@ -186,6 +190,7 @@ export const useScanStore = create<ScanState>()((set, get) => {
         status: "done",
         error: null,
         isDemo: true,
+        changedVerdicts: [],
       });
       await persist(get());
     },
@@ -213,7 +218,16 @@ export const useScanStore = create<ScanState>()((set, get) => {
     reset: () => {
       inflight?.abort();
       revokeAll(get().panels);
-      set({ panels: [], result: null, scanProfiles: [], status: "idle", error: null, corrections: [], isDemo: false });
+      set({
+        panels: [],
+        result: null,
+        scanProfiles: [],
+        status: "idle",
+        error: null,
+        corrections: [],
+        isDemo: false,
+        changedVerdicts: [],
+      });
       void idbDel(LAST_SCAN_KEY).catch(() => undefined);
     },
   };
