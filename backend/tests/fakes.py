@@ -6,7 +6,7 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
-from backend.app.llm.base import LLMImage, ProviderName
+from backend.app.llm.base import ChatMessage, InvalidOutputError, LLMImage, ProviderName, ProviderUnavailableError
 from backend.app.llm.router import LLMRouter
 from shared.contract import Box, OcrToken
 
@@ -17,19 +17,49 @@ def recorded(name: str) -> str:
     return (DATA_DIR / name).read_text(encoding="utf-8")
 
 
-class FakeLLM:
-    """Returns (or raises) the queued responses in order; the last one repeats."""
+# Phrases that identify each prompt kind (see backend/app/llm/prompts/).
+STRUCTURE = "TRANSCRIBE the label"
+REREAD = "# Focused re-read"
+INTERPRET = "rules engine could not find"
+SUMMARIZE = "one-sentence summaries"
 
-    def __init__(self, responses: Sequence[str | BaseException], name: ProviderName = "gemini",
-                 label: str | None = None, model: str = "fake-model", delay_s: float = 0.0) -> None:
+Response = str | BaseException
+
+
+class FakeLLM:
+    """Scripted model. `routes` maps a phrase in the prompt to its responses; other prompts use
+    `responses`. Each list is consumed in order and its last entry repeats."""
+
+    def __init__(self, responses: Sequence[Response] = (), name: ProviderName = "gemini",
+                 label: str | None = None, model: str = "fake-model", delay_s: float = 0.0,
+                 routes: dict[str, Sequence[Response]] | None = None) -> None:
         self.name = name
         self.label = label or name
         self.model = model
         self.responses = list(responses)
+        self.routes = {k: list(v) for k, v in (routes or {}).items()}
         self.delay_s = delay_s
         self.prompts: list[str] = []
         self.images: list[list[LLMImage]] = []
         self.schemas: list[dict[str, Any]] = []
+
+    @staticmethod
+    def _matches(phrase: str, prompt: str) -> bool:
+        # A re-read prompt embeds the structuring rules; it only counts as a re-read.
+        return phrase in prompt and not (phrase == STRUCTURE and REREAD in prompt)
+
+    def calls(self, phrase: str) -> list[str]:
+        return [p for p in self.prompts if self._matches(phrase, p)]
+
+    def _next(self, prompt: str) -> Response:
+        for phrase in sorted(self.routes, key=len, reverse=True):
+            if self._matches(phrase, prompt):
+                queue, used = self.routes[phrase], len(self.calls(phrase)) - 1
+                return queue[min(used, len(queue) - 1)]
+        if not self.responses:
+            return InvalidOutputError(f"FakeLLM has no response for this prompt: {prompt[:60]!r}")
+        unrouted = [p for p in self.prompts if not any(ph in p for ph in self.routes)]
+        return self.responses[min(len(unrouted) - 1, len(self.responses) - 1)]
 
     async def generate_json(self, prompt: str, images: list[LLMImage], schema: dict[str, Any], timeout_s: float) -> str:
         self.prompts.append(prompt)
@@ -37,10 +67,23 @@ class FakeLLM:
         self.schemas.append(schema)
         if self.delay_s:
             await asyncio.sleep(self.delay_s)
-        response = self.responses[min(len(self.prompts) - 1, len(self.responses) - 1)]
+        response = self._next(prompt)
         if isinstance(response, BaseException):
             raise response
         return response
+
+
+def scan_llm(structure: Response, name: ProviderName = "ollama", model: str = "gemma3:4b",
+             **routes: Sequence[Response]) -> FakeLLM:
+    """A scan model: answers structuring with `structure`; re-read/interpret/summarize are unavailable
+    unless given (reread=…, interpret=…, summarize=…)."""
+    down: list[Response] = [ProviderUnavailableError("not scripted")]
+    return FakeLLM(name=name, model=model, routes={
+        STRUCTURE: [structure],
+        REREAD: routes.get("reread", down),
+        INTERPRET: routes.get("interpret", down),
+        SUMMARIZE: routes.get("summarize", down),
+    })
 
 
 def router_with(*clients: FakeLLM, timeout_s: float = 5.0) -> LLMRouter:
@@ -63,3 +106,22 @@ def line_tokens(words: Sequence[str], y: float, start: int = 0, x0: float = 0.05
         tokens.append(token(start + n, word, x, y, w=width, image_id=image_id))
         x += width + 0.01
     return tokens
+
+
+class FakeToolClient(FakeLLM):
+    """A Gemini-like client whose chat turns are scripted (ChatMessage or exception per turn)."""
+
+    def __init__(self, turns: Sequence["ChatMessage | BaseException"], label: str = "gemini:primary") -> None:
+        super().__init__([ProviderUnavailableError("not scripted")], name="gemini", label=label)
+        self.turns = list(turns)
+        self.seen: list[list["ChatMessage"]] = []
+        self.systems: list[str] = []
+
+    async def chat_with_tools(self, messages: list["ChatMessage"], tools: list[Any], system: str,
+                              timeout_s: float) -> "ChatMessage":
+        self.seen.append(list(messages))
+        self.systems.append(system)
+        turn = self.turns[min(len(self.seen) - 1, len(self.turns) - 1)]
+        if isinstance(turn, BaseException):
+            raise turn
+        return turn

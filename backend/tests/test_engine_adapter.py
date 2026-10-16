@@ -5,12 +5,15 @@ import types
 
 import pytest
 
-from backend.app import engine_adapter, fixtures
+from backend.app import engine_adapter
+from backend.tests import fixture_data as fixtures
 from backend.app.config import get_settings
 from shared.contract import Profile
 
 
-def test_stub_mode_evaluates_fixture_extraction() -> None:
+def test_stub_mode_evaluates_fixture_extraction(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("ENGINE_MODE", "stub")
+    get_settings.cache_clear()
     scan = fixtures.scan_result()
     profiles = [Profile.model_validate(p) for p in _fixture_profiles()]
     output = engine_adapter.evaluate(scan.extraction, profiles)

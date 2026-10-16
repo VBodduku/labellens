@@ -15,6 +15,7 @@ from fastapi.concurrency import run_in_threadpool
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from backend.app.api import routes_ask, routes_misc, routes_scan
+from backend.app.body_limit import BodyLimit
 from backend.app.config import get_settings
 from backend.app.errors import ApiError
 from backend.app.logging_setup import configure_logging, current_request, logger, start_request
@@ -62,14 +63,10 @@ async def request_context(request: Request, call_next: Callable[[Request], Await
     request_id = request.headers.get(REQUEST_ID_HEADER) or uuid.uuid4().hex
     log = start_request(request_id)
     started = time.perf_counter()
-    length = request.headers.get("content-length")
-    if length is not None and length.isdigit() and int(length) > get_settings().max_body_bytes:
-        response: Response = error_response(413, "BAD_IMAGE", "The upload is too large.")
-    else:
-        try:
-            response = await call_next(request)
-        except Exception as exc:  # last resort; route errors normally reach the handlers above
-            response = await handle_unexpected(request, exc)
+    try:
+        response: Response = await call_next(request)
+    except Exception as exc:  # last resort; route errors normally reach the handlers above
+        response = await handle_unexpected(request, exc)
     response.headers[REQUEST_ID_HEADER] = request_id
     logger.info("request", extra={"fields": {
         "request_id": request_id,
@@ -94,6 +91,9 @@ def create_app() -> FastAPI:
     settings = get_settings()
     configure_logging(settings.log_level)
     app = FastAPI(title="LabelLens API", version="0.1.0", lifespan=lifespan)
+    # Added first = innermost: oversized bodies still get a request id, a log line and CORS headers.
+    app.add_middleware(BodyLimit, scan_limit=lambda: get_settings().max_scan_body_bytes,
+                       respond=lambda e: error_response(e.status, e.error_code, e.message))
     app.middleware("http")(request_context)
     app.add_middleware(
         CORSMiddleware,

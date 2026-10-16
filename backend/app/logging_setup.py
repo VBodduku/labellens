@@ -44,6 +44,8 @@ def configure_logging(level: str) -> None:
     logger.handlers[:] = [handler]
     logger.setLevel(level)
     logger.propagate = False
+    for noisy in ("httpx", "httpcore", "google_genai", "google.genai"):   # they log request URLs
+        logging.getLogger(noisy).setLevel(logging.WARNING)
 
 
 def start_request(request_id: str) -> RequestLog:

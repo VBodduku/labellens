@@ -8,6 +8,7 @@ line width shared out by character count.
 from __future__ import annotations
 
 import asyncio
+import logging
 import statistics
 from collections.abc import Sequence
 from concurrent.futures import ThreadPoolExecutor
@@ -18,13 +19,15 @@ from typing import Any
 from PIL import Image
 from rapidocr_onnxruntime import RapidOCR
 
+from backend.app.config import get_settings
 from backend.app.pipeline.images import PreparedImage
 from shared.contract import Box, OcrToken
 
+OCR_TIMEOUT_S = 20.0
 ROW_TOLERANCE = 0.5             # lines whose centres differ by < this x median line height share a row
 WORD_GAP = 0.45                 # character gap (x line height) that splits a word when the space was dropped
 
-_executor = ThreadPoolExecutor(max_workers=2, thread_name_prefix="ocr")
+logger = logging.getLogger("labellens.ocr")
 
 
 @dataclass(frozen=True)
@@ -63,6 +66,12 @@ class WordBox:
     x1: float
     y1: float
     score: float
+
+
+@lru_cache(maxsize=1)
+def executor() -> ThreadPoolExecutor:
+    """One OCR worker per panel by default (OCR_WORKERS, 1 on small hosts to bound memory)."""
+    return ThreadPoolExecutor(max_workers=get_settings().ocr_workers, thread_name_prefix="ocr")
 
 
 @lru_cache(maxsize=1)
@@ -188,6 +197,15 @@ def ocr_image(image: Image.Image, image_id: str) -> list[OcrToken]:
     return tokens_from_lines(parse_raw(result), image_id, image.width, image.height)
 
 
-async def run_ocr(image: PreparedImage) -> list[OcrToken]:
+async def ocr_image_async(image: Image.Image, image_id: str, timeout_s: float = OCR_TIMEOUT_S) -> list[OcrToken]:
+    """OCR in the thread pool, never blocking the event loop; a stuck OCR run yields no tokens."""
     loop = asyncio.get_running_loop()
-    return await loop.run_in_executor(_executor, ocr_image, image.ocr_image, image.image_id)
+    try:
+        return await asyncio.wait_for(loop.run_in_executor(executor(), ocr_image, image, image_id), timeout_s)
+    except TimeoutError:
+        logger.warning("ocr timed out", extra={"fields": {"image_id": image_id, "timeout_s": timeout_s}})
+        return []
+
+
+async def run_ocr(image: PreparedImage) -> list[OcrToken]:
+    return await ocr_image_async(image.ocr_image, image.image_id)

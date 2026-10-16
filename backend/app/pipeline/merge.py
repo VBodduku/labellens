@@ -166,15 +166,16 @@ def merge_claims(panels: Sequence[PanelExtraction]) -> list[Claim]:
     return list(merged.values())
 
 
-def _ingredient_ids(items: Sequence[Ingredient], prefix: str) -> list[Ingredient]:
+def assign_ingredient_ids(items: Sequence[Ingredient], prefix: str = "ing_") -> list[Ingredient]:
     return [
-        i.model_copy(update={"id": f"{prefix}{n}", "sub_ingredients": _ingredient_ids(i.sub_ingredients, f"{prefix}{n}_")})
+        i.model_copy(update={"id": f"{prefix}{n}",
+                             "sub_ingredients": assign_ingredient_ids(i.sub_ingredients, f"{prefix}{n}_")})
         for n, i in enumerate(items)
     ]
 
 
 def assign_ids(label: MergedLabel) -> MergedLabel:
-    label.ingredients = _ingredient_ids(label.ingredients, "ing_")
+    label.ingredients = assign_ingredient_ids(label.ingredients)
     label.allergen_statements = [s.model_copy(update={"id": f"alg_{n}"}) for n, s in enumerate(label.allergen_statements)]
     label.claims = [c.model_copy(update={"id": f"clm_{n}"}) for n, c in enumerate(label.claims)]
     return label

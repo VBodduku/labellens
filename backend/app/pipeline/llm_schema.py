@@ -1,4 +1,6 @@
-"""LLM-facing extraction schema: flat, every item cites OCR token ids ("img_0:t12").
+"""LLM-facing extraction schema: flat, every item cites OCR words by their number in that photo's
+OCR list (`token_ids: [12, 13]`, ~1 output token each instead of ~6 for "img_0:t12"); the
+pipeline maps the numbers back to real token ids (structure.Citations).
 
 One level of nesting (panels) keeps evidence and multi-panel merging per photo; no recursion, so
 Gemini's and Ollama's structured-output support can handle it. Boxes use Gemini's convention:
@@ -23,7 +25,7 @@ Box2d = list[int]
 
 class LLMIngredient(BaseModel):
     text: str
-    token_ids: list[str] = []
+    token_ids: list[int] = []
     percentage: Optional[float] = None
     parent_index: Optional[int] = None
     readability: Readability = "clear"
@@ -38,7 +40,7 @@ class LLMSection(BaseModel):
     presence: SectionPresence
     complete: bool
     issues: list[str] = []
-    unreadable_token_ids: list[str] = []
+    unreadable_token_ids: list[int] = []
     unreadable_boxes: list[LLMUnreadableBox] = []
 
 
@@ -46,7 +48,7 @@ class LLMStatement(BaseModel):
     type: StatementType
     text: str
     items: list[str] = []
-    token_ids: list[str] = []
+    token_ids: list[int] = []
     box_2d: Optional[Box2d] = None
 
 
@@ -55,7 +57,7 @@ class LLMNutrientValue(BaseModel):
     amount: Optional[float] = None
     unit: str
     text: str
-    token_ids: list[str] = []
+    token_ids: list[int] = []
     readability: Readability = "clear"
     box_2d: Optional[Box2d] = None
 
@@ -82,7 +84,7 @@ class LLMVegMark(BaseModel):
 
 class LLMClaim(BaseModel):
     text: str
-    token_ids: list[str] = []
+    token_ids: list[int] = []
     box_2d: Optional[Box2d] = None
 
 

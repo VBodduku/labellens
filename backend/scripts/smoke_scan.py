@@ -1,6 +1,8 @@
 """POST every packet folder in a directory to a running backend and print a summary table.
 
-Each subfolder is one packet with 1-3 photos (sent in file-name order). Uses the fixture profiles.
+Each subfolder is one packet with 1-3 photos (sent in file-name order). Uses the fixture family
+(peanut + tree-nut allergy, diabetic + low sodium, Jain + sesame). "overall" is each profile's
+overall state, "states" every result state seen (C conflict, P possible, N not listed, U unknown).
 Usage (repo root): python -m backend.scripts.smoke_scan <photos_dir> [--url http://localhost:8000] [--lang en]
 """
 from __future__ import annotations
@@ -20,7 +22,9 @@ IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif"}
 MIME = {".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".webp": "image/webp",
         ".heic": "image/heic", ".heif": "image/heif"}
 TIMEOUT_S = 60.0
-COLUMNS = ("packet", "provider", "secs", "ingr", "verified", "ingr_ok", "nutr_ok", "allg_ok", "veg", "cache")
+COLUMNS = ("packet", "provider", "secs", "ingr", "verified", "ingr_ok", "nutr_ok", "allg_ok", "veg", "cache",
+           "retries", "overall", "states")
+STATE_SHORT = {"conflict": "C", "possible": "P", "not_listed": "N", "unknown": "U"}
 
 
 def flatten(items: list[Ingredient]) -> list[Ingredient]:
@@ -56,9 +60,12 @@ def row(name: str, elapsed: float, result: ScanResult) -> tuple[tuple[str, ...],
     verified = sum(1 for i in items if any(ev.status == "verified" for ev in i.evidence))
     pct = f"{100 * verified / len(items):.0f}%" if items else "-"
     yes = {True: "yes", False: "no"}
+    overall = "/".join(STATE_SHORT[r.overall] for r in result.reports)
+    states = "".join(sorted({STATE_SHORT[x.state] for r in result.reports for x in r.results}))
+    retries = ",".join(r.outcome for r in e.meta.retries) or "-"
     cells = (name, e.meta.provider, f"{elapsed:.1f}", str(len(items)), pct, yes[e.ingredients_section.complete],
              yes[e.nutrition_section.complete], yes[e.allergen_section.complete], e.veg_mark.value,
-             yes[e.meta.cache_hit])
+             yes[e.meta.cache_hit], retries, overall, states)
     return cells, verified, len(items)
 
 
@@ -71,6 +78,7 @@ def main() -> None:
 
     rows: list[tuple[str, ...]] = []
     durations: list[float] = []
+    seen_states: set[str] = set()
     verified_total = items_total = 0
     with httpx.Client(timeout=TIMEOUT_S) as client:
         for name, photos in packets(args.photos_dir):
@@ -81,6 +89,7 @@ def main() -> None:
                 continue
             cells, verified, items = row(name, elapsed, result)
             rows.append(cells)
+            seen_states.update(cells[-1])
             verified_total += verified
             items_total += items
 
@@ -93,6 +102,9 @@ def main() -> None:
         overall = f"{100 * verified_total / items_total:.0f}%" if items_total else "-"
         print(f"\npackets: {len(rows)}  p50: {statistics.median(durations):.1f} s  "
               f"ingredients verified: {overall} ({verified_total}/{items_total})")
+        missing = [s for s in "CPNU" if s not in seen_states]
+        print("states seen across packets (C=conflict P=possible N=not_listed U=unknown): "
+              f"{''.join(sorted(seen_states)) or '-'}" + (f"  missing: {''.join(missing)}" if missing else "  (all four)"))
 
 
 if __name__ == "__main__":

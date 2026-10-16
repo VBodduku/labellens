@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import io
+from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 
@@ -11,7 +12,8 @@ from backend.app.pipeline.images import PreparedImage
 from backend.app.pipeline.llm_schema import LLMExtraction
 from shared.contract import OcrToken, PanelHint
 
-PROMPT_VERSION = "structure-v1"
+PROMPT_VERSION = "structure-v3"
+Citations = dict[str, list[str]]        # image_id -> token ids in prompt order (the model cites the index)
 PROMPT_PATH = Path(__file__).resolve().parents[1] / "llm" / "prompts" / "structure.md"
 TOKEN_CAP: dict[ProviderName, int] = {"gemini": 1500, "ollama": 600}
 LOW_CONFIDENCE = 0.3
@@ -32,11 +34,19 @@ def cap_tokens(tokens: list[OcrToken], cap: int) -> list[OcrToken]:
     return [t for i, t in enumerate(tokens) if i in keep]
 
 
-def format_tokens(tokens: list[OcrToken], image_ids: list[str], cap: int) -> str:
+def listed_tokens(tokens: list[OcrToken], image_ids: list[str], cap: int) -> dict[str, list[OcrToken]]:
     kept = cap_tokens(tokens, cap)
+    return {image_id: [t for t in kept if t.image_id == image_id] for image_id in image_ids}
+
+
+def citations_for(tokens: list[OcrToken], image_ids: list[str], cap: int) -> Citations:
+    return {image_id: [t.token_id for t in listed] for image_id, listed in listed_tokens(tokens, image_ids, cap).items()}
+
+
+def format_tokens(tokens: list[OcrToken], image_ids: list[str], cap: int) -> str:
     blocks: list[str] = []
-    for image_id in image_ids:
-        lines = [f"{t.token_id}|{t.text}" for t in kept if t.image_id == image_id]
+    for image_id, listed in listed_tokens(tokens, image_ids, cap).items():
+        lines = [f"{n}|{t.text}" for n, t in enumerate(listed)]
         blocks.append(f"## {image_id}\n" + ("\n".join(lines) if lines else "(no OCR text)"))
     return "\n\n".join(blocks)
 
@@ -58,11 +68,19 @@ def llm_image(image: PreparedImage) -> LLMImage:
     return LLMImage(mime_type="image/jpeg", data=buffer.getvalue())
 
 
+@dataclass(frozen=True)
+class StructureOutput:
+    result: LLMResult[LLMExtraction]
+    citations: Citations                # how to turn the model's word numbers back into token ids
+
+
 async def structure(
     images: list[PreparedImage], hints: list[PanelHint], tokens: list[OcrToken], router: LLMRouter,
-) -> LLMResult[LLMExtraction]:
-    return await router.generate(
+) -> StructureOutput:
+    result = await router.generate(
         lambda provider: build_prompt(images, hints, tokens, TOKEN_CAP[provider]),
         [llm_image(i) for i in images],
         LLMExtraction,
     )
+    image_ids = [i.image_id for i in images]
+    return StructureOutput(result, citations_for(tokens, image_ids, TOKEN_CAP[result.provider]))

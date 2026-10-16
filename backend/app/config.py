@@ -19,6 +19,7 @@ class Settings:
     gemini_api_key: str
     gemini_api_key_backup: str
     gemini_model: str
+    gemini_fallback_model: str          # tried on the same key when gemini_model is overloaded or out of quota
     ollama_base_url: str
     ollama_model: str
     ollama_text_model: str
@@ -29,13 +30,14 @@ class Settings:
     max_images: int
     max_image_mb: float
     log_level: str
+    ocr_workers: int                    # parallel OCR runs; 1 on small hosts (Render free: 512 MB)
 
     @property
     def max_image_bytes(self) -> int:
         return int(self.max_image_mb * 1024 * 1024)
 
     @property
-    def max_body_bytes(self) -> int:
+    def max_scan_body_bytes(self) -> int:
         return self.max_images * self.max_image_bytes + 1024 * 1024
 
 
@@ -59,6 +61,7 @@ def get_settings() -> Settings:
         gemini_api_key=_env("GEMINI_API_KEY", ""),
         gemini_api_key_backup=_env("GEMINI_API_KEY_BACKUP", ""),
         gemini_model=_env("GEMINI_MODEL", "gemini-flash-latest"),
+        gemini_fallback_model=_env("GEMINI_FALLBACK_MODEL", "gemini-flash-lite-latest"),
         ollama_base_url=_env("OLLAMA_BASE_URL", "http://localhost:11434").rstrip("/"),
         ollama_model=_env("OLLAMA_MODEL", "gemma3:4b"),
         ollama_text_model=_env("OLLAMA_TEXT_MODEL", "gemma3:4b"),
@@ -69,4 +72,5 @@ def get_settings() -> Settings:
         max_images=int(_env("MAX_IMAGES", "3")),
         max_image_mb=float(_env("MAX_IMAGE_MB", "8")),
         log_level=_env("LOG_LEVEL", "info").upper(),
+        ocr_workers=max(1, int(_env("OCR_WORKERS", "3"))),
     )

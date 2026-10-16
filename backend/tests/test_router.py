@@ -5,7 +5,7 @@ import json
 
 import pytest
 
-from backend.app.llm.base import InvalidOutputError, ProviderUnavailableError, RateLimitedError
+from backend.app.llm.base import InvalidOutputError, LLMImage, ProviderUnavailableError, RateLimitedError
 from backend.app.llm.router import AllProvidersFailedError, LLMRouter
 from backend.app.pipeline.llm_schema import LLMExtraction
 from backend.tests.fakes import FakeLLM, recorded
@@ -80,14 +80,43 @@ def test_all_rate_limited_reports_shortest_retry() -> None:
     assert info.value.rate_limited is True and info.value.retry_after_s == 12
 
 
-def test_timed_out_provider_is_skipped_until_cooldown_ends() -> None:
+def test_provider_too_slow_for_images_is_skipped_for_image_calls_only() -> None:
     clock = Clock()
     slow = FakeLLM([GOOD], name="ollama", delay_s=1.0)
     router = LLMRouter([slow], 0.05, clock=clock)
+    image = [LLMImage("image/jpeg", b"x")]
     for _ in range(2):
         with pytest.raises(AllProvidersFailedError):
-            run(router)
-    assert len(slow.prompts) == 1
-    assert router.provider_status()["ollama"] is False
-    clock.now += 301
+            asyncio.run(router.generate(lambda p: "x", image, LLMExtraction))
+    assert len(slow.prompts) == 1                                   # second image call skipped
+    slow.delay_s = 0
+    assert asyncio.run(router.generate(lambda p: "x", [], LLMExtraction)).provider == "ollama"   # text still ok
     assert router.provider_status()["ollama"] is True
+    clock.now += 301
+    asyncio.run(router.generate(lambda p: "x", image, LLMExtraction))
+    assert len(slow.prompts) == 3
+
+
+def test_short_caller_budget_timeout_does_not_cool_down() -> None:
+    slow = FakeLLM([GOOD], name="ollama", delay_s=1.0)
+    router = LLMRouter([slow], 5)
+    with pytest.raises(AllProvidersFailedError):
+        asyncio.run(router.generate(lambda p: "x", [], LLMExtraction, timeout_s=0.05))
+    assert router.provider_status()["ollama"] is True
+
+
+def test_each_key_gets_main_then_fallback_model(monkeypatch: pytest.MonkeyPatch) -> None:
+    from backend.app.config import get_settings
+    from backend.app.llm.router import gemini_clients
+
+    monkeypatch.setenv("GEMINI_API_KEY", "k1")
+    monkeypatch.setenv("GEMINI_API_KEY_BACKUP", "k2")
+    monkeypatch.setenv("GEMINI_MODEL", "main-model")
+    monkeypatch.setenv("GEMINI_FALLBACK_MODEL", "lite-model")
+    get_settings.cache_clear()
+    assert [(c.label, c.model) for c in gemini_clients()] == [
+        ("gemini:primary:main-model", "main-model"), ("gemini:primary:lite-model", "lite-model"),
+        ("gemini:backup:main-model", "main-model"), ("gemini:backup:lite-model", "lite-model")]
+    monkeypatch.setenv("GEMINI_FALLBACK_MODEL", "main-model")
+    get_settings.cache_clear()
+    assert len(gemini_clients()) == 2

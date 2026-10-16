@@ -238,19 +238,23 @@ class PanelExtraction:
 
 
 class _PanelAligner:
-    def __init__(self, panel: LLMPanel, image_id: str, index: TokenIndex) -> None:
+    def __init__(self, panel: LLMPanel, image_id: str, index: TokenIndex, citations: Sequence[str]) -> None:
         self.panel = panel
         self.image_id = image_id
         self.index = index
+        self.citations = citations          # the model's word number n -> token id
         self.counts: dict[EvidenceStatus, int] = {"verified": 0, "approximate": 0, "unverified": 0}
 
-    def align(self, text: str, token_ids: Sequence[str], box_2d: Box2d | None) -> Alignment:
-        alignment = align_span(text, token_ids, box_2d, self.image_id, self.index)
+    def ids(self, numbers: Sequence[int]) -> list[str]:
+        return [self.citations[n] for n in numbers if 0 <= n < len(self.citations)]
+
+    def align(self, text: str, numbers: Sequence[int], box_2d: Box2d | None) -> Alignment:
+        alignment = align_span(text, self.ids(numbers), box_2d, self.image_id, self.index)
         self.counts[alignment.status] += 1
         return alignment
 
     def section(self, section: LLMSection, extra_issues: Iterable[str] = (), readable: bool = True) -> SectionStatus:
-        tokens = _cited_tokens(section.unreadable_token_ids, self.image_id, self.index)
+        tokens = _cited_tokens(self.ids(section.unreadable_token_ids), self.image_id, self.index)
         regions = line_evidence(tokens, 0.0) if tokens else []
         for item in section.unreadable_boxes:
             box = box_from_2d(item.box_2d)
@@ -376,8 +380,8 @@ class _PanelAligner:
         )
 
 
-def align_panel(panel: LLMPanel, image_id: str, index: TokenIndex) -> PanelExtraction:
-    return _PanelAligner(panel, image_id, index).build()
+def align_panel(panel: LLMPanel, image_id: str, index: TokenIndex, citations: Sequence[str]) -> PanelExtraction:
+    return _PanelAligner(panel, image_id, index, citations).build()
 
 
 def panel_image_ids(panels: Sequence[LLMPanel], image_ids: Sequence[str]) -> list[str]:

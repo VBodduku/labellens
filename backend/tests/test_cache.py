@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from backend.app import fixtures
+from backend.tests import fixture_data as fixtures
 from backend.app.cache import ExtractionCache, cache_key
 
 
