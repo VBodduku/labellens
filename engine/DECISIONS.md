@@ -25,3 +25,15 @@
 - Inconsistent duplicate nutrition readings stay unusable; later duplicates cannot silently restore a conflicting value.
 - Start the evaluation harness with offline saved responses; exclude the template and refuse empty-data accuracy reports. Backend upload mode is Phase 2.
 - Evaluation uses one-to-one ingredient matching, a documented 2%/0.05-unit nutrient tolerance, exact normalized statement sets and unknown for missing profile reports; undefined rates are null.
+
+# Phase 2 decisions
+
+- Single-field correction hypotheses identify suspect fields and never rewrite label values; keep every plausible field when the diagnosis is ambiguous, otherwise mark all four core fields.
+- Compute deviation relative to declared energy; zero/zero is consistent, and positive macros with zero energy are inconsistent with an undefined (null) percentage.
+- The frozen contract represents polyols with key other and raw_label Polyols/Sugar alcohols; an internal polyols_g key participates in the formula and is not added to the public nutrient vocabulary.
+- Subtract fibre only when the carbohydrate row explicitly says including/includes fibre; the default does not subtract fibre.
+- Sanity checks flag both sides of impossible part/whole relationships because the label alone cannot identify which side was misread.
+- A printed serving value differs by more than 10% of its expected value before it becomes suspect; a value exactly on the boundary is accepted.
+- Derive servings per pack only from positive finite compatible pack/serving sizes when the explicit count is missing; never infer density.
+- A concrete NutritionTable supplies readable signals even if stale section metadata says not_found, matching the ingredient-rule principle that positive evidence survives incomplete sections.
+- A green mark inconsistency note applies to every affected restriction, including an egg allergy, rather than only diet-category matches.

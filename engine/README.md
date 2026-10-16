@@ -1,4 +1,4 @@
-# LabelLens engine — Phase 1
+# LabelLens engine — Phase 2
 
 Pure deterministic Python, with the five functions specified in
 `shared/engine_interface.py`. Run Python from the repository root. No network or
@@ -21,7 +21,7 @@ in a commit. `engine/.gitignore` excludes these.
 ## API
 
 - `evaluate(extraction, profiles, interpretations=None)` returns `EngineOutput`.
-- `analyze_nutrition(extraction)` returns basic readable-value normalization or None.
+- `analyze_nutrition(extraction)` returns normalized nutrition and a deterministic consistency check, or None.
 - `explain_term(term, lang="en")` performs KB lookup; unknown/multi-term input returns None.
 - `restriction_catalog()` returns fresh contract objects for all 29 restrictions.
 - `category_vocabulary()` returns a fresh copy of the frozen category vocabulary.
@@ -59,18 +59,21 @@ onion, garlic and root-vegetable restrictions are not resolved by green marks.
 Untrusted model interpretations use the fixed vocabulary and valid 0..1 confidence;
 their signals never exceed possible and cannot reclassify a resolved KB ingredient.
 
-## Phase boundary
+## Nutrition and suspect readings
 
-Ingredient, ambiguity, statement, completeness, precedence and confidence rules are
-implemented and tested. Basic sugar/threshold comparisons, unit conversions,
-per-serving to per-100, and per-pack calculations also work, so the public API and
-fixture verdicts are usable immediately.
+Normalize per-serving/per-100/per-pack values only across compatible mass or volume
+bases. Salt is converted to sodium and kJ to kcal. Printed values are preserved.
+The engine checks energy against 4*protein + 4*carbohydrate + 9*fat, including the
+specified 2.4*polyols term when an `other` row is labelled Polyols. Fibre is subtracted
+only when the carbohydrate row explicitly says it includes fibre.
 
-**Nutrition consistency diagnosis is not implemented in Phase 1.** The analysis
-returns insufficient_data rather than asserting consistency. Macro-energy checks,
-OCR correction hypotheses, cross-basis sanity checks, and full suspect-value
-production are Phase 2 work. The rule can consume suspect_keys when that analysis
-is added. Do not claim full master-spec nutrition acceptance yet.
+Energy deviation up to 15% is accepted. Larger deviations trigger single-field
+hypotheses (x10, /10, missing decimals, 0/8, 1/7 and 5/6 substitutions). All plausible
+fields that can bring the mismatch within 5% are suspect; if none can, all four
+core fields are suspect. No hypothesis changes an extracted value. Sugar/carbohydrate,
+saturated/total-fat, added/total-sugar, duplicate-value and serving-ratio checks also
+feed suspect_keys. Thresholds skip suspect fields. Missing macros produce
+insufficient_data, with any independently detected sanity suspects retained.
 
 ## Extending the KB
 
