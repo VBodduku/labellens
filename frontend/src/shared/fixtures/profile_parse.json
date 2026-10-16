@@ -1,0 +1,71 @@
+{
+  "profiles": [
+    {
+      "profile_id": "p_new_1",
+      "name": "Aarav",
+      "color": null,
+      "restrictions": [
+        {
+          "id": "r_new_1",
+          "kind": "allergy",
+          "key": "peanut",
+          "label": "Peanut allergy",
+          "severity": "strict",
+          "threshold": null,
+          "source_text": "allergic to peanuts"
+        },
+        {
+          "id": "r_new_2",
+          "kind": "allergy",
+          "key": "tree_nut",
+          "label": "Tree nut allergy",
+          "severity": "strict",
+          "threshold": null,
+          "source_text": "and cashews"
+        }
+      ]
+    },
+    {
+      "profile_id": "p_new_2",
+      "name": "Father",
+      "color": null,
+      "restrictions": [
+        {
+          "id": "r_new_3",
+          "kind": "health_limit",
+          "key": "diabetes_sugar",
+          "label": "Diabetic: limit sugar",
+          "severity": "strict",
+          "threshold": {
+            "nutrient": "total_sugars_g",
+            "max_value": 22.5,
+            "basis": "per_100g",
+            "source_note": "UK FSA front-of-pack 'high' threshold"
+          },
+          "source_text": "my father is diabetic"
+        }
+      ]
+    },
+    {
+      "profile_id": "p_new_3",
+      "name": "Me",
+      "color": null,
+      "restrictions": [
+        {
+          "id": "r_new_4",
+          "kind": "diet",
+          "key": "jain",
+          "label": "Jain",
+          "severity": "strict",
+          "threshold": null,
+          "source_text": "I am Jain"
+        }
+      ]
+    }
+  ],
+  "unparsed": [],
+  "warnings": [
+    "Cashew was mapped to 'Tree nut allergy'. Please confirm."
+  ],
+  "needs_confirmation": true
+}

@@ -1,0 +1,12 @@
+{
+  "term": "INS 322",
+  "canonical_id": "ins_322",
+  "display_name": "Lecithin (INS 322)",
+  "description": "An emulsifier that keeps fats and water mixed. Usually made from soy or sunflower.",
+  "origin": "varies",
+  "categories": [
+    "soy"
+  ],
+  "source": "kb",
+  "caution": "If the source is soy, it matters for soy allergies. This label says [Soy]."
+}

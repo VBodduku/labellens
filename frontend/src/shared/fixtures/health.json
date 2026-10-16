@@ -1,0 +1,9 @@
+{
+  "status": "ok",
+  "providers": {
+    "gemini": true,
+    "ollama": true
+  },
+  "engine_mode": "stub",
+  "contract_version": "1.0.0"
+}

@@ -1,0 +1,87 @@
+[
+  {
+    "profile_id": "p_aarav",
+    "name": "Aarav",
+    "color": "#ff7a59",
+    "restrictions": [
+      {
+        "id": "r_aarav_peanut",
+        "kind": "allergy",
+        "key": "peanut",
+        "label": "Peanut allergy",
+        "severity": "strict",
+        "threshold": null,
+        "source_text": null
+      },
+      {
+        "id": "r_aarav_treenut",
+        "kind": "allergy",
+        "key": "tree_nut",
+        "label": "Tree nut allergy",
+        "severity": "strict",
+        "threshold": null,
+        "source_text": null
+      }
+    ]
+  },
+  {
+    "profile_id": "p_thatha",
+    "name": "Thatha",
+    "color": "#7c9cff",
+    "restrictions": [
+      {
+        "id": "r_thatha_sugar",
+        "kind": "health_limit",
+        "key": "diabetes_sugar",
+        "label": "Diabetic: limit sugar",
+        "severity": "strict",
+        "threshold": {
+          "nutrient": "total_sugars_g",
+          "max_value": 22.5,
+          "basis": "per_100g",
+          "source_note": "UK FSA front-of-pack 'high' threshold"
+        },
+        "source_text": null
+      },
+      {
+        "id": "r_thatha_sodium",
+        "kind": "health_limit",
+        "key": "low_sodium",
+        "label": "Low sodium (BP)",
+        "severity": "strict",
+        "threshold": {
+          "nutrient": "sodium_mg",
+          "max_value": 600.0,
+          "basis": "per_100g",
+          "source_note": "UK FSA front-of-pack 'high' threshold"
+        },
+        "source_text": null
+      }
+    ]
+  },
+  {
+    "profile_id": "p_lakshmi",
+    "name": "Lakshmi",
+    "color": "#5fd3a5",
+    "restrictions": [
+      {
+        "id": "r_lakshmi_jain",
+        "kind": "diet",
+        "key": "jain",
+        "label": "Jain",
+        "severity": "strict",
+        "threshold": null,
+        "source_text": null
+      },
+      {
+        "id": "r_lakshmi_sesame",
+        "kind": "allergy",
+        "key": "sesame",
+        "label": "Sesame allergy",
+        "severity": "strict",
+        "threshold": null,
+        "source_text": null
+      }
+    ]
+  }
+]
