@@ -227,7 +227,7 @@ excludes import, JSON parsing, HTTP, OCR, models and browser work.
 
 No real extraction is currently available, so that target is **unmeasured**.
 The explicit fixture-only check (`python -m engine.eval.benchmark --fixture`) measured
-**5.28 ms median, 5.87 ms p95, 6.26 ms maximum** for 11 ingredient nodes and eight
+**5.34 ms median, 5.65 ms p95, 6.10 ms maximum** for 11 ingredient nodes and eight
 profiles on macOS arm64 / Python 3.13.9. Raw measurements and method are in
 `eval/performance.json`. A fixture timing does not satisfy the largest-real-label check.
 
@@ -259,6 +259,13 @@ profiles on macOS arm64 / Python 3.13.9. Raw measurements and method are in
   from both panels and independently readable children under an unreadable parent.
 - No verdict rules or KB entries changed during Phase 4. The public API remains
   deterministic and offline; clock/network access exists only in evaluation tooling.
+
+Follow-up review fixed two dangerous matcher defects: list splitting now preserves
+original offsets through Unicode expansion, and fuzzy repair cannot discard an
+unrelated exact allergen. Interrupted capture batches are marked pending and cannot
+be scored as complete. These repairs add no verdict rules. The expanded suite has
+590 passing tests; [final verification](eval/FINAL_VERIFICATION.md) records the
+adversarial cases and remaining real-data validation limits.
 
 See [Phase 4 measurement status](eval/PHASE4_STATUS.md) for current blockers and
 what can honestly go into the pitch. This package reports label evidence and its

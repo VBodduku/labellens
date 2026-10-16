@@ -141,3 +141,39 @@ def test_invalid_image_size_rejected(tmp_path, size):
     (tmp_path / "img_0.jpg").write_bytes(b"x" * size)
     with pytest.raises(ValueError, match="400 KB"):
         live.images_for_case(tmp_path)
+
+
+def test_interrupted_recapture_cannot_score_old_responses_as_complete(
+    tmp_path, monkeypatch
+):
+    from engine.eval.run_eval import Truth, run
+
+    packet = case(tmp_path)
+    (packet.folder / "truth.json").write_text(
+        Truth(
+            product="Simulated transport interruption, not a real accuracy measurement",
+            ingredients=[],
+            ingredients_complete_in_photos=False,
+            allergen_statements={},
+            veg_mark="not_found",
+            nutrition_per_100={},
+            expected=[],
+        ).model_dump_json()
+    )
+    output = tmp_path / "responses"
+    output.mkdir()
+    old_response = scan().model_dump_json()
+    (output / f"{packet.folder.name}.json").write_text(old_response)
+    (output / "capture_manifest.json").write_text(json.dumps(dict(failed=[])))
+    fake_http(monkeypatch)
+
+    def interrupt(*args):
+        raise KeyboardInterrupt("Simulate stopping a slow capture")
+
+    monkeypatch.setattr(live, "multipart", interrupt)
+    with pytest.raises(KeyboardInterrupt):
+        live.capture("http://localhost:8000", [packet], output, profiles())
+    with pytest.raises(ValueError, match="stale and fresh"):
+        run(tmp_path, output, tmp_path / "reports")
+    assert not (tmp_path / "reports").exists()
+    assert (output / f"{packet.folder.name}.json").read_text() == old_response

@@ -1,6 +1,6 @@
 # Synthetic pipeline check — NOT real-packet accuracy
 
-Generated: 2026-10-16T12:42:18Z. Cases: 2; real cases: 0.
+Generated: 2026-10-16T13:42:13Z. Cases: 2; real cases: 0.
 
 **No real-packet headline metrics are available.** These fixture-derived software checks cannot substantiate a pitch accuracy claim. About-page metrics remain pending, with zero real packets and null rates.
 
@@ -91,5 +91,5 @@ Comparison rates above are fractions (0–1); latency is milliseconds. Both runs
 - Error causes are unreviewed until explicitly classified with an explanation; engine-owned classifications require a regression-test reference.
 - The local engine fingerprint identifies this checkout, not the code loaded by a separate backend process. Restart the backend after engine changes; health only confirms ENGINE_MODE=real.
 
-Source mode: reevaluated. Local engine fingerprint: a0456448ccd6bc672c869c7945da6007e760900f99685249cdc8a85ab3f3d922.
+Source mode: reevaluated. Local engine fingerprint: 14422e39febb17a4b087396f3cc9ae86c5c7305791849c55d016d515c8eccbaf.
 Truth/photo fingerprint: 6c18435c632ae042cc9e7c46c9603b23eea099488cdeb692e733f15c802df906. Profiles fingerprint: cf3f8a7b6df71d2bcb965b447a5cebd098e311493ed5588dda4791727063653e.

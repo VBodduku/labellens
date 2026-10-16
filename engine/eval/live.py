@@ -139,6 +139,28 @@ def capture(
     responses.mkdir(parents=True, exist_ok=True)
     results: list[dict[str, object]] = []
     failures: list[str] = []
+
+    def write_manifest(pending: list[str]) -> None:
+        (responses / "capture_manifest.json").write_text(
+            json.dumps(
+                dict(
+                    backend=backend,
+                    engine_mode=health.engine_mode,
+                    profiles=[profile.model_dump(mode="json") for profile in profiles],
+                    cases=results,
+                    failed=failures,
+                    pending=pending,
+                ),
+                indent=2,
+                ensure_ascii=False,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+    # Invalidate a previous successful batch before writing any new responses.
+    # A hard interruption must not leave its old manifest advertising completion.
+    write_manifest([case.folder.name for case, _ in inputs])
     for case, images in inputs:
         case_id = case.folder.name
         start = perf_counter()
@@ -170,21 +192,7 @@ def capture(
         except (CaptureError, ValueError, OSError) as error:
             failures.append(case_id)
             results.append(dict(packet_id=case_id, status="failed", error=str(error)))
-    (responses / "capture_manifest.json").write_text(
-        json.dumps(
-            dict(
-                backend=backend,
-                engine_mode=health.engine_mode,
-                profiles=[profile.model_dump(mode="json") for profile in profiles],
-                cases=results,
-                failed=failures,
-            ),
-            indent=2,
-            ensure_ascii=False,
-        )
-        + "\n",
-        encoding="utf-8",
-    )
+    write_manifest([])
     if failures:
         raise CaptureError(
             f"Capture failed for {', '.join(failures)}. No accuracy report generated; inspect capture_manifest.json and retry the complete batch"

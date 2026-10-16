@@ -70,3 +70,7 @@
 - About metrics retain Part 1's existing status/metrics envelope. Only real case measurements populate numeric rates; synthetic runs publish pending, zero real packets and null rates. generated_at is UTC artifact-generation time, not evidence of a live scan.
 - Request latency comes from capture_manifest request_ms, with cache hits disclosed. Extraction-only duration_ms and engine replay cannot establish request latency; leave it null if no HTTP timings were captured.
 - Performance benchmark explicitly distinguishes largest saved real extraction from opt-in fixture timing; fixture timing cannot satisfy the real-label acceptance target. Largest is measured by ingredient-name characters including children; report warm median/p95/max and environment.
+
+- Freeze follow-up: split ingredient lists using original character offsets while normalizing delimiter candidates; whole-string NFKC/lowercase offsets can truncate a following allergen. Exact label text remains intact.
+- Freeze follow-up: a full-fragment fuzzy compound repair may replace exact spans only if those spans are part of the candidate compound. It must not discard an unrelated exact allergen such as egg after a long misspelled additive name.
+- Mark a capture batch pending before writing any responses. Interrupted recaptures must block offline scoring even if a previous successful manifest and old responses exist.

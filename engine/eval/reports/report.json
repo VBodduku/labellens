@@ -175,7 +175,7 @@
       "synthetic_imperfect"
     ],
     "source_mode": "reevaluated",
-    "local_engine_digest": "a0456448ccd6bc672c869c7945da6007e760900f99685249cdc8a85ab3f3d922"
+    "local_engine_digest": "14422e39febb17a4b087396f3cc9ae86c5c7305791849c55d016d515c8eccbaf"
   },
   "errors": [
     {
@@ -269,5 +269,5 @@
       "change": null
     }
   },
-  "generated_at": "2026-10-16T12:42:18Z"
+  "generated_at": "2026-10-16T13:42:13Z"
 }

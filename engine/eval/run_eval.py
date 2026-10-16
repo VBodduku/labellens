@@ -244,9 +244,9 @@ def run(
     cache_hits: set[str] = set()
     if manifest.exists():
         capture_metadata = json.loads(manifest.read_text(encoding="utf-8"))
-        if capture_metadata.get("failed"):
+        if capture_metadata.get("failed") or capture_metadata.get("pending"):
             raise ValueError(
-                "Saved capture manifest has failed cases; do not score a mixture of stale and fresh responses"
+                "Saved capture manifest has failed or incomplete cases; do not score a mixture of stale and fresh responses"
             )
         captured_profiles = capture_metadata.get("profiles")
         if (

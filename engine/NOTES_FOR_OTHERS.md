@@ -71,3 +71,17 @@ duplicate evidence from both panels and still detect a readable child when a par
 name is empty/unreadable. A profile with no restrictions returns no checks and
 overall not_listed as the empty aggregation identity; show "no restrictions configured"
 in that UI case rather than presenting it as a substantive label assessment.
+
+## Freeze follow-up verification
+
+Two matcher defects were reproduced and fixed without adding verdict rules or KB
+entries: Unicode expansion could shift list-split offsets and truncate the next
+allergen; full-fragment fuzzy repair could replace an unrelated exact egg match.
+Six adversarial examples changed from erroneous not_listed to conflict. These are
+independently constructed regression cases, not observed real packet failures.
+Exact evidence text remains unchanged and compound protection still works.
+
+Evaluation capture now writes a pending manifest before any response is replaced;
+an interrupted recapture cannot score leftover responses as a completed batch.
+The scorer rejects nonempty pending/failed lists. No HTTP/shared-contract change
+is needed. Details and current checks are in engine/eval/FINAL_VERIFICATION.md.

@@ -18,7 +18,7 @@ No real responses were captured and no real headline metric can be reported.
 | Real dangerous-miss / evidence / unknown rates | Unmeasured |
 | Real backend latency | Unmeasured |
 | evaluate() on largest real label (<50 ms target) | Unmeasured |
-| Unit/integration tests | 575 passing, including shared fixture scenario |
+| Unit/integration tests | 590 passing, including shared fixture scenario and follow-up regressions |
 | KB entries / catalog restrictions | 260 / 29 |
 | New verdict rules / KB edits in this phase | None |
 
@@ -39,7 +39,7 @@ These numbers cannot substantiate real-packet accuracy in the pitch.
 
 The explicit fixture-only performance check used 11 ingredient nodes / 200 ingredient
 characters, eight profiles/eight restrictions, 10 warmups and 300 timed calls:
-median 5.2797 ms, p95 5.8692 ms, maximum 6.2598 ms on macOS arm64 / Python 3.13.9.
+median 5.3447 ms, p95 5.6530 ms, maximum 6.0957 ms on macOS arm64 / Python 3.13.9.
 `performance.json` records the method and environment with `measurement_kind=fixture`
 and `real_target_met=null`. This does not satisfy the largest-real-label target.
 
