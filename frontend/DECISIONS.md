@@ -18,3 +18,12 @@
 - Scroll-linked values use function transforms (`useScrollRange`): Motion's accelerated scroll timelines did not clamp after the last keyframe, so chips faded back out.
 - Lenis runs on the landing page only this phase (spec allows About too, but the phase rule keeps Lenis inside the landing chunk).
 - Scan route is a photo-upload flow in Phase 1 so loading/error paths are exercisable; the live camera replaces it in Phase 2.
+- Phase 2: `react-zoom-pan-pinch` pinned to 3.7 (v4 targets React 19 and warns about `ref` under React 18); same API except `onTransformed`.
+- The zoomable content is exactly the viewer's size with the fitted photo centred inside it, so `focusTransform` (lib/boxMath.ts) is plain arithmetic; evidence outlines divide their stroke by the zoom because `non-scaling-stroke` ignores the parent's CSS scale.
+- Mobile result layout keeps the photo viewer sticky under the header (collapsible), so tapping any chip shows the zoom without scrolling.
+- Auto-capture re-arms only after ≥ 800 ms of failing frames (a real move to the next panel); one jittery frame while holding still never triggers a duplicate panel.
+- Live coaching reports motion as `quality.blurry` ("Hold steady") — the contract's `QualityIssue` has no motion value and the message fits.
+- Evidence with a box but no text (an unreadable region) shows a "Hard-to-read area on the photo" chip, so every unknown flag can still be traced to the photo; unknown verdicts with a located region get a "Retake this area" button inline.
+- Template summary (when `summary_lang ≠ lang`) = `{name} — {overall}. {first worst message}`, built only from fixed message keys.
+- The `?debug=1` calibration overlay is developer-only and deliberately untranslated.
+- Phone testing uses `vite preview` (production build) behind a cloudflared quick tunnel; `preview` shares the dev server's host/allowedHosts/proxy settings.

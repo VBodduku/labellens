@@ -6,6 +6,15 @@ import { VitePWA } from "vite-plugin-pwa";
 
 const ENV_DIR = "..";
 
+/** Dev and preview servers: reachable on the LAN, through a cloudflared tunnel, with /api proxied to the backend. */
+const network = {
+  host: true,
+  allowedHosts: [".trycloudflare.com"],
+  proxy: {
+    "/api": { target: "http://localhost:8000", changeOrigin: true },
+  },
+};
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, ENV_DIR, "VITE_");
   const plugins: PluginOption[] = [
@@ -42,13 +51,8 @@ export default defineConfig(({ mode }) => {
   return {
     envDir: ENV_DIR,
     plugins,
-    server: {
-      host: true,
-      allowedHosts: [".trycloudflare.com"],
-      proxy: {
-        "/api": { target: "http://localhost:8000", changeOrigin: true },
-      },
-    },
+    server: { ...network },
+    preview: { ...network },
     build: {
       manifest: true,
     },
