@@ -2600,7 +2600,7 @@
           "confidence": 1.0
         }
       ],
-      "summary": "Not suitable for Aarav: it contains peanuts, and the label warns it may contain tree nuts.",
+      "summary": "Conflict for Aarav: it contains peanuts, and the label warns it may contain tree nuts.",
       "summary_lang": "en"
     },
     {
@@ -2733,7 +2733,7 @@
           "confidence": 1.0
         }
       ],
-      "summary": "Too much sugar for Thatha (38 g per 100 g, limit 22.5 g). Sodium couldn't be read.",
+      "summary": "Conflict for Thatha: 38 g sugar per 100 g, above the 22.5 g limit. Sodium couldn't be read.",
       "summary_lang": "en"
     },
     {
@@ -2821,7 +2821,7 @@
           "confidence": 1.0
         }
       ],
-      "summary": "Probably fine for Lakshmi's sesame allergy. For Jain rules, 'natural flavours' doesn't say what it is made from.",
+      "summary": "Check this for Lakshmi: sesame is not listed, but for Jain rules 'natural flavours' doesn't say what it is made from.",
       "summary_lang": "en"
     }
   ],

@@ -3,7 +3,7 @@ LabelLens shared contract (Python / Pydantic v2).
 
 FROZEN after the initial commit on `main`. All three parts build against this file.
 
-Change protocol (see docs/SETUP_AND_GIT.md):
+Change protocol:
   * Only ADD optional fields. Never rename, remove, or change the type of an existing field.
   * Any change is made on `main` in ONE commit that updates BOTH this file and shared/contract.ts,
     bumps CONTRACT_VERSION's patch number, and is announced to the whole team.

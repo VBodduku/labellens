@@ -14,9 +14,9 @@ LANGUAGE_NAMES: dict[Lang, str] = {"en": "English", "hi": "Hindi", "te": "Telugu
 # REVIEW: native speaker (hi, te)
 STATE_WORDS: dict[Lang, dict[VerdictState, str]] = {
     "en": {"conflict": "Conflict", "possible": "Check this", "not_listed": "Not listed", "unknown": "Can't determine"},
-    "hi": {"conflict": "टकराव", "possible": "इसे जाँचें", "not_listed": "सूची में नहीं", "unknown": "तय नहीं हो सका"},
-    "te": {"conflict": "విరుద్ధం", "possible": "దీన్ని తనిఖీ చేయండి", "not_listed": "జాబితాలో లేదు",
-           "unknown": "నిర్ణయించలేము"},
+    "hi": {"conflict": "टकराव", "possible": "इसे जाँचें", "not_listed": "सूची में नहीं", "unknown": "तय नहीं हो सकता"},
+    "te": {"conflict": "విరుద్ధం", "possible": "ఇది తనిఖీ చేయండి", "not_listed": "జాబితాలో లేదు",
+           "unknown": "నిర్ణయించలేం"},
 }
 
 # REVIEW: native speaker (hi, te)

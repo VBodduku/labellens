@@ -2,7 +2,7 @@
  * LabelLens shared contract (TypeScript mirror of shared/contract.py).
  *
  * FROZEN after the initial commit on `main`. If you change one file you MUST change the other in the
- * same commit (see docs/SETUP_AND_GIT.md, "Contract change protocol"). Only ADD optional fields.
+ * same commit. Only ADD optional fields.
  *
  * Conventions: boxes are normalised 0..1 (top-left origin); image ids are "img_0".."img_2" in upload
  * order; languages are "en" | "hi" | "te"; UI text for verdicts comes from message_key + message_params

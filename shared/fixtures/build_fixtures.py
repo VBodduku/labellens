@@ -438,9 +438,9 @@ reports = [
 ]
 for rep in reports:
     rep.summary = {
-        "p_aarav": "Not suitable for Aarav: it contains peanuts, and the label warns it may contain tree nuts.",
-        "p_thatha": "Too much sugar for Thatha (38 g per 100 g, limit 22.5 g). Sodium couldn't be read.",
-        "p_lakshmi": "Probably fine for Lakshmi's sesame allergy. For Jain rules, 'natural flavours' "
+        "p_aarav": "Conflict for Aarav: it contains peanuts, and the label warns it may contain tree nuts.",
+        "p_thatha": "Conflict for Thatha: 38 g sugar per 100 g, above the 22.5 g limit. Sodium couldn't be read.",
+        "p_lakshmi": "Check this for Lakshmi: sesame is not listed, but for Jain rules 'natural flavours' "
                      "doesn't say what it is made from.",
     }[rep.profile_id]
     rep.summary_lang = "en"
