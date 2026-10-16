@@ -30,6 +30,32 @@ describe("scan store recheck", () => {
     expect(useScanStore.getState().result?.lang).toBe("te");
   });
 
+  it("ignores a recheck that was superseded by a newer one (no status flip, no loop)", async () => {
+    let finishSecond: () => void = () => undefined;
+    recheck
+      .mockImplementationOnce(
+        (_request: RecheckRequest, options: { signal: AbortSignal }) =>
+          new Promise((_resolve, reject) => {
+            options.signal.addEventListener("abort", () => reject(new ApiError("ABORTED", "replaced")));
+          }),
+      )
+      .mockImplementationOnce(
+        (request: RecheckRequest) =>
+          new Promise((resolve) => {
+            finishSecond = () => resolve({ ...fixtureScanResult, lang: request.lang });
+          }),
+      );
+    const first = useScanStore.getState().recheck("te");
+    const second = useScanStore.getState().recheck("te");
+    await first;
+    // The aborted first request must not report "done" while the second is still running.
+    expect(useScanStore.getState().status).toBe("rechecking");
+    finishSecond();
+    await second;
+    expect(useScanStore.getState()).toMatchObject({ status: "done", recheckError: null });
+    expect(useScanStore.getState().result?.lang).toBe("te");
+  });
+
   it("keeps the current result on screen when a recheck fails", async () => {
     recheck.mockRejectedValue(new ApiError("NETWORK", "offline"));
     await useScanStore.getState().recheck("hi");

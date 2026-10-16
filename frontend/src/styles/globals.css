@@ -37,6 +37,19 @@
     line-height: 1.55;
   }
 
+  /* Result page: the header, the pinned photo viewer (mobile) and the ask bar cover parts of the screen, so
+     anything scrolled into view (keyboard focus, find-in-page) lands in the visible gap between them. */
+  html:has([data-page="result"]) {
+    scroll-padding-top: calc(4rem + 38svh + 4rem);
+    scroll-padding-bottom: 5.5rem;
+  }
+
+  @media (min-width: 1024px) {
+    html:has([data-page="result"]) {
+      scroll-padding-top: 5rem;
+    }
+  }
+
   body {
     min-height: 100dvh;
     background: var(--bg);

@@ -108,7 +108,7 @@ function ResultView({ result, panels }: { result: ScanResult; panels: Panel[] })
   ];
 
   return (
-    <div className="page-gutter mx-auto max-w-page pb-32 pt-4 lg:pt-8">
+    <div data-page="result" className="page-gutter mx-auto max-w-page pb-32 pt-4 lg:pt-8">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <h1 className="text-2xl font-bold sm:text-3xl">{result.extraction.product_name ?? t("result.unnamedProduct")}</h1>
         {isDemo && <span className="rounded-chip bg-surface-2 px-3 py-1 text-xs font-semibold text-beam">{t("result.demoBadge")}</span>}

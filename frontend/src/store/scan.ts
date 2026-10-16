@@ -73,6 +73,11 @@ function startRequest(): AbortSignal {
   return inflight.signal;
 }
 
+/** A request replaced by a newer one must not touch the store (the newer request owns the status). */
+function superseded(signal: AbortSignal): boolean {
+  return inflight?.signal !== signal && inflight !== null;
+}
+
 async function persist(state: ScanState): Promise<void> {
   if (!state.result) return;
   const stored: StoredScan = {
@@ -90,7 +95,8 @@ async function persist(state: ScanState): Promise<void> {
 }
 
 export const useScanStore = create<ScanState>()((set, get) => {
-  function failWith(error: unknown): void {
+  function failWith(error: unknown, signal: AbortSignal): void {
+    if (superseded(signal)) return;
     if (isApiError(error) && error.code === "ABORTED") {
       set({ status: get().result ? "done" : "idle", error: null });
       return;
@@ -151,10 +157,11 @@ export const useScanStore = create<ScanState>()((set, get) => {
           { images: panels.map((panel) => panel.file), profiles, lang, panelHints: panels.map((panel) => panel.hint) },
           { signal },
         );
+        if (superseded(signal)) return;
         set({ result, scanProfiles: profiles, status: "done" });
         await persist(get());
       } catch (error) {
-        failWith(error);
+        failWith(error, signal);
       }
     },
 
@@ -172,9 +179,11 @@ export const useScanStore = create<ScanState>()((set, get) => {
       try {
         const extraction = applyCorrections({ ...result.extraction, user_corrections: [] }, corrections);
         const next = await api.recheck({ extraction, profiles: scanProfiles, lang }, { signal });
+        if (superseded(signal)) return;
         set({ result: next, scanProfiles, status: "done", changedVerdicts: changedVerdicts(result, next) });
         await persist(get());
       } catch (error) {
+        if (superseded(signal)) return;
         if (isApiError(error) && error.code === "ABORTED") {
           set({ status: "done" });
           return;

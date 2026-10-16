@@ -6,17 +6,24 @@ import { VitePWA } from "vite-plugin-pwa";
 
 const ENV_DIR = "..";
 
-/** Dev and preview servers: reachable on the LAN, through a cloudflared tunnel, with /api proxied to the backend. */
-const network = {
-  host: true,
-  allowedHosts: [".trycloudflare.com"],
-  proxy: {
-    "/api": { target: "http://localhost:8000", changeOrigin: true },
-  },
-};
+/**
+ * Dev and preview servers: reachable on the LAN and through a cloudflared tunnel, with /api proxied to the
+ * backend (API_PROXY_TARGET in ../.env, e.g. the integration Mac). The browser only ever calls same-origin
+ * /api, so the backend needs no CORS entry for phones or tunnels.
+ */
+function networkOptions(proxyTarget: string) {
+  return {
+    host: true,
+    allowedHosts: [".trycloudflare.com"],
+    proxy: {
+      "/api": { target: proxyTarget, changeOrigin: true },
+    },
+  };
+}
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, ENV_DIR, "VITE_");
+  const env = loadEnv(mode, ENV_DIR, "");
+  const network = networkOptions(env.API_PROXY_TARGET || "http://localhost:8000");
   const plugins: PluginOption[] = [
     react(),
     VitePWA({
