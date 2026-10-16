@@ -32,6 +32,8 @@ interface ScanState {
   result: ScanResult | null;
   /** Profiles the current result was computed for (the demo uses the fixture family). */
   scanProfiles: Profile[];
+  /** Profiles sent with the latest analyse() call — used to retry it and to count "checking for n members". */
+  attemptProfiles: Profile[];
   status: ScanStatus;
   error: ApiError | null;
   corrections: Correction[];
@@ -97,6 +99,7 @@ export const useScanStore = create<ScanState>()((set, get) => {
     panels: [],
     result: null,
     scanProfiles: [],
+    attemptProfiles: [],
     status: "idle",
     error: null,
     corrections: [],
@@ -138,7 +141,7 @@ export const useScanStore = create<ScanState>()((set, get) => {
     analyse: async ({ profiles, lang }) => {
       const { panels } = get();
       const signal = startRequest();
-      set({ status: "analysing", error: null, corrections: [], isDemo: false, changedVerdicts: [] });
+      set({ status: "analysing", error: null, corrections: [], isDemo: false, changedVerdicts: [], attemptProfiles: profiles });
       try {
         const result = await api.scan(
           { images: panels.map((panel) => panel.file), profiles, lang, panelHints: panels.map((panel) => panel.hint) },

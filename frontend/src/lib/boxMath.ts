@@ -76,3 +76,9 @@ export function cropStyle(box: Box, padding = 0.15): { backgroundSize: string; b
     backgroundPosition: `${positionX}% ${positionY}%`,
   };
 }
+
+/** `img_2` → 2: the backend names images by upload order, which is also the panel order. */
+export function imageIndex(imageId: string): number {
+  const index = Number(imageId.replace(/^img_/, ""));
+  return Number.isInteger(index) && index >= 0 ? index : 0;
+}

@@ -32,3 +32,15 @@ export function stateLabelKey(state: VerdictState, unknownKind?: UnknownKind | n
 export function resultLabelKey(result: Pick<RestrictionResult, "state" | "unknown_kind">): string {
   return stateLabelKey(result.state, result.unknown_kind);
 }
+
+const STATE_COLORS: Record<VerdictState, string> = {
+  conflict: "var(--conflict)",
+  possible: "var(--possible)",
+  not_listed: "var(--not-listed)",
+  unknown: "var(--unknown)",
+};
+
+/** CSS colour for a state's highlight; null (neutral evidence) uses the beam colour. */
+export function stateColor(state: VerdictState | null): string {
+  return state ? STATE_COLORS[state] : "var(--beam)";
+}

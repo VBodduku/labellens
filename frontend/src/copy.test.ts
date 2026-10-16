@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { dictionaries, LANGS } from "./i18n/resources";
 
-/** Product principle: never tell anyone a product is "safe", "healthy" or "guaranteed". */
-const FORBIDDEN = /\b(safe|safely|healthy|guaranteed?)\b/i;
+/** Product principle: never tell anyone a product is "safe", "healthy" or "guaranteed" (CSS `safe-area` is not wording). */
+const FORBIDDEN = /\b(safe|safely|healthy|guaranteed?)\b(?!-area)/i;
 
 const sources = import.meta.glob(["./**/*.{ts,tsx}", "!./**/*.test.{ts,tsx}", "!./shared/**"], {
   query: "?raw",

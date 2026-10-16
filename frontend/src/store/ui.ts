@@ -6,10 +6,13 @@ import type { Evidence, Lang, VerdictState } from "../shared/contract";
 
 export type ThemeChoice = "system" | "light" | "dark";
 
-/** Evidence the viewer should zoom to; `nonce` re-triggers the focus animation when the same chip is tapped again. */
+/**
+ * Evidence the viewer should zoom to. `state` colours the highlight (null = neutral, e.g. an ingredient);
+ * `nonce` re-triggers the focus animation when the same chip is tapped again.
+ */
 export interface FocusedEvidence {
   evidence: Evidence;
-  state: VerdictState;
+  state: VerdictState | null;
   nonce: number;
 }
 
@@ -25,7 +28,7 @@ interface UiState {
   setTheme: (theme: ThemeChoice) => void;
   cycleTheme: () => void;
   selectProfile: (profileId: string | null) => void;
-  focusEvidence: (evidence: Evidence, state: VerdictState) => void;
+  focusEvidence: (evidence: Evidence, state: VerdictState | null) => void;
   clearFocus: () => void;
   setVoiceRate: (rate: number) => void;
 }

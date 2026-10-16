@@ -1,7 +1,7 @@
 import { motion, useTransform, type MotionValue } from "motion/react";
 import { useTranslation } from "react-i18next";
 import { useMediaQuery } from "../../lib/useMediaQuery";
-import { stateLabelKey } from "../../lib/verdict";
+import { stateColor, stateLabelKey } from "../../lib/verdict";
 import type { Box } from "../../shared/contract";
 import { StateBadge } from "../verdict/StateBadge";
 import { HERO_CHIPS, type HeroChip } from "./heroChipData";
@@ -12,13 +12,6 @@ const FIRST_START = 0.06;
 const STAGGER = 0.15;
 const LIFT = 0.07;
 const REVEAL = 0.06;
-
-const STATE_COLOR: Record<HeroChip["state"], string> = {
-  conflict: "var(--conflict)",
-  possible: "var(--possible)",
-  not_listed: "var(--not-listed)",
-  unknown: "var(--unknown)",
-};
 
 function boxStyle(box: Box) {
   return {
@@ -90,7 +83,7 @@ function ChipStory({ chip, index, progress, stacked }: ChipStoryProps) {
             className="absolute -inset-[3px] rounded-[4px] shadow-[inset_0_0_0_1.5px_var(--beam),0_0_14px_-2px_var(--beam)]"
           />
           <motion.span
-            style={{ opacity: reveal, boxShadow: `inset 0 0 0 2px ${STATE_COLOR[chip.state]}, 0 0 18px -4px ${STATE_COLOR[chip.state]}` }}
+            style={{ opacity: reveal, boxShadow: `inset 0 0 0 2px ${stateColor(chip.state)}, 0 0 18px -4px ${stateColor(chip.state)}` }}
             className="absolute -inset-[3px] rounded-[4px]"
           />
         </span>
