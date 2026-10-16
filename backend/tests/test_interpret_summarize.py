@@ -68,12 +68,13 @@ def test_banned_word_matching_is_by_whole_word() -> None:
 
 def test_summaries_dropped_when_invalid_or_unknown_profile() -> None:
     answer = {"summaries": [
-        {"profile_id": "p_aarav", "summary": "Conflict: peanuts (22%) are listed in the ingredients."},
+        {"profile_id": "p_aarav", "summary": "విరుద్ధం: Peanuts (22%) పదార్థాల జాబితాలో ఉన్నాయి."},
         {"profile_id": "p_thatha", "summary": "Healthy enough for Thatha."},
-        {"profile_id": "p_ghost", "summary": "Conflict: nothing."}]}
+        {"profile_id": "p_lakshmi", "summary": "జాబితాలో లేదు: Natural Flavours."},     # wrong state word
+        {"profile_id": "p_ghost", "summary": "విరుద్ధం: nothing."}]}
     llm = FakeLLM(routes={SUMMARIZE: [json.dumps(answer)]})
     result = asyncio.run(summarize.summarize(REPORTS, PROFILES, "te", LLMRouter([llm], 5)))
-    assert result == {"p_aarav": "Conflict: peanuts (22%) are listed in the ingredients."}
+    assert result == {"p_aarav": "విరుద్ధం: Peanuts (22%) పదార్థాల జాబితాలో ఉన్నాయి."}
     prompt = llm.prompts[0]
     assert "Telugu" in prompt and "విరుద్ధం" in prompt and "profile_id p_thatha (Thatha)" in prompt
     reports = summarize.apply(REPORTS, result, "te")
@@ -83,3 +84,9 @@ def test_summaries_dropped_when_invalid_or_unknown_profile() -> None:
 def test_no_llm_means_no_summaries() -> None:
     llm = FakeLLM([ProviderUnavailableError("down")])
     assert asyncio.run(summarize.summarize(REPORTS, PROFILES, "en", LLMRouter([llm], 5))) == {}
+
+
+def test_summaries_are_never_taken_from_a_local_model() -> None:
+    local = FakeLLM(routes={SUMMARIZE: ['{"summaries": []}']}, name="ollama")
+    assert asyncio.run(summarize.summarize(REPORTS, PROFILES, "en", LLMRouter([local], 5))) == {}
+    assert local.prompts == []

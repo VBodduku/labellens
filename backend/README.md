@@ -15,6 +15,8 @@ cp .env.example .env                # ENGINE_MODE=stub until the engine is merge
 ## Scripts
 - `python -m backend.scripts.make_test_label [out.png]`: draws the fixture's OCR tokens onto a PNG at their boxes (default `.cache/test_label.png`).
 - `python -m backend.scripts.ocr_probe <photo>`: decode + quality + OCR timings and the first tokens for one photo.
+- `python -m backend.scripts.smoke_scan <photos_dir> [--url ...]`: scans every packet folder against a running backend and prints a table.
+- `python -m backend.scripts.record_fake_llm gemini|ollama`: records a real structuring response for the offline tests.
 
-## Status (Phase 1)
-All endpoints exist with contract types. `/api/scan` validates and decodes uploads, then returns the fixture. `/api/recheck` and `/api/catalog` use the engine adapter. `/api/ask`, `/api/profile/parse` and `/api/explain` return fixtures. `/api/health` is real. Image decoding, quality checks and word-level OCR are implemented and tested.
+## Status (Phase 3)
+Real pipeline with the real engine: OCR -> LLM structuring (Gemini -> Ollama -> OCR-only) -> evidence alignment -> panel merge -> self-verification -> engine -> term interpretation -> grounded summaries. `/api/ask` (tool-calling agent with guard and keyword fallback), `/api/profile/parse`, `/api/explain` and `/api/recheck` are real. See `DECISIONS.md` and `NOTES_FOR_OTHERS.md`.

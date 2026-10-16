@@ -11,6 +11,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from backend.app.llm.base import PROSE_PROVIDERS
 from backend.app.llm.router import AllProvidersFailedError, LLMRouter
 from backend.app.wording import ALL_BANNED, LANGUAGE_NAMES, STATE_WORDS, has_banned_word
 from shared.contract import Lang, Profile, ProfileReport, Restriction
@@ -28,8 +29,10 @@ class LLMSummaries(BaseModel):
     summaries: list[LLMSummary]
 
 
-def valid_summary(text: str) -> bool:
-    return bool(text.strip()) and len(text.split()) <= MAX_WORDS and not has_banned_word(text)
+def valid_summary(text: str, state_word: str | None = None) -> bool:
+    """≤ 25 words, no banned word, and (when given) the exact word for the profile's overall state."""
+    ok = bool(text.strip()) and len(text.split()) <= MAX_WORDS and not has_banned_word(text)
+    return ok and (state_word is None or state_word.casefold() in text.casefold())
 
 
 def _label(restrictions: dict[str, Restriction], restriction_id: str) -> str:
@@ -70,13 +73,14 @@ async def summarize(
         return {}
     prompt = build_prompt(reports, profiles, lang)
     try:
-        result = await router.generate(lambda _: prompt, [], LLMSummaries, timeout_s=timeout_s)
+        result = await router.generate(lambda _: prompt, [], LLMSummaries, timeout_s=timeout_s,
+                                       providers=PROSE_PROVIDERS)
     except AllProvidersFailedError:
         logger.warning("summaries skipped: no LLM available")
         return {}
-    wanted = {r.profile_id for r in reports}
+    overall = {r.profile_id: STATE_WORDS[lang][r.overall] for r in reports}
     accepted = {s.profile_id: s.summary.strip() for s in result.value.summaries
-                if s.profile_id in wanted and valid_summary(s.summary)}
+                if s.profile_id in overall and valid_summary(s.summary, overall[s.profile_id])}
     dropped = len(result.value.summaries) - len(accepted)
     if dropped:
         logger.warning("summaries dropped", extra={"fields": {"count": dropped}})

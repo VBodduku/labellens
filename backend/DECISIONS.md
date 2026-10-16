@@ -26,3 +26,18 @@
 - Ollama `num_ctx` = 8192: the default context truncates the prompt, and the OCR list comes last.
 - Gemini: SDK retries disabled (`HttpRetryOptions(attempts=1)`), timeout in ms from `LLM_TIMEOUT_S`; the router owns fallback.
 - The FakeLLM fixture `tests/data/ollama_test_label.json` is a real gemma3:4b recording (it includes realistic mistakes). The Gemini recording (`scripts/record_fake_llm.py gemini`) is added once a key is in `.env`.
+
+## Phase 3
+- Self-verification: each trigger reason is tried once; at most 2 LLM re-reads per scan within 25 s; further triggers are recorded as `skipped_budget`. Ingredient re-reads crop the whole ingredients block (not just the unreadable spot) so an accepted re-read is a complete list. Crop tokens get ids `img_N:r{round}t{K}`.
+- "Couldn't read" items are derived, not stored: every verify trigger that still applies after verification becomes an `UnknownItem` with the region (`unknown.retake_region`, or `unknown.ingredients_truncated`). The same function serves scans, cache hits and `/api/recheck`, and follows profile changes (threshold triggers depend on profiles). Pipeline items replace engine items of the same (section, message_key).
+- One 45 s deadline per scan; each LLM stage gets its cap minus a reserve for the stages after it, and is skipped below 3 s.
+- User-facing prose (summaries, LLM explanations of unknown terms, hi/te translations of KB text) is taken from Gemini only. In a live test gemma3:4b wrote Telugu summaries with wrong ingredients and wrong state words. Without Gemini: no summaries (the frontend shows its reviewed templates), explain returns the English KB text, and unknown terms return 503 `LLM_UNAVAILABLE`.
+- Ollama is still used where output is checked afterwards: region re-reads (aligned to the photo), profile parsing (catalog-validated, user confirms) and term interpretation (engine caps it at "possible").
+- A summary must contain the exact state word for that profile's overall verdict (in the scan language), be ≤ 25 words and contain no banned word (en/hi/te), else it is dropped.
+- A provider that times out on an image call is skipped for image calls for 300 s, but keeps serving short text tasks. Rate limits still cool a client down for everything.
+- `/api/recheck` summaries: regenerated (8 s) only when the language changed; otherwise a stored summary is reused only for profiles whose (restriction, state, reason) results are unchanged. Unknown scan_id (restart) -> no summaries. Interpretations are reused per scan_id from an in-memory LRU (256 scans).
+- Agent: Gemini function calling only (gemma3 has no tool support). The model's final turn is JSON; Gemini's own reply turns are sent back unchanged (thought signatures). Questions about "me"/"us" with no name answer for every profile, because AskRequest does not say who is asking.
+- Keyword fallback maps hi/te/en ingredient words to KB categories through `engine.explain_term` ("दूध" -> milk), and quotes "may contain"/facility statements instead of answering "yes".
+- Profile parsing: severity comes from wording first (allergic -> strict; avoid / trying to cut -> preference), then the model, then the catalog default. Needs the keyword matcher sees but the model dropped are returned as warnings for the confirmation screen.
+- Shared fixed wording (state words, banned words, AI note) lives in `app/wording.py`; hi/te strings are marked for native-speaker review.
+- `backend/app/fixtures.py` removed: every endpoint now does real work; tests load fixtures from `backend/tests/fixture_data.py`.

@@ -4,7 +4,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import time
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Collection, Sequence
 from dataclasses import dataclass
 from functools import lru_cache
 from typing import Generic, TypeVar
@@ -21,7 +21,7 @@ logger = logging.getLogger("labellens.llm")
 
 M = TypeVar("M", bound=BaseModel)
 
-TIMEOUT_COOLDOWN_S = 300       # a provider too slow for the scan budget is skipped for a while (local Ollama)
+TIMEOUT_COOLDOWN_S = 300       # a provider too slow for image calls is skipped for them a while (local Ollama)
 REPAIR_INSTRUCTION = (
     "\n\nYour previous answer did not match the required JSON schema. Validation errors:\n{errors}\n"
     "Return the corrected JSON only."
@@ -31,7 +31,8 @@ REPAIR_INSTRUCTION = (
 @dataclass
 class ClientState:
     client: LLMClient
-    cooldown_until: float = 0.0
+    cooldown_until: float = 0.0         # rate limited: skipped for every call
+    slow_until: float = 0.0             # timed out on an image call: skipped for image calls only
     last_ok: float | None = None
     last_error: str | None = None
 
@@ -79,20 +80,26 @@ class LLMRouter:
             if state.client.label == client_label:
                 state.cooldown_until = self._clock() + retry_after_s
 
-    def can_generate(self) -> bool:
-        return any(state.cooldown_until <= self._clock() for state in self._states)
+    def can_generate(self, providers: Collection[ProviderName] | None = None) -> bool:
+        return any(state.cooldown_until <= self._clock() and (providers is None or state.client.name in providers)
+                   for state in self._states)
 
     async def generate(
         self, prompt_for: Callable[[ProviderName], str], images: list[LLMImage], schema_model: type[M],
-        timeout_s: float | None = None,
+        timeout_s: float | None = None, providers: Collection[ProviderName] | None = None,
     ) -> LLMResult[M]:
+        """`providers` restricts the chain (e.g. user-facing prose only from Gemini)."""
         schema = inline_schema(schema_model)
         timeout = min(self._timeout_s, timeout_s) if timeout_s is not None else self._timeout_s
         attempts = 0
         retry_after: list[int] = []
         for state in self._states:
+            if providers is not None and state.client.name not in providers:
+                continue
             if state.cooldown_until > self._clock():
                 retry_after.append(int(state.cooldown_until - self._clock()) + 1)
+                continue
+            if images and state.slow_until > self._clock():
                 continue
             prompt = prompt_for(state.client.name)
             for repair in (False, True):
@@ -112,8 +119,8 @@ class LLMRouter:
                     self._fail(state, f"rate limited for {exc.retry_after_s}s")
                     break
                 except TimeoutError:
-                    if timeout >= self._timeout_s:      # slow provider, not just a caller's short budget
-                        state.cooldown_until = self._clock() + TIMEOUT_COOLDOWN_S
+                    if images and timeout >= self._timeout_s:   # too slow for photos, not a short caller budget
+                        state.slow_until = self._clock() + TIMEOUT_COOLDOWN_S
                     self._fail(state, f"timed out after {timeout:g}s")
                     break
                 except LLMError as exc:

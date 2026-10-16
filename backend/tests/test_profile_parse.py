@@ -98,3 +98,10 @@ def test_without_llm_keyword_parsing_makes_one_profile(text: str, expected: list
 def test_without_llm_nothing_recognised_is_unparsed() -> None:
     response = parse("hello there", None)
     assert response.profiles == [] and response.unparsed == ["hello there"]
+
+
+def test_need_the_model_dropped_is_flagged_for_confirmation() -> None:
+    answer = {"people": [person("Son", ("peanut", "strict", "allergic to peanuts"))], "unparsed": []}
+    response = parse("My son is allergic to peanuts and I am Jain", answer)
+    assert summary(response) == [("Son", [("peanut", "strict")])]
+    assert response.warnings == ["Also mentioned: Jain. Add it to the right person if it applies."]

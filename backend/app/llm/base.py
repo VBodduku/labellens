@@ -5,6 +5,9 @@ from dataclasses import dataclass, field
 from typing import Any, Literal, Protocol
 
 ProviderName = Literal["gemini", "ollama"]
+# User-facing prose (summaries, explanations, translations) is only taken from these providers:
+# a small local model misstates facts and verdict words in hi/te, and nothing can check prose.
+PROSE_PROVIDERS: tuple[ProviderName, ...] = ("gemini",)
 
 
 @dataclass(frozen=True)

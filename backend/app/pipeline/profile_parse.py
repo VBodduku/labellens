@@ -106,7 +106,8 @@ def build_response(parsed: LLMProfileParse, catalog: dict[str, RestrictionCatalo
     return ProfileParseResponse(profiles=profiles, unparsed=list(dict.fromkeys(unparsed)), needs_confirmation=True)
 
 
-def keyword_parse(text: str, catalog: dict[str, RestrictionCatalogItem]) -> ProfileParseResponse:
+def keyword_keys(text: str, catalog: dict[str, RestrictionCatalogItem]) -> list[str]:
+    """Catalog keys whose keywords appear in the text, in order of first mention."""
     found: dict[str, int] = {}                  # key -> position of its first mention
     for pattern, key in _KEYWORDS:
         match = re.search(pattern, text, re.IGNORECASE)
@@ -114,7 +115,18 @@ def keyword_parse(text: str, catalog: dict[str, RestrictionCatalogItem]) -> Prof
             if key == "vegetarian" and {"vegan", "eggetarian", "jain"} & set(found):
                 continue
             found[key] = match.start()
-    keys = sorted(found, key=found.__getitem__)
+    return sorted(found, key=found.__getitem__)
+
+
+def missed_warnings(response: ProfileParseResponse, text: str, catalog: dict[str, RestrictionCatalogItem]) -> list[str]:
+    """Needs the keyword matcher sees but the model dropped: ask the user to add them when confirming."""
+    parsed = {r.key for p in response.profiles for r in p.restrictions}
+    return [f"Also mentioned: {catalog[k].label_en}. Add it to the right person if it applies."
+            for k in keyword_keys(text, catalog) if k not in parsed]
+
+
+def keyword_parse(text: str, catalog: dict[str, RestrictionCatalogItem]) -> ProfileParseResponse:
+    keys = keyword_keys(text, catalog)
     restrictions = [restriction(catalog[k], severity_for(text, None, catalog[k]), text.strip()) for k in keys]
     profiles = [Profile(profile_id=_id("p"), name="Me", restrictions=restrictions)] if restrictions else []
     return ProfileParseResponse(profiles=profiles, unparsed=[] if profiles else [text.strip()],
@@ -129,4 +141,5 @@ async def parse_profiles(text: str, lang: Lang, router: LLMRouter, timeout_s: fl
         result = await router.generate(lambda _: prompt, [], LLMProfileParse, timeout_s=timeout_s)
     except AllProvidersFailedError:
         return keyword_parse(text, catalog)
-    return build_response(result.value, catalog)
+    response = build_response(result.value, catalog)
+    return response.model_copy(update={"warnings": [*response.warnings, *missed_warnings(response, text, catalog)]})

@@ -4,7 +4,8 @@ quality -> cache lookup -> OCR (panels in parallel) -> LLM structuring (Gemini -
 -> alignment -> panel merge -> self-verification -> cache store -> engine -> LLM interpretation of
 unresolved terms -> engine again -> per-profile summaries -> ScanResult.
 When every LLM fails or the LLM budget runs out, the OCR-only reader replaces structuring +
-alignment, and interpretation/summaries are skipped. Every LLM stage gets what is left of the
+alignment; interpretation and summaries still run on whichever provider is usable (they are short).
+Every LLM stage gets what is left of the
 45 s budget minus a reserve for the stages after it.
 """
 from __future__ import annotations
@@ -17,6 +18,7 @@ from dataclasses import dataclass
 from backend.app import engine_adapter, errors
 from backend.app.cache import ExtractionCache, cache_key
 from backend.app.config import get_settings
+from backend.app.llm.base import PROSE_PROVIDERS
 from backend.app.llm.router import AllProvidersFailedError, LLMRouter
 from backend.app.logging_setup import note, stage
 from backend.app.pipeline import ocr_only, summarize
@@ -193,10 +195,9 @@ async def run_scan(scan: ScanInput, router: LLMRouter, cache: ExtractionCache) -
     with stage("engine"):
         output = engine_adapter.evaluate(extraction, scan.profiles)
 
-    llm_used = extraction.meta.provider != "ocr_only"
     interpretations: dict[str, TermInterpretation] = {}
     interpret_budget = deadline.budget(INTERPRET_CAP_S, INTERPRET_RESERVE_S)
-    if llm_used and output.unresolved_terms and interpret_budget:
+    if output.unresolved_terms and interpret_budget and router.can_generate():
         with stage("interpret"):
             interpretations = await interpret(output.unresolved_terms, router, interpret_budget)
         if interpretations:
@@ -205,7 +206,7 @@ async def run_scan(scan: ScanInput, router: LLMRouter, cache: ExtractionCache) -
 
     summaries: dict[str, str] = {}
     summary_budget = deadline.budget(SUMMARY_CAP_S, SUMMARY_RESERVE_S)
-    if llm_used and summary_budget:
+    if summary_budget and router.can_generate(PROSE_PROVIDERS):
         with stage("summarize"):
             summaries = await summarize.summarize(output.reports, scan.profiles, scan.lang, router, summary_budget)
     reports = summarize.apply(output.reports, summaries, scan.lang)

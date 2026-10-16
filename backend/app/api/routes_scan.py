@@ -11,6 +11,7 @@ from pydantic import TypeAdapter, ValidationError
 from backend.app import engine_adapter, errors
 from backend.app.cache import ExtractionCache, get_cache
 from backend.app.config import get_settings
+from backend.app.llm.base import PROSE_PROVIDERS
 from backend.app.llm.router import LLMRouter, get_router
 from backend.app.logging_setup import stage
 from backend.app.pipeline import summarize
@@ -104,7 +105,7 @@ async def recheck(body: RecheckRequest, router: LLMRouter = Depends(get_router))
     with stage("engine"):
         output = engine_adapter.evaluate(body.extraction, body.profiles, record.interpretations if record else None)
     summaries: dict[str, str] = {}
-    if record is not None and body.lang != record.lang:
+    if record is not None and body.lang != record.lang and router.can_generate(PROSE_PROVIDERS):
         with stage("summarize"):
             summaries = await summarize.summarize(output.reports, body.profiles, body.lang, router,
                                                   RECHECK_SUMMARY_BUDGET_S)

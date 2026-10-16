@@ -8,6 +8,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 from backend.app import engine_adapter, errors
+from backend.app.llm.base import PROSE_PROVIDERS
 from backend.app.llm.router import AllProvidersFailedError, LLMRouter
 from backend.app.pipeline.textnorm import norm
 from backend.app.wording import AI_EXPLANATION_NOTE, LANGUAGE_NAMES, has_banned_word
@@ -56,7 +57,8 @@ async def _translate(kb: ExplainResponse, lang: Lang, router: LLMRouter) -> Expl
     prompt = ((PROMPTS / "translate.md").read_text(encoding="utf-8")
               .replace("{language}", LANGUAGE_NAMES[lang])
               .replace("{description}", kb.description).replace("{caution}", kb.caution or "none"))
-    result = await router.generate(lambda _: prompt, [], LLMTranslation, timeout_s=TIMEOUT_S)
+    result = await router.generate(lambda _: prompt, [], LLMTranslation, timeout_s=TIMEOUT_S,
+                                   providers=PROSE_PROVIDERS)
     caution = result.value.caution if kb.caution and result.value.caution else kb.caution
     return kb.model_copy(update={"description": result.value.description.strip(), "caution": caution})
 
@@ -66,7 +68,8 @@ async def _from_llm(term: str, lang: Lang, router: LLMRouter) -> ExplainResponse
     prompt = ((PROMPTS / "explain.md").read_text(encoding="utf-8")
               .replace("{term}", term.strip()).replace("{language}", LANGUAGE_NAMES[lang])
               .replace("{categories}", ", ".join(vocabulary)))
-    value = (await router.generate(lambda _: prompt, [], LLMExplanation, timeout_s=TIMEOUT_S)).value
+    value = (await router.generate(lambda _: prompt, [], LLMExplanation, timeout_s=TIMEOUT_S,
+                                   providers=PROSE_PROVIDERS)).value
     caution = " ".join(c for c in (value.caution, AI_EXPLANATION_NOTE[lang]) if c)
     description = value.description.strip()
     if has_banned_word(description):
