@@ -1,4 +1,4 @@
-import { motion, type MotionValue } from "motion/react";
+import { m, type MotionValue } from "motion/react";
 import { useTranslation } from "react-i18next";
 
 interface CaptureButtonProps {
@@ -20,7 +20,7 @@ export function CaptureButton({ progress, disabled, onCapture }: CaptureButtonPr
     >
       <svg viewBox="0 0 80 80" className="absolute inset-0 size-full -rotate-90" aria-hidden="true">
         <circle cx="40" cy="40" r="36" fill="none" stroke="rgb(255 255 255 / 0.35)" strokeWidth="4" />
-        <motion.circle
+        <m.circle
           cx="40"
           cy="40"
           r="36"

@@ -1,9 +1,14 @@
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { fixtureCatalog, fixtureProfileParse, fixtureProfiles, fixtureScanResult } from "../api/fixtures";
 import { finalizeParsedProfiles, nextColor, PROFILE_COLORS, restrictionFromCatalog } from "./profileParse";
 import { pickVoice, recognitionErrorKey, sentenceChunks } from "./speech";
 import { speechScript } from "./speechScript";
 import { describeToolCall } from "./toolTrace";
+import { loadDictionary } from "../i18n/resources";
+
+beforeAll(async () => {
+  await loadDictionary("te");
+});
 
 const voices = [
   { name: "Google US English", lang: "en-US" },

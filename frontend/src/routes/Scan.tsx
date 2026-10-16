@@ -1,5 +1,5 @@
 import { ArrowRight, Users, X } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -132,7 +132,7 @@ export default function Scan() {
       {debug && live && <DebugOverlay latest={monitor.latest} fps={monitor.fps} streakMs={monitor.streakMs} />}
       <AnimatePresence>
         {flash > 0 && (
-          <motion.div
+          <m.div
             key={flash}
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-30 bg-white"

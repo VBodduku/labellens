@@ -1,5 +1,5 @@
 import { ChevronDown } from "lucide-react";
-import { motion, useMotionValue, useReducedMotion, useScroll } from "motion/react";
+import { m, useMotionValue, useReducedMotion, useScroll } from "motion/react";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { HeroActions } from "./HeroActions";
@@ -43,13 +43,13 @@ export function Hero() {
             </p>
             <HeroActions className="mt-5 lg:mt-9" />
             {!reduce && (
-              <motion.p
+              <m.p
                 style={{ opacity: hintOpacity }}
                 className="mt-8 hidden items-center gap-2 text-sm font-medium text-text-dim lg:flex"
               >
                 <ChevronDown className="size-4 animate-bounce" aria-hidden="true" />
                 {t("landing.hero.scrollHint")}
-              </motion.p>
+              </m.p>
             )}
           </div>
           <div className="relative order-1 min-h-0 lg:order-2 lg:h-full">

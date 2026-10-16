@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { useTranslation } from "react-i18next";
 import { LANGS } from "../../i18n/resources";
 import type { Lang } from "../../shared/contract";
@@ -30,7 +30,7 @@ export function LanguageSwitcher() {
             }`}
           >
             {selected && (
-              <motion.span
+              <m.span
                 layoutId="lang-pill"
                 className="absolute inset-0 rounded-chip bg-surface shadow-[inset_0_0_0_1px_var(--line)]"
                 transition={{ type: "spring", stiffness: 500, damping: 38 }}

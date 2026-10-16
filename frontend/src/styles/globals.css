@@ -16,7 +16,6 @@
     font-family: var(--font-body), var(--font-indic);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
     -webkit-tap-highlight-color: transparent;
   }
 

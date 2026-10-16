@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, m, useReducedMotion } from "motion/react";
 import { useId, type KeyboardEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { stateColor, stateLabelKey } from "../../lib/verdict";
@@ -41,7 +41,7 @@ export function EvidenceOverlay({ items, focus, zoom }: EvidenceOverlayProps) {
     <svg viewBox="0 0 1 1" preserveAspectRatio="none" className="absolute inset-0 size-full overflow-visible">
       <AnimatePresence>
         {focus && (
-          <motion.g key="veil" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reduce ? 0 : 0.26 }}>
+          <m.g key="veil" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reduce ? 0 : 0.26 }}>
             <defs>
               <mask id={maskId} maskUnits="userSpaceOnUse" x="0" y="0" width="1" height="1">
                 <rect x="0" y="0" width="1" height="1" fill="white" />
@@ -49,7 +49,7 @@ export function EvidenceOverlay({ items, focus, zoom }: EvidenceOverlayProps) {
               </mask>
             </defs>
             <rect x="0" y="0" width="1" height="1" fill="rgb(8 10 14 / 0.58)" mask={`url(#${maskId})`} pointerEvents="none" />
-          </motion.g>
+          </m.g>
         )}
       </AnimatePresence>
 
@@ -83,7 +83,7 @@ export function EvidenceOverlay({ items, focus, zoom }: EvidenceOverlayProps) {
       })}
 
       {focus && (
-        <motion.rect
+        <m.rect
           key={focus.pulse}
           x={focus.box.x}
           y={focus.box.y}

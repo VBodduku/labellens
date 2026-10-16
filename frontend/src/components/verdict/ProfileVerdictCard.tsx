@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { useTranslation } from "react-i18next";
 import { restrictionLabel } from "../../lib/restrictionLabel";
 import { verdictKey } from "../../lib/resultDiff";
@@ -49,7 +49,7 @@ export function ProfileVerdictCard({ report, profile, changed }: ProfileVerdictC
           <p className="mt-0.5 text-sm font-semibold">{t(`overall.${report.overall}`)}</p>
         </div>
         <AnimatePresence mode="popLayout" initial={false}>
-          <motion.span
+          <m.span
             key={report.overall}
             initial={{ opacity: 0, scale: 0.7 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -57,7 +57,7 @@ export function ProfileVerdictCard({ report, profile, changed }: ProfileVerdictC
             className="inline-flex"
           >
             <StateBadge state={report.overall} unknownKind={worst?.state === "unknown" ? worst.unknown_kind : null} size="lg" />
-          </motion.span>
+          </m.span>
         </AnimatePresence>
       </header>
       <div className="space-y-3 border-b border-line px-4 py-3 sm:px-5">
@@ -67,7 +67,7 @@ export function ProfileVerdictCard({ report, profile, changed }: ProfileVerdictC
         </p>
         <ReadAloudButton getText={(mode, readLang) => speechScript(report, profile, readLang, mode)} />
       </div>
-      <motion.ul
+      <m.ul
         key={report.profile_id}
         className="divide-y divide-line"
         initial="hidden"
@@ -82,7 +82,7 @@ export function ProfileVerdictCard({ report, profile, changed }: ProfileVerdictC
             changed={changed.includes(verdictKey(report.profile_id, result.restriction_id))}
           />
         ))}
-      </motion.ul>
+      </m.ul>
     </article>
   );
 }

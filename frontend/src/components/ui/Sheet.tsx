@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { useEffect, useId, useRef, type KeyboardEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
@@ -66,7 +66,7 @@ export function Sheet({ open, title, onClose, children, wide = false }: SheetPro
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-[60] flex items-end justify-center sm:items-center" onKeyDown={onKeyDown}>
-          <motion.div
+          <m.div
             className="absolute inset-0 bg-black/55"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -75,7 +75,7 @@ export function Sheet({ open, title, onClose, children, wide = false }: SheetPro
             onClick={onClose}
             aria-hidden="true"
           />
-          <motion.div
+          <m.div
             ref={panel}
             role="dialog"
             aria-modal="true"
@@ -97,7 +97,7 @@ export function Sheet({ open, title, onClose, children, wide = false }: SheetPro
               </IconButton>
             </div>
             {children}
-          </motion.div>
+          </m.div>
         </div>
       )}
     </AnimatePresence>,

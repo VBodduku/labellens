@@ -3,6 +3,7 @@ import basicSsl from "@vitejs/plugin-basic-ssl";
 import react from "@vitejs/plugin-react";
 import { defineConfig, loadEnv, type PluginOption } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
+import { preloadCritical } from "./plugins/preloadCritical";
 
 const ENV_DIR = "..";
 
@@ -26,8 +27,10 @@ export default defineConfig(({ mode }) => {
   const network = networkOptions(env.API_PROXY_TARGET || "http://localhost:8000");
   const plugins: PluginOption[] = [
     react(),
+    preloadCritical(),
     VitePWA({
       registerType: "autoUpdate",
+      injectRegister: "script-defer",
       includeAssets: ["logo.svg", "apple-touch-icon-180x180.png"],
       manifest: {
         name: "LabelLens",
@@ -46,7 +49,7 @@ export default defineConfig(({ mode }) => {
         ],
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,svg,png,woff2}"],
+        globPatterns: ["**/*.{js,css,html,svg,png,webp,woff2}"],
         navigateFallback: "/index.html",
         navigateFallbackDenylist: [/^\/api/],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,

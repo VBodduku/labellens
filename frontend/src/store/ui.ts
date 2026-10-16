@@ -62,8 +62,8 @@ export const useUiStore = create<UiState>()(
       voiceRate: 1,
       speakingId: null,
       setLang: (lang) => {
-        setLanguage(lang);
-        set({ lang });
+        // Switch once the language's strings are loaded, so the UI never flashes untranslated keys.
+        void setLanguage(lang).then(() => set({ lang }));
       },
       setTheme: (theme) => {
         applyTheme(theme);

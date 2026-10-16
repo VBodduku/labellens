@@ -2,7 +2,12 @@ import { describe, expect, it } from "vitest";
 import { CATEGORIES, NUTRIENT_KEYS } from "../shared/contract";
 import catalog from "../shared/fixtures/catalog.json";
 import messages from "../shared/messages.en.json";
-import { dictionaries, LANGS } from "./resources";
+import en from "./en.json";
+import hi from "./hi.json";
+import { LANGS, type Dictionary } from "./resources";
+import te from "./te.json";
+
+const dictionaries: Record<(typeof LANGS)[number], Dictionary> = { en, hi, te };
 
 const BASIS_IDS = ["per_100g", "per_100ml", "per_serving", "per_pack"];
 const contentKeys = (dictionary: Record<string, string>) => Object.keys(dictionary).filter((key) => !key.startsWith("_"));

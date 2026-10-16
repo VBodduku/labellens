@@ -1,5 +1,5 @@
 import { ChevronDown } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { Match } from "../../shared/contract";
@@ -23,7 +23,7 @@ export function WhyDisclosure({ matches }: { matches: Match[] }) {
       </button>
       <AnimatePresence initial={false}>
         {open && (
-          <motion.div
+          <m.div
             id={panelId}
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
@@ -48,7 +48,7 @@ export function WhyDisclosure({ matches }: { matches: Match[] }) {
                 ))}
               </ul>
             )}
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

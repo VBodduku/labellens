@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { useRef, type KeyboardEvent } from "react";
 import { panelId, tabId } from "./tabIds";
 
@@ -66,7 +66,7 @@ export function Tabs<T extends string>({ tabs, value, onChange, label, idPrefix 
               </span>
             )}
             {selected && (
-              <motion.span
+              <m.span
                 layoutId={`${idPrefix}-underline`}
                 className="absolute inset-x-2 -bottom-px h-[2px] rounded-full bg-[var(--beam-gradient)]"
                 transition={{ type: "spring", stiffness: 500, damping: 40 }}

@@ -1,5 +1,5 @@
 import { LocateFixed, Pencil } from "lucide-react";
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { formatNumber } from "../../lib/format";
@@ -45,7 +45,7 @@ export function NutritionTable({ result, onEdit }: { result: ScanResult; onEdit:
             }`}
           >
             {view === option && (
-              <motion.span
+              <m.span
                 layoutId="nutrition-basis"
                 className="absolute inset-0 rounded-chip bg-surface shadow-[inset_0_0_0_1px_var(--line)]"
                 transition={{ type: "spring", stiffness: 500, damping: 40 }}

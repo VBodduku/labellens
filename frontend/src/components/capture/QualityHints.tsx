@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { useTranslation } from "react-i18next";
 import type { LiveIssue } from "../../lib/quality";
 
@@ -11,7 +11,7 @@ export function QualityHints({ issues, ready }: { issues: LiveIssue[] | null; re
     <div aria-live="polite" className="flex min-h-10 justify-center">
       <AnimatePresence mode="wait" initial={false}>
         {text && (
-          <motion.p
+          <m.p
             key={text}
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
@@ -22,7 +22,7 @@ export function QualityHints({ issues, ready }: { issues: LiveIssue[] | null; re
             }`}
           >
             {text}
-          </motion.p>
+          </m.p>
         )}
       </AnimatePresence>
     </div>

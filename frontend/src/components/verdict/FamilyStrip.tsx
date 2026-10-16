@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { useTranslation } from "react-i18next";
 import { sortWorstFirst } from "../../lib/verdict";
 import type { Profile, ProfileReport } from "../../shared/contract";
@@ -43,7 +43,7 @@ export function FamilyStrip({ reports, profiles, selectedId, onSelect }: FamilyS
               <StateBadge state={report.overall} unknownKind={worst?.state === "unknown" ? worst.unknown_kind : null} size="sm" />
             </span>
             {selected && (
-              <motion.span
+              <m.span
                 layoutId="family-selection"
                 className="absolute inset-x-3 -bottom-px h-[3px] rounded-full bg-[var(--beam-gradient)]"
                 transition={{ type: "spring", stiffness: 500, damping: 40 }}
