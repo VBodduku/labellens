@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+from datetime import datetime, timezone
 from hashlib import sha256
 from pathlib import Path
 from typing import Literal, TypedDict
@@ -20,9 +21,10 @@ from shared.contract import (
 )
 from engine.eval.metrics import matched_ingredients, ratio, score_verdicts
 from engine.normalize import normalize
-from engine.eval.comparison import EvaluationMetadata, comparison, markdown_table
+from engine.eval.comparison import EvaluationMetadata, comparison
 from engine.eval.errors import ErrorReview, EvaluationError, errors_for_packet
 from engine.eval.replay import load_profiles, replay
+from engine.eval.reporting import about_metrics, render_report, timestamp
 
 HERE = Path(__file__).resolve().parent
 CountKey = Literal[
@@ -53,7 +55,7 @@ class PacketScores(TypedDict):
     evidence_total: int
     unknown_results: int
     total_results: int
-    latency_ms: int | None
+    latency_ms: float | None
 
 
 class PacketRecord(PacketScores):
@@ -226,6 +228,7 @@ def run(
     baseline: Path | None = None,
     reviews_path: Path | None = None,
     source_mode: Literal["saved", "live", "reevaluated"] = "saved",
+    generated_at: datetime | None = None,
 ) -> dict[str, object]:
     truth_files = case_files(dataset)
     if baseline and baseline.resolve() == (reports / "report.json").resolve():
@@ -237,6 +240,8 @@ def run(
             "Offline re-evaluation requires the exact original evaluation profiles"
         )
     manifest = responses / "capture_manifest.json"
+    request_timings: dict[str, float] = {}
+    cache_hits: set[str] = set()
     if manifest.exists():
         capture_metadata = json.loads(manifest.read_text(encoding="utf-8"))
         if capture_metadata.get("failed"):
@@ -253,6 +258,17 @@ def run(
             raise ValueError(
                 "Evaluation profiles differ from those submitted in the saved capture manifest"
             )
+        for item in capture_metadata.get("cases", []):
+            duration = item.get("request_ms")
+            if (
+                item.get("status") == "captured"
+                and isinstance(duration, (float, int))
+                and math.isfinite(duration)
+                and duration > 0
+            ):
+                request_timings[item["packet_id"]] = duration
+                if item.get("cache_hit"):
+                    cache_hits.add(item["packet_id"])
     reviews = (
         TypeAdapter(dict[str, ErrorReview]).validate_json(
             reviews_path.read_text(encoding="utf-8")
@@ -316,8 +332,11 @@ def run(
         packets.append(
             PacketRecord(packet_id=path.parent.name, **score_packet(truth, scan))
         )
-        if reevaluate:
-            packets[-1]["latency_ms"] = None
+        packets[-1]["latency_ms"] = (
+            request_timings.get(path.parent.name)
+            if truth.source == "real" and not reevaluate
+            else None
+        )
     if len(sources) != 1:
         raise ValueError(
             "Do not mix real and synthetic packets; generate separate reports"
@@ -375,7 +394,7 @@ def run(
         "Missing expected profiles appear as unknown in the confusion matrix, always fail verdict accuracy, and are listed; missing responses abort the run.",
         "Evidence rate counts unique extraction evidence records, including nested ingredients, claims and veg marks.",
         "Unknown rate uses restriction results in supplied reports. Verdict accuracy uses expected profile overalls.",
-        "Latency uses positive saved extraction durations for real packets only; synthetic latency is unmeasured.",
+        "Latency uses positive capture-client request durations for real packets only. Saved extraction-only timings, synthetic cases and offline replay have no measured request latency.",
         "Saved responses are scored as supplied; the runner does not re-evaluate them.",
     ]
     if reevaluate:
@@ -418,6 +437,10 @@ def run(
         ),
         average_latency_ms=sum(latencies) / len(latencies) if latencies else None,
         latency_samples=len(latencies),
+        latency_cache_hits=sum(
+            packet["packet_id"] in cache_hits and packet["latency_ms"] is not None
+            for packet in packets
+        ),
         limitations=limitations,
         error_count=len(errors),
         unreviewed_error_count=sum(error.category == "unreviewed" for error in errors),
@@ -433,9 +456,11 @@ def run(
         ),
     )
     changes = comparison(baseline, metrics, metadata) if baseline else None
+    generated = timestamp(generated_at or datetime.now(timezone.utc))
+    headline = about_metrics(metrics, generated)
     reports.mkdir(parents=True, exist_ok=True)
     for name, data in (
-        ("metrics.json", metrics),
+        ("metrics.json", headline.model_dump(mode="json")),
         (
             "report.json",
             dict(
@@ -444,6 +469,7 @@ def run(
                 evaluation=metadata.model_dump(),
                 errors=[error.model_dump() for error in errors],
                 comparison=changes,
+                generated_at=generated,
             ),
         ),
     ):
@@ -451,61 +477,9 @@ def run(
             json.dumps(data, indent=2, ensure_ascii=False, allow_nan=False) + "\n",
             encoding="utf-8",
         )
-    title = (
-        "Synthetic pipeline check — NOT real-packet accuracy"
-        if kind == "synthetic"
-        else "Real-packet saved-response evaluation"
+    (reports / "report.md").write_text(
+        render_report(metrics, metadata, errors, changes, generated), encoding="utf-8"
     )
-    lines = [f"# {title}", "", "| Metric | Value |", "| --- | --- |"]
-    lines += [
-        f"| {key} | {value} |"
-        for key, value in metrics.items()
-        if key not in {"confusion_matrix", "limitations"}
-    ]
-    lines += [
-        "",
-        "Confusion matrix (rows expected, columns predicted):",
-        "",
-        "```json",
-        json.dumps(scores.confusion, indent=2),
-        "```",
-        "",
-    ]
-    lines += [f"- {limitation}" for limitation in limitations]
-    lines += [
-        "",
-        f"Source mode: {metadata.source_mode}. Local engine fingerprint: {metadata.local_engine_digest}.",
-    ]
-    if changes:
-        lines += markdown_table(changes)
-    lines += [
-        "",
-        "## Error analysis",
-        "",
-        "| Error ID | Check | Expected | Predicted | Classification | Review |",
-        "| --- | --- | --- | --- | --- | --- |",
-    ]
-
-    def cell(value: object) -> str:
-        return str(value).replace("|", "\\|").replace("\n", " ")
-
-    lines += [
-        "| "
-        + " | ".join(
-            cell(value)
-            for value in (
-                error.error_id,
-                error.check,
-                error.expected,
-                error.predicted,
-                error.category,
-                error.explanation,
-            )
-        )
-        + " |"
-        for error in errors
-    ]
-    (reports / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     return metrics
 
 

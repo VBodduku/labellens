@@ -65,3 +65,8 @@
 - Correct generic albumin from definite egg to possible egg/egg-derived (medium); explicit ovalbumin and egg albumen remain definite egg. Albumin is a protein family, not an exclusive egg-source label.
 - Whole-word boundaries treat Unicode combining marks as word content so Hindi/Telugu vowel signs cannot split a syllable. Existing >=92 fuzzy policy is retained.
 - Add optional internal review_reason metadata and generate KB_REVIEW.md from every medium, possible, variable-origin or flagged entry. High-confidence origin taxonomy limitations are flagged without silently changing spec-required lactitol/sugar categories.
+
+- Phase 4 feature freeze: no KB or verdict-rule changes. Edge cases cover empty/no-profile/no-restriction inputs, nested-only and duplicate panel ingredients, unknown keys and extreme/nonfinite nutrient readings.
+- About metrics retain Part 1's existing status/metrics envelope. Only real case measurements populate numeric rates; synthetic runs publish pending, zero real packets and null rates. generated_at is UTC artifact-generation time, not evidence of a live scan.
+- Request latency comes from capture_manifest request_ms, with cache hits disclosed. Extraction-only duration_ms and engine replay cannot establish request latency; leave it null if no HTTP timings were captured.
+- Performance benchmark explicitly distinguishes largest saved real extraction from opt-in fixture timing; fixture timing cannot satisfy the real-label acceptance target. Largest is measured by ingredient-name characters including children; report warm median/p95/max and environment.

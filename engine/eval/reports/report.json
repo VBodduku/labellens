@@ -43,6 +43,7 @@
     "missing_profile_count": 0,
     "average_latency_ms": null,
     "latency_samples": 0,
+    "latency_cache_hits": 0,
     "limitations": [
       "Synthetic fixtures test software behavior only; they do not measure real-packet accuracy.",
       "Nutrient tolerance is max(2% of truth, annotated absolute printed rounding); no unannotated rounding allowance.",
@@ -50,7 +51,7 @@
       "Missing expected profiles appear as unknown in the confusion matrix, always fail verdict accuracy, and are listed; missing responses abort the run.",
       "Evidence rate counts unique extraction evidence records, including nested ingredients, claims and veg marks.",
       "Unknown rate uses restriction results in supplied reports. Verdict accuracy uses expected profile overalls.",
-      "Latency uses positive saved extraction durations for real packets only; synthetic latency is unmeasured.",
+      "Latency uses positive capture-client request durations for real packets only. Saved extraction-only timings, synthetic cases and offline replay have no measured request latency.",
       "Saved extractions were re-evaluated with the current local engine and exact profiles; saved input responses remain unchanged.",
       "Replay is not a new extraction run and has no measured scan latency. Missing original LLM inputs block replay rather than silently dropping model signals.",
       "Error causes are unreviewed until explicitly classified with an explanation; engine-owned classifications require a regression-test reference.",
@@ -267,5 +268,6 @@
       "after": null,
       "change": null
     }
-  }
+  },
+  "generated_at": "2026-10-16T12:42:18Z"
 }

@@ -1,4 +1,5 @@
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 import pytest
 from shared.contract import ScanResult
@@ -57,7 +58,9 @@ def test_saved_response_harness_writes_three_files(tmp_path):
     assert metrics["verdict_accuracy"] == 1
     for name in ["metrics.json", "report.json", "report.md"]:
         assert (tmp_path / "reports" / name).is_file()
-    assert json.loads((tmp_path / "reports/metrics.json").read_text())["packets"] == 1
+    headline = json.loads((tmp_path / "reports/metrics.json").read_text())
+    assert headline["status"] == "pending"
+    assert headline["metrics"]["packets"] == 0
 
 
 def test_missing_profile_is_unknown_not_not_listed():
@@ -138,7 +141,8 @@ def test_two_synthetic_packets_end_to_end_and_reproducible(tmp_path):
 
     dataset, responses = build(tmp_path / "synthetic")
     reports = tmp_path / "reports"
-    metrics = run(dataset, responses, reports)
+    generated = datetime(2026, 10, 16, tzinfo=timezone.utc)
+    metrics = run(dataset, responses, reports, generated_at=generated)
     assert metrics["dataset_kind"] == "synthetic"
     assert metrics["real_packets"] == 0
     assert metrics["packets"] == 2
@@ -152,7 +156,7 @@ def test_two_synthetic_packets_end_to_end_and_reproducible(tmp_path):
     )
     before = {path.name: path.read_bytes() for path in reports.iterdir()}
     build(tmp_path / "synthetic")
-    run(dataset, responses, reports)
+    run(dataset, responses, reports, generated_at=generated)
     assert before == {path.name: path.read_bytes() for path in reports.iterdir()}
 
 

@@ -22,3 +22,52 @@
 - Part 2: preserve the original dict[str, TermInterpretation] in evaluation sidecars (<case_id>.interpretations.json) when saving scans. ScanResult alone does not retain the original model confidence/rationale needed for faithful fixed-extraction replay. No shared contract change was made.
 - Restart the backend after engine edits: /api/health confirms real/stub mode, but the contract exposes no engine revision. The eval report's local code digest cannot prove which code a separate backend process loaded.
 - KB_REVIEW.md currently has 38 source/taxonomy/community-practice review entries and a complete native-script alias table. These are pending review, not human-certified facts or real packet observations. The KB now has 260 entries.
+
+## Phase 4 — About-page metric handoff (feature freeze)
+
+Part 1 / main: the metric file is `engine/eval/reports/metrics.json`; copy it to
+`frontend/public/metrics.json` during integration. The existing About loader on
+origin/part-1-frontend expects `{status, metrics}`, so that envelope is preserved.
+This is the concrete handoff format; no frontend file or frozen shared type was changed.
+
+```json
+{
+  "status": "pending",
+  "metrics": {
+    "packets": 0,
+    "ingredient_recall": null,
+    "ingredient_precision": null,
+    "nutrient_accuracy": null,
+    "verdict_accuracy": null,
+    "dangerous_miss_rate": null,
+    "evidence_verified_rate": null,
+    "unknown_rate": null,
+    "avg_latency_s": null
+  },
+  "generated_at": "2026-10-16T00:00:00Z"
+}
+```
+
+The timestamp above is a format example, not a measurement date. The generated
+artifact contains the actual UTC generation time. `status` becomes `ready` only
+for a nonempty real-packet evaluation. `metrics.packets` counts evaluated real
+photo cases (clean and imperfect are separate cases, not unique physical products).
+All rates are fractions 0–1; format as percentages in the UI. Null means unmeasured,
+never 0%. `avg_latency_s` is the mean timed backend request in seconds, including
+upload/backend response work, excluding browser capture/render. Cache hits remain
+included; their count and timing sample count are in report.json/report.md.
+Saved extraction-only durations and offline replay have null request latency.
+`generated_at` is artifact-generation time; it is not proof of a fresh live scan.
+
+Synthetic runs keep this file pending with zero packets and null values, while
+their actual software-test scores remain in report.json/report.md. Never copy
+synthetic scores into pitch claims. The existing About loader handles pending and
+ignores nulls; Part 1 should add percent/seconds formatting and optionally display
+the timestamp. Owner review of this handoff is still pending; compatibility was
+checked against the existing source, not a running integrated frontend.
+
+Part 2: panel merge owns ingredient deduplication. Engine regression tests preserve
+duplicate evidence from both panels and still detect a readable child when a parent
+name is empty/unreadable. A profile with no restrictions returns no checks and
+overall not_listed as the empty aggregation identity; show "no restrictions configured"
+in that UI case rather than presenting it as a substantive label assessment.
