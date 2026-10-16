@@ -1,7 +1,7 @@
 """OCR-only degraded mode: keyword rules over real OCR tokens of the fixture label."""
 from __future__ import annotations
 
-from backend.app.pipeline.ocr_only import extract_panel, find_ingredients
+from backend.app.pipeline.ocr_only import extract_panel, find_ingredients, find_statements
 from backend.tests.fakes import line_tokens
 from shared.contract import OcrToken
 
@@ -41,3 +41,44 @@ def test_no_heading_means_section_not_found() -> None:
     panel = extract_panel("img_0", line_tokens(["Best", "before", "6", "months"], 0.1))
     assert panel.ingredients == [] and panel.ingredients_section.presence == "not_found"
     assert panel.nutrition is None
+
+
+def _page(*columns: list[tuple[list[str], float]], x0s: tuple[float, ...] = (0.05, 0.7)) -> list[OcrToken]:
+    """Side-by-side columns of printed lines, interleaved in reading order like real OCR output."""
+    tokens: list[OcrToken] = []
+    for column, x0 in zip(columns, x0s):
+        for words, y in column:
+            tokens += line_tokens(words, y, start=len(tokens), x0=x0)
+    return sorted(tokens, key=lambda t: (t.box.y, t.box.x))
+
+
+def test_heading_graphic_is_not_a_contains_statement() -> None:
+    graphic = [(["THIS", "BAR"], 0.10), (["CONTAINS"], 0.12), (["No", "Artificial", "Flavours"], 0.14)]
+    ingredients = [(["Ingredients:", "Oats,", "Honey,"], 0.10), (["Peanut", "Butter,", "Salt."], 0.12)]
+    assert find_statements(_page(graphic, ingredients)) == []
+
+
+def test_statements_stay_in_their_own_column() -> None:
+    allergens = [(["Allergen", "Advice:"], 0.50), (["CONTAINS", "OATS,", "NUTS"], 0.52),
+                 (["SOY.", "Processed", "in", "a", "plant"], 0.54), (["where", "other", "tree", "nuts", "are"], 0.56),
+                 (["processed."], 0.58), (["Manufactured", "by", "Foods", "Ltd"], 0.64)]
+    nutrition = [(["Total", "Fat", "4.0"], 0.50), (["Sodium", "38.5"], 0.52), (["Protein", "3.8"], 0.54),
+                 (["Sugar", "10.8"], 0.56), (["Fibre", "4.0"], 0.58)]
+    contains, facility = find_statements(_page(allergens, nutrition))
+    assert (contains.type, contains.items) == ("contains", ["OATS", "NUTS", "SOY"])
+    assert contains.raw_text == "Allergen Advice: CONTAINS OATS, NUTS SOY."
+    assert (facility.type, facility.items) == ("facility", ["tree nuts"])
+    evidence = " ".join(e.text for s in (contains, facility) for e in s.evidence)
+    assert not any(word in evidence for word in ("Fat", "Sodium", "Protein", "Manufactured"))
+
+
+def test_contains_that_is_not_a_short_list_is_left_out() -> None:
+    tokens = line_tokens(["Contains:", "Rolled", "oats", "baked", "with", "honey", "for", "120", "minutes."], 0.1)
+    assert find_statements(tokens) == []
+
+
+def test_contains_opening_its_own_line_counts_even_without_a_full_stop_before() -> None:
+    tokens = (line_tokens(["Natural", "Flavours"], 0.10)
+              + line_tokens(["CONTAINSMILK,SOY.MAYCONTAIN", "WHEAT,", "BARLEY."], 0.12, start=2))
+    assert [(s.type, s.items) for s in find_statements(tokens)] == [
+        ("contains", ["MILK", "SOY"]), ("may_contain", ["WHEAT", "BARLEY"])]
