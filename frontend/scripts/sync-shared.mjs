@@ -1,6 +1,6 @@
 // Copies the frozen contract, message templates and fixtures from ../shared into src/shared.
 // Cross-platform (pure Node). Skips quietly when ../shared is absent (e.g. a frontend-only deploy).
-import { copyFileSync, existsSync, mkdirSync, readdirSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, extname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -15,7 +15,9 @@ if (!existsSync(sharedRoot)) {
 
 const FIXTURE_EXTENSIONS = new Set([".json", ".svg"]);
 
+/** Copies only when the content differs, so unchanged files keep their timestamps (and git stays clean). */
 function copy(from, to) {
+  if (existsSync(to) && readFileSync(from).equals(readFileSync(to))) return;
   mkdirSync(dirname(to), { recursive: true });
   copyFileSync(from, to);
 }
@@ -29,4 +31,4 @@ for (const name of fixtures) {
   copy(join(fixturesDir, name), join(target, "fixtures", name));
 }
 
-console.log(`[sync-shared] copied contract.ts, messages.en.json and ${fixtures.length} fixtures.`);
+console.log(`[sync-shared] contract.ts, messages.en.json and ${fixtures.length} fixtures are in sync.`);

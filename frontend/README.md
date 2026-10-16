@@ -1,4 +1,4 @@
-# LabelLens — frontend (Part 1)
+# LabelLens frontend
 
 React 18 + Vite 6 + TypeScript (strict) + Tailwind. A camera-first PWA that photographs a food label, sends it to the backend and shows every family member's verdict with the exact words on the photo behind it. Verdicts come from the backend's deterministic engine; this app only displays them.
 
@@ -15,7 +15,7 @@ npm run dev                   # http://localhost:5173
 
 `predev`/`prebuild` run two small scripts:
 - `scripts/sync-shared.mjs` copies `../shared/contract.ts`, the fixtures and the English messages into `src/shared/`. Never edit `src/shared/` by hand.
-- `scripts/render-poster.mjs` renders the sample label to `public/hero-poster*.webp` with sharp (skipped when up to date).
+- `scripts/render-poster.mjs` renders the sample label to `public/hero-poster*.webp` with sharp (only when missing; `npm run render-poster` re-renders).
 
 ### Environment (root `.env`)
 

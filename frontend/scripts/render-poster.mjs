@@ -2,8 +2,9 @@
 // and public/hero-poster-500.webp (phones).
 // The landing hero shows this raster instead of the live SVG: the SVG's many text runs and blur filter are
 // laid out and rasterised on the main thread, which was the largest cost of the first paint on phones.
-// Skips quietly (keeping the committed file) when the SVG or sharp is unavailable.
-import { existsSync, statSync } from "node:fs";
+// The posters are committed: dev/build only render them when missing; `npm run render-poster` (--force)
+// re-renders after the fixture SVG changes. Skips quietly when the SVG or sharp is unavailable.
+import { existsSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -16,9 +17,8 @@ if (!existsSync(source)) {
   console.log("[render-poster] fixture SVG not found — keeping public/hero-poster.webp.");
   process.exit(0);
 }
-const fresh = (file) => existsSync(file) && statSync(file).mtimeMs >= statSync(source).mtimeMs;
-if (fresh(target) && fresh(small)) {
-  console.log("[render-poster] up to date.");
+if (!process.argv.includes("--force") && existsSync(target) && existsSync(small)) {
+  console.log("[render-poster] posters present (npm run render-poster to re-render).");
   process.exit(0);
 }
 

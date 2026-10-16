@@ -14,7 +14,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "pwa-assets": "pwa-assets-generator",
-    "render-poster": "node scripts/render-poster.mjs"
+    "render-poster": "node scripts/render-poster.mjs --force"
   },
   "dependencies": {
     "@fontsource-variable/bricolage-grotesque": "^5.3.0",
