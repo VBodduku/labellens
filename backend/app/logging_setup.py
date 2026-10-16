@@ -56,13 +56,6 @@ def current_request() -> RequestLog | None:
     return _current.get()
 
 
-def note(key: str, value: Any) -> None:
-    """Attach a field (e.g. provider, retries) to the current request's log line."""
-    log = _current.get()
-    if log is not None:
-        log.extra[key] = value
-
-
 @contextmanager
 def stage(name: str) -> Iterator[None]:
     """Time a pipeline stage and record it on the current request's log line."""
