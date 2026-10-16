@@ -1,0 +1,3299 @@
+[
+  {
+    "id": "peanut",
+    "names": {
+      "en": [
+        "peanut",
+        "peanuts",
+        "groundnut",
+        "groundnuts",
+        "moongphali",
+        "mungfali",
+        "singdana",
+        "peanut butter",
+        "groundnut oil"
+      ],
+      "hi": [
+        "मूंगफली"
+      ],
+      "te": [
+        "వేరుశెనగ"
+      ]
+    },
+    "ins": [],
+    "categories": [
+      "peanut"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Peanut; declared ingredient mapped to peanut.",
+    "confidence": "high"
+  },
+  {
+    "id": "almond",
+    "names": {
+      "en": [
+        "almond",
+        "almonds",
+        "badam",
+        "almond milk",
+        "almond butter"
+      ],
+      "hi": [
+        "बादाम"
+      ],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "tree_nut"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Almond; declared ingredient mapped to tree_nut.",
+    "confidence": "high"
+  },
+  {
+    "id": "cashew",
+    "names": {
+      "en": [
+        "cashew",
+        "cashews",
+        "kaju",
+        "cashew milk",
+        "cashew butter"
+      ],
+      "hi": [
+        "काजू"
+      ],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "tree_nut"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Cashew; declared ingredient mapped to tree_nut.",
+    "confidence": "high"
+  },
+  {
+    "id": "pistachio",
+    "names": {
+      "en": [
+        "pistachio",
+        "pistachios",
+        "pista"
+      ],
+      "hi": [
+        "पिस्ता"
+      ],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "tree_nut"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Pistachio; declared ingredient mapped to tree_nut.",
+    "confidence": "high"
+  },
+  {
+    "id": "walnut",
+    "names": {
+      "en": [
+        "walnut",
+        "walnuts",
+        "akhrot"
+      ],
+      "hi": [
+        "अखरोट"
+      ],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "tree_nut"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Walnut; declared ingredient mapped to tree_nut.",
+    "confidence": "high"
+  },
+  {
+    "id": "hazelnut",
+    "names": {
+      "en": [
+        "hazelnut",
+        "hazelnuts"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "tree_nut"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Hazelnut; declared ingredient mapped to tree_nut.",
+    "confidence": "high"
+  },
+  {
+    "id": "pecan",
+    "names": {
+      "en": [
+        "pecan",
+        "pecans"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "tree_nut"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Pecan; declared ingredient mapped to tree_nut.",
+    "confidence": "high"
+  },
+  {
+    "id": "brazil_nut",
+    "names": {
+      "en": [
+        "brazil nut",
+        "brazil nuts"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "tree_nut"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Brazil nut; declared ingredient mapped to tree_nut.",
+    "confidence": "high"
+  },
+  {
+    "id": "macadamia",
+    "names": {
+      "en": [
+        "macadamia",
+        "macadamia nuts"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "tree_nut"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Macadamia; declared ingredient mapped to tree_nut.",
+    "confidence": "high"
+  },
+  {
+    "id": "wheat_flour",
+    "names": {
+      "en": [
+        "wheat",
+        "wheat flour",
+        "refined wheat flour",
+        "whole wheat flour",
+        "maida",
+        "atta",
+        "durum",
+        "durum wheat"
+      ],
+      "hi": [
+        "गेहूं",
+        "मैदा",
+        "आटा"
+      ],
+      "te": [
+        "గోధుమ"
+      ]
+    },
+    "ins": [],
+    "categories": [
+      "wheat",
+      "gluten"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Wheat; declared ingredient mapped to wheat, gluten.",
+    "confidence": "high"
+  },
+  {
+    "id": "semolina",
+    "names": {
+      "en": [
+        "semolina",
+        "sooji",
+        "suji",
+        "rava",
+        "rawa"
+      ],
+      "hi": [
+        "सूजी"
+      ],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "wheat",
+      "gluten"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Unqualified semolina/rava conventionally means wheat. Explicit rice rava is a separate compound.",
+    "confidence": "high"
+  },
+  {
+    "id": "barley",
+    "names": {
+      "en": [
+        "barley",
+        "jau",
+        "barley malt"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "gluten"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Barley grain and barley malt contain gluten.",
+    "confidence": "high"
+  },
+  {
+    "id": "malt_extract",
+    "names": {
+      "en": [
+        "malt extract",
+        "barley malt extract"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "gluten",
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Unqualified malt extract commonly means barley malt; check a stated alternative grain source.",
+    "confidence": "high"
+  },
+  {
+    "id": "rye",
+    "names": {
+      "en": [
+        "rye",
+        "rye flour"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "gluten"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Rye; declared ingredient mapped to gluten.",
+    "confidence": "high"
+  },
+  {
+    "id": "oats",
+    "names": {
+      "en": [
+        "oats",
+        "oat",
+        "oat flour",
+        "oatmeal",
+        "oat milk",
+        "oat cream"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [
+      "gluten"
+    ],
+    "origin": "varies",
+    "notes": "Oats may be contaminated with gluten-containing grains; certified gluten-free qualifier removes this possible category.",
+    "confidence": "medium"
+  },
+  {
+    "id": "milk",
+    "names": {
+      "en": [
+        "milk",
+        "doodh"
+      ],
+      "hi": [
+        "दूध"
+      ],
+      "te": [
+        "పాలు"
+      ]
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. This mapping screens declared milk origin, not individual lactose or allergenic protein concentrations.",
+    "confidence": "high"
+  },
+  {
+    "id": "milk_solids",
+    "names": {
+      "en": [
+        "milk solids",
+        "milk solid"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. This mapping screens declared milk origin, not individual lactose or allergenic protein concentrations.",
+    "confidence": "high"
+  },
+  {
+    "id": "milk_powder",
+    "names": {
+      "en": [
+        "milk powder",
+        "whole milk powder"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. This mapping screens declared milk origin, not individual lactose or allergenic protein concentrations.",
+    "confidence": "high"
+  },
+  {
+    "id": "skimmed_milk_powder",
+    "names": {
+      "en": [
+        "skimmed milk powder",
+        "skim milk powder",
+        "nonfat milk powder"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. This mapping screens declared milk origin, not individual lactose or allergenic protein concentrations.",
+    "confidence": "high"
+  },
+  {
+    "id": "whey",
+    "names": {
+      "en": [
+        "whey",
+        "whey powder",
+        "whey protein",
+        "whey solids",
+        "whey protein concentrate",
+        "whey protein isolate"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. This mapping screens declared milk origin, not individual lactose or allergenic protein concentrations.",
+    "confidence": "high"
+  },
+  {
+    "id": "casein",
+    "names": {
+      "en": [
+        "casein",
+        "caseinate",
+        "sodium caseinate",
+        "calcium caseinate",
+        "milk protein"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. This mapping screens declared milk origin, not individual lactose or allergenic protein concentrations.",
+    "confidence": "high"
+  },
+  {
+    "id": "lactose",
+    "names": {
+      "en": [
+        "lactose",
+        "milk sugar"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. This mapping screens declared milk origin, not individual lactose or allergenic protein concentrations.",
+    "confidence": "high"
+  },
+  {
+    "id": "butter",
+    "names": {
+      "en": [
+        "butter",
+        "butter oil"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. This mapping screens declared milk origin, not individual lactose or allergenic protein concentrations.",
+    "confidence": "high"
+  },
+  {
+    "id": "ghee",
+    "names": {
+      "en": [
+        "ghee",
+        "clarified butter"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. This mapping screens declared milk origin, not individual lactose or allergenic protein concentrations.",
+    "confidence": "high"
+  },
+  {
+    "id": "cream",
+    "names": {
+      "en": [
+        "cream",
+        "malai"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. This mapping screens declared milk origin, not individual lactose or allergenic protein concentrations.",
+    "confidence": "high"
+  },
+  {
+    "id": "khoya",
+    "names": {
+      "en": [
+        "khoya",
+        "mawa",
+        "khoa"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. This mapping screens declared milk origin, not individual lactose or allergenic protein concentrations.",
+    "confidence": "high"
+  },
+  {
+    "id": "paneer",
+    "names": {
+      "en": [
+        "paneer",
+        "cottage cheese"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. This mapping screens declared milk origin, not individual lactose or allergenic protein concentrations.",
+    "confidence": "high"
+  },
+  {
+    "id": "curd",
+    "names": {
+      "en": [
+        "curd",
+        "dahi",
+        "yogurt",
+        "yoghurt"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. This mapping screens declared milk origin, not individual lactose or allergenic protein concentrations.",
+    "confidence": "high"
+  },
+  {
+    "id": "cheese",
+    "names": {
+      "en": [
+        "cheese",
+        "cheddar",
+        "mozzarella"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. This mapping screens declared milk origin, not individual lactose or allergenic protein concentrations.",
+    "confidence": "high"
+  },
+  {
+    "id": "buttermilk",
+    "names": {
+      "en": [
+        "buttermilk",
+        "chaas",
+        "chhach"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. This mapping screens declared milk origin, not individual lactose or allergenic protein concentrations.",
+    "confidence": "high"
+  },
+  {
+    "id": "egg",
+    "names": {
+      "en": [
+        "egg",
+        "eggs",
+        "egg white",
+        "egg yolk",
+        "anda"
+      ],
+      "hi": [
+        "अंडा"
+      ],
+      "te": [
+        "గుడ్డు"
+      ]
+    },
+    "ins": [],
+    "categories": [
+      "egg",
+      "egg_derived"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Egg; declared ingredient mapped to egg, egg_derived.",
+    "confidence": "high"
+  },
+  {
+    "id": "albumin",
+    "names": {
+      "en": [
+        "albumin",
+        "ovalbumin",
+        "egg albumen"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "egg",
+      "egg_derived"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Food-label albumin/albumen commonly refers to egg; other explicit protein sources require source-specific review.",
+    "confidence": "high"
+  },
+  {
+    "id": "egg_lecithin",
+    "names": {
+      "en": [
+        "egg lecithin"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "egg",
+      "egg_derived"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Egg lecithin; declared ingredient mapped to egg, egg_derived.",
+    "confidence": "high"
+  },
+  {
+    "id": "lysozyme",
+    "names": {
+      "en": [
+        "lysozyme",
+        "egg lysozyme"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "1105"
+    ],
+    "categories": [
+      "egg",
+      "egg_derived"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Food additive lysozyme is conventionally isolated from hen egg white.",
+    "confidence": "high"
+  },
+  {
+    "id": "soy",
+    "names": {
+      "en": [
+        "soy",
+        "soya",
+        "soybean",
+        "soybeans",
+        "soya bean",
+        "soy flour",
+        "soy protein",
+        "soya protein",
+        "soy protein isolate",
+        "tofu",
+        "soy milk",
+        "soya milk",
+        "soy cream"
+      ],
+      "hi": [
+        "सोया"
+      ],
+      "te": [
+        "సోయా"
+      ]
+    },
+    "ins": [],
+    "categories": [
+      "soy"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Soy; declared ingredient mapped to soy.",
+    "confidence": "high"
+  },
+  {
+    "id": "soy_lecithin",
+    "names": {
+      "en": [
+        "soy lecithin",
+        "soya lecithin"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "soy"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Soy lecithin; declared ingredient mapped to soy.",
+    "confidence": "high"
+  },
+  {
+    "id": "sesame",
+    "names": {
+      "en": [
+        "sesame",
+        "sesame seeds",
+        "sesame oil",
+        "til",
+        "gingelly",
+        "tahini"
+      ],
+      "hi": [
+        "तिल"
+      ],
+      "te": [
+        "నువ్వులు"
+      ]
+    },
+    "ins": [],
+    "categories": [
+      "sesame"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Sesame; declared ingredient mapped to sesame.",
+    "confidence": "high"
+  },
+  {
+    "id": "mustard",
+    "names": {
+      "en": [
+        "mustard",
+        "mustard seed",
+        "mustard oil",
+        "rai",
+        "sarson"
+      ],
+      "hi": [
+        "सरसों",
+        "राई"
+      ],
+      "te": [
+        "ఆవాలు"
+      ]
+    },
+    "ins": [],
+    "categories": [
+      "mustard"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Mustard; declared ingredient mapped to mustard.",
+    "confidence": "high"
+  },
+  {
+    "id": "fish",
+    "names": {
+      "en": [
+        "fish",
+        "fish sauce",
+        "anchovy",
+        "anchovies",
+        "tuna",
+        "salmon",
+        "machhli"
+      ],
+      "hi": [
+        "मछली"
+      ],
+      "te": [
+        "చేప"
+      ]
+    },
+    "ins": [],
+    "categories": [
+      "fish",
+      "fish_derived"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Fish; declared ingredient mapped to fish, fish_derived.",
+    "confidence": "high"
+  },
+  {
+    "id": "prawn",
+    "names": {
+      "en": [
+        "prawn",
+        "prawns",
+        "shrimp",
+        "shrimps",
+        "jhinga"
+      ],
+      "hi": [
+        "झींगा"
+      ],
+      "te": [
+        "రొయ్యలు"
+      ]
+    },
+    "ins": [],
+    "categories": [
+      "crustacean",
+      "animal_derived"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Prawn; declared ingredient mapped to crustacean, animal_derived.",
+    "confidence": "high"
+  },
+  {
+    "id": "crab",
+    "names": {
+      "en": [
+        "crab",
+        "crabs"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "crustacean",
+      "animal_derived"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Crab; declared ingredient mapped to crustacean, animal_derived.",
+    "confidence": "high"
+  },
+  {
+    "id": "lobster",
+    "names": {
+      "en": [
+        "lobster",
+        "crayfish"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "crustacean",
+      "animal_derived"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Lobster; declared ingredient mapped to crustacean, animal_derived.",
+    "confidence": "high"
+  },
+  {
+    "id": "mollusc",
+    "names": {
+      "en": [
+        "mollusc",
+        "molluscs",
+        "mussel",
+        "mussels",
+        "oyster",
+        "oysters",
+        "squid",
+        "octopus",
+        "clam",
+        "clams"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "mollusc",
+      "animal_derived"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Molluscs; regional names vary, so only unambiguous English aliases are included.",
+    "confidence": "high"
+  },
+  {
+    "id": "celery",
+    "names": {
+      "en": [
+        "celery",
+        "celery seed",
+        "celery salt"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "celery"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Celery; ajmod/ajwain translations can refer to different plants, so they are deliberately omitted.",
+    "confidence": "high"
+  },
+  {
+    "id": "lupin",
+    "names": {
+      "en": [
+        "lupin",
+        "lupine",
+        "lupin flour"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "lupin"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Lupin seed/flour. No unreviewed regional translation is assigned.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_220",
+    "names": {
+      "en": [
+        "sulphur dioxide",
+        "sulfur dioxide"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "220"
+    ],
+    "categories": [
+      "sulphite"
+    ],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Sulphur dioxide; declared ingredient mapped to sulphite.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_221",
+    "names": {
+      "en": [
+        "sodium sulphite",
+        "sodium sulfite"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "221"
+    ],
+    "categories": [
+      "sulphite"
+    ],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Sodium sulphite; declared ingredient mapped to sulphite.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_222",
+    "names": {
+      "en": [
+        "sodium hydrogen sulphite",
+        "sodium bisulphite",
+        "sodium bisulfite"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "222"
+    ],
+    "categories": [
+      "sulphite"
+    ],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Sodium hydrogen sulphite; declared ingredient mapped to sulphite.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_223",
+    "names": {
+      "en": [
+        "sodium metabisulphite",
+        "sodium metabisulfite"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "223"
+    ],
+    "categories": [
+      "sulphite"
+    ],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Sodium metabisulphite; declared ingredient mapped to sulphite.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_224",
+    "names": {
+      "en": [
+        "potassium metabisulphite",
+        "potassium metabisulfite"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "224"
+    ],
+    "categories": [
+      "sulphite"
+    ],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Potassium metabisulphite; declared ingredient mapped to sulphite.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_225",
+    "names": {
+      "en": [
+        "potassium sulphite",
+        "potassium sulfite"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "225"
+    ],
+    "categories": [
+      "sulphite"
+    ],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Potassium sulphite; declared ingredient mapped to sulphite.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_226",
+    "names": {
+      "en": [
+        "calcium sulphite",
+        "calcium sulfite"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "226"
+    ],
+    "categories": [
+      "sulphite"
+    ],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Calcium sulphite; declared ingredient mapped to sulphite.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_227",
+    "names": {
+      "en": [
+        "calcium hydrogen sulphite",
+        "calcium bisulphite"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "227"
+    ],
+    "categories": [
+      "sulphite"
+    ],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Calcium hydrogen sulphite; declared ingredient mapped to sulphite.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_228",
+    "names": {
+      "en": [
+        "potassium hydrogen sulphite",
+        "potassium bisulphite"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "228"
+    ],
+    "categories": [
+      "sulphite"
+    ],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Potassium hydrogen sulphite; declared ingredient mapped to sulphite.",
+    "confidence": "high"
+  },
+  {
+    "id": "meat",
+    "names": {
+      "en": [
+        "meat"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "meat"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Meat; declared ingredient mapped to meat.",
+    "confidence": "high"
+  },
+  {
+    "id": "chicken",
+    "names": {
+      "en": [
+        "chicken",
+        "poultry",
+        "murgh"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "poultry"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Chicken; declared ingredient mapped to poultry.",
+    "confidence": "high"
+  },
+  {
+    "id": "mutton",
+    "names": {
+      "en": [
+        "mutton",
+        "lamb",
+        "goat meat"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "meat"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Mutton; declared ingredient mapped to meat.",
+    "confidence": "high"
+  },
+  {
+    "id": "beef",
+    "names": {
+      "en": [
+        "beef"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "meat"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Beef; declared ingredient mapped to meat.",
+    "confidence": "high"
+  },
+  {
+    "id": "pork",
+    "names": {
+      "en": [
+        "pork",
+        "bacon",
+        "ham"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "meat"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Pork; declared ingredient mapped to meat.",
+    "confidence": "high"
+  },
+  {
+    "id": "lard",
+    "names": {
+      "en": [
+        "lard"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "meat",
+      "animal_derived"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Lard; declared ingredient mapped to meat, animal_derived.",
+    "confidence": "high"
+  },
+  {
+    "id": "tallow",
+    "names": {
+      "en": [
+        "tallow",
+        "beef fat"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "meat",
+      "animal_derived"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Tallow; declared ingredient mapped to meat, animal_derived.",
+    "confidence": "high"
+  },
+  {
+    "id": "gelatin",
+    "names": {
+      "en": [
+        "gelatin",
+        "gelatine"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "441"
+    ],
+    "categories": [
+      "gelatin",
+      "animal_derived"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Collagen-derived gelling ingredient. 441 is a legacy gelatin label code; do not interpret it as current authorization in any jurisdiction.",
+    "confidence": "high"
+  },
+  {
+    "id": "carmine",
+    "names": {
+      "en": [
+        "carmine",
+        "cochineal",
+        "carminic acid"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "120"
+    ],
+    "categories": [
+      "insect_derived"
+    ],
+    "possible_categories": [],
+    "origin": "insect",
+    "notes": "Colour derived from cochineal insects; the green mark does not resolve this category.",
+    "confidence": "high"
+  },
+  {
+    "id": "shellac",
+    "names": {
+      "en": [
+        "shellac",
+        "confectioners glaze"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "904"
+    ],
+    "categories": [
+      "insect_derived"
+    ],
+    "possible_categories": [],
+    "origin": "insect",
+    "notes": "Lac insect secretion; diet practices differ, but insect origin is definite.",
+    "confidence": "high"
+  },
+  {
+    "id": "beeswax",
+    "names": {
+      "en": [
+        "beeswax",
+        "bee wax"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "901"
+    ],
+    "categories": [
+      "insect_derived"
+    ],
+    "possible_categories": [],
+    "origin": "insect",
+    "notes": "Beeswax; declared ingredient mapped to insect_derived.",
+    "confidence": "high"
+  },
+  {
+    "id": "honey",
+    "names": {
+      "en": [
+        "honey",
+        "shahad"
+      ],
+      "hi": [
+        "शहद"
+      ],
+      "te": [
+        "తేనె"
+      ]
+    },
+    "ins": [],
+    "categories": [
+      "honey",
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Honey; declared ingredient mapped to honey, added_sugar, sugar_alias.",
+    "confidence": "high"
+  },
+  {
+    "id": "bone_phosphate",
+    "names": {
+      "en": [
+        "bone phosphate",
+        "edible bone phosphate"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "542"
+    ],
+    "categories": [
+      "animal_derived"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Bone-derived phosphate; not interchangeable with generic calcium phosphate.",
+    "confidence": "high"
+  },
+  {
+    "id": "animal_rennet",
+    "names": {
+      "en": [
+        "animal rennet",
+        "calf rennet"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "animal_derived"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Animal rennet; declared ingredient mapped to animal_derived.",
+    "confidence": "high"
+  },
+  {
+    "id": "rennet",
+    "names": {
+      "en": [
+        "rennet"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [
+      "animal_derived"
+    ],
+    "origin": "varies",
+    "notes": "Rennet may be animal or microbial; origin must be printed to resolve it.",
+    "confidence": "medium"
+  },
+  {
+    "id": "enzymes",
+    "names": {
+      "en": [
+        "enzymes",
+        "enzyme"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [
+      "animal_derived"
+    ],
+    "origin": "varies",
+    "notes": "Enzymes can be animal, plant or microbial; name alone does not identify source.",
+    "confidence": "medium"
+  },
+  {
+    "id": "ins_920",
+    "names": {
+      "en": [
+        "l cysteine",
+        "l cysteine hydrochloride",
+        "cysteine"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "920"
+    ],
+    "categories": [],
+    "possible_categories": [
+      "animal_derived"
+    ],
+    "origin": "varies",
+    "notes": "L-cysteine can be animal-derived or produced by fermentation/synthesis; code alone does not establish source.",
+    "confidence": "medium"
+  },
+  {
+    "id": "ins_471",
+    "names": {
+      "en": [
+        "mono and diglycerides",
+        "mono diglycerides",
+        "mono and di glycerides of fatty acids"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "471"
+    ],
+    "categories": [],
+    "possible_categories": [
+      "animal_derived"
+    ],
+    "origin": "varies",
+    "notes": "Fatty acid feedstock can be vegetable or animal; unqualified code is not proof of animal origin.",
+    "confidence": "medium"
+  },
+  {
+    "id": "ins_472a",
+    "names": {
+      "en": [
+        "acetic acid esters of mono and diglycerides"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "472a"
+    ],
+    "categories": [],
+    "possible_categories": [
+      "animal_derived"
+    ],
+    "origin": "varies",
+    "notes": "Glyceride ester; fatty acid origin can vary. The letter suffix is significant. E472f is included as a label code, not a claim of current Codex authorization.",
+    "confidence": "medium"
+  },
+  {
+    "id": "ins_472b",
+    "names": {
+      "en": [
+        "lactic acid esters of mono and diglycerides"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "472b"
+    ],
+    "categories": [],
+    "possible_categories": [
+      "animal_derived"
+    ],
+    "origin": "varies",
+    "notes": "Glyceride ester; fatty acid origin can vary. The letter suffix is significant. E472f is included as a label code, not a claim of current Codex authorization.",
+    "confidence": "medium"
+  },
+  {
+    "id": "ins_472c",
+    "names": {
+      "en": [
+        "citric acid esters of mono and diglycerides"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "472c"
+    ],
+    "categories": [],
+    "possible_categories": [
+      "animal_derived"
+    ],
+    "origin": "varies",
+    "notes": "Glyceride ester; fatty acid origin can vary. The letter suffix is significant. E472f is included as a label code, not a claim of current Codex authorization.",
+    "confidence": "medium"
+  },
+  {
+    "id": "ins_472d",
+    "names": {
+      "en": [
+        "tartaric acid esters of mono and diglycerides"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "472d"
+    ],
+    "categories": [],
+    "possible_categories": [
+      "animal_derived"
+    ],
+    "origin": "varies",
+    "notes": "Glyceride ester; fatty acid origin can vary. The letter suffix is significant. E472f is included as a label code, not a claim of current Codex authorization.",
+    "confidence": "medium"
+  },
+  {
+    "id": "ins_472e",
+    "names": {
+      "en": [
+        "datem",
+        "diacetyltartaric acid esters of mono and diglycerides"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "472e"
+    ],
+    "categories": [],
+    "possible_categories": [
+      "animal_derived"
+    ],
+    "origin": "varies",
+    "notes": "Glyceride ester; fatty acid origin can vary. The letter suffix is significant. E472f is included as a label code, not a claim of current Codex authorization.",
+    "confidence": "medium"
+  },
+  {
+    "id": "ins_472f",
+    "names": {
+      "en": [
+        "mixed acetic and tartaric acid esters of mono and diglycerides"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "472f"
+    ],
+    "categories": [],
+    "possible_categories": [
+      "animal_derived"
+    ],
+    "origin": "varies",
+    "notes": "Glyceride ester; fatty acid origin can vary. The letter suffix is significant. E472f is included as a label code, not a claim of current Codex authorization.",
+    "confidence": "medium"
+  },
+  {
+    "id": "ins_627",
+    "names": {
+      "en": [
+        "disodium guanylate",
+        "disodium 5 guanylate"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "627"
+    ],
+    "categories": [],
+    "possible_categories": [
+      "animal_derived",
+      "fish_derived"
+    ],
+    "origin": "varies",
+    "notes": "Flavour enhancer may have animal or microbial origin; no definite source follows from the code.",
+    "confidence": "medium"
+  },
+  {
+    "id": "ins_631",
+    "names": {
+      "en": [
+        "disodium inosinate",
+        "disodium 5 inosinate"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "631"
+    ],
+    "categories": [],
+    "possible_categories": [
+      "animal_derived",
+      "fish_derived"
+    ],
+    "origin": "varies",
+    "notes": "Flavour enhancer may have animal or microbial origin; no definite source follows from the code.",
+    "confidence": "medium"
+  },
+  {
+    "id": "ins_635",
+    "names": {
+      "en": [
+        "disodium ribonucleotides",
+        "disodium 5 ribonucleotides"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "635"
+    ],
+    "categories": [],
+    "possible_categories": [
+      "animal_derived",
+      "fish_derived"
+    ],
+    "origin": "varies",
+    "notes": "Flavour enhancer may have animal or microbial origin; no definite source follows from the code.",
+    "confidence": "medium"
+  },
+  {
+    "id": "ins_322",
+    "names": {
+      "en": [
+        "lecithin",
+        "lecithins"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "322",
+      "322(i)",
+      "322(ii)"
+    ],
+    "categories": [],
+    "possible_categories": [
+      "soy",
+      "egg",
+      "egg_derived"
+    ],
+    "origin": "varies",
+    "notes": "Lecithins can originate from soy, sunflower or egg. The source qualifier determines the relevant category.",
+    "confidence": "medium"
+  },
+  {
+    "id": "onion",
+    "names": {
+      "en": [
+        "onion",
+        "onions",
+        "onion powder",
+        "dehydrated onion",
+        "onion flakes",
+        "pyaz",
+        "pyaaz"
+      ],
+      "hi": [
+        "प्याज"
+      ],
+      "te": [
+        "ఉల్లిపాయ"
+      ]
+    },
+    "ins": [],
+    "categories": [
+      "onion"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Onion; declared ingredient mapped to onion.",
+    "confidence": "high"
+  },
+  {
+    "id": "garlic",
+    "names": {
+      "en": [
+        "garlic",
+        "garlic powder",
+        "dehydrated garlic",
+        "garlic flakes",
+        "lahsun",
+        "lasun"
+      ],
+      "hi": [
+        "लहसुन"
+      ],
+      "te": [
+        "వెల్లుల్లి"
+      ]
+    },
+    "ins": [],
+    "categories": [
+      "garlic"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Garlic; declared ingredient mapped to garlic.",
+    "confidence": "high"
+  },
+  {
+    "id": "potato",
+    "names": {
+      "en": [
+        "potato",
+        "potatoes",
+        "potato starch",
+        "aloo"
+      ],
+      "hi": [
+        "आलू"
+      ],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "root_vegetable"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Potato; declared ingredient mapped to root_vegetable.",
+    "confidence": "high"
+  },
+  {
+    "id": "carrot",
+    "names": {
+      "en": [
+        "carrot",
+        "carrots",
+        "gajar"
+      ],
+      "hi": [
+        "गाजर"
+      ],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "root_vegetable"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Carrot; declared ingredient mapped to root_vegetable.",
+    "confidence": "high"
+  },
+  {
+    "id": "beetroot",
+    "names": {
+      "en": [
+        "beetroot",
+        "beet",
+        "beets"
+      ],
+      "hi": [
+        "चुकंदर"
+      ],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "root_vegetable"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Beetroot; declared ingredient mapped to root_vegetable.",
+    "confidence": "high"
+  },
+  {
+    "id": "radish",
+    "names": {
+      "en": [
+        "radish",
+        "mooli"
+      ],
+      "hi": [
+        "मूली"
+      ],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "root_vegetable"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Radish; declared ingredient mapped to root_vegetable.",
+    "confidence": "high"
+  },
+  {
+    "id": "sweet_potato",
+    "names": {
+      "en": [
+        "sweet potato",
+        "shakarkand"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "root_vegetable"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Sweet potato; declared ingredient mapped to root_vegetable.",
+    "confidence": "high"
+  },
+  {
+    "id": "ginger",
+    "names": {
+      "en": [
+        "ginger",
+        "fresh ginger",
+        "adrak"
+      ],
+      "hi": [
+        "अदरक"
+      ],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "root_vegetable"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Ginger; declared ingredient mapped to root_vegetable.",
+    "confidence": "high"
+  },
+  {
+    "id": "turnip",
+    "names": {
+      "en": [
+        "turnip",
+        "shalgam"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "root_vegetable"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Turnip; declared ingredient mapped to root_vegetable.",
+    "confidence": "high"
+  },
+  {
+    "id": "dried_ginger",
+    "names": {
+      "en": [
+        "dried ginger",
+        "dry ginger",
+        "ginger powder",
+        "sonth"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [
+      "root_vegetable"
+    ],
+    "origin": "varies",
+    "notes": "Acceptance of dried ginger varies between Jain practices. This is a diet-practice uncertainty, not botanical origin.",
+    "confidence": "medium"
+  },
+  {
+    "id": "turmeric",
+    "names": {
+      "en": [
+        "turmeric",
+        "turmeric powder",
+        "haldi"
+      ],
+      "hi": [
+        "हल्दी"
+      ],
+      "te": [
+        "పసుపు"
+      ]
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [
+      "root_vegetable"
+    ],
+    "origin": "varies",
+    "notes": "Turmeric is a rhizome; acceptance of dried turmeric varies between Jain practices.",
+    "confidence": "medium"
+  },
+  {
+    "id": "spices",
+    "names": {
+      "en": [
+        "spices",
+        "spices and condiments",
+        "mixed spices",
+        "seasoning"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [
+      "onion",
+      "garlic"
+    ],
+    "origin": "varies",
+    "notes": "Unspecified spice/seasoning blends may include onion or garlic; label does not establish composition.",
+    "confidence": "medium"
+  },
+  {
+    "id": "natural_flavours",
+    "names": {
+      "en": [
+        "natural flavours",
+        "natural flavour",
+        "natural flavors",
+        "natural flavor",
+        "natural flavouring"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [
+      "onion",
+      "garlic",
+      "animal_derived",
+      "dairy"
+    ],
+    "origin": "varies",
+    "notes": "Source not declared on label. Broad flavour descriptions do not identify onion, garlic or animal/dairy sources.",
+    "confidence": "medium"
+  },
+  {
+    "id": "alcohol",
+    "names": {
+      "en": [
+        "alcohol",
+        "ethanol",
+        "wine",
+        "rum",
+        "brandy",
+        "alcohol based flavouring"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "alcohol"
+    ],
+    "possible_categories": [],
+    "origin": "microbial",
+    "notes": "Alcohol; declared ingredient mapped to alcohol.",
+    "confidence": "high"
+  },
+  {
+    "id": "sugar",
+    "names": {
+      "en": [
+        "sugar",
+        "cane sugar",
+        "white sugar",
+        "brown sugar"
+      ],
+      "hi": [
+        "चीनी"
+      ],
+      "te": [
+        "చక్కెర"
+      ]
+    },
+    "ins": [],
+    "categories": [
+      "added_sugar"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Sugar; declared ingredient mapped to added_sugar.",
+    "confidence": "high"
+  },
+  {
+    "id": "jaggery",
+    "names": {
+      "en": [
+        "jaggery",
+        "gur",
+        "gud"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Jaggery; declared ingredient mapped to added_sugar, sugar_alias.",
+    "confidence": "high"
+  },
+  {
+    "id": "khandsari",
+    "names": {
+      "en": [
+        "khandsari"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Khandsari; declared ingredient mapped to added_sugar, sugar_alias.",
+    "confidence": "high"
+  },
+  {
+    "id": "invert_sugar",
+    "names": {
+      "en": [
+        "invert sugar",
+        "invert syrup",
+        "invert sugar syrup"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Invert sugar; declared ingredient mapped to added_sugar, sugar_alias.",
+    "confidence": "high"
+  },
+  {
+    "id": "glucose",
+    "names": {
+      "en": [
+        "glucose",
+        "liquid glucose",
+        "glucose syrup"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Glucose; declared ingredient mapped to added_sugar, sugar_alias.",
+    "confidence": "high"
+  },
+  {
+    "id": "dextrose",
+    "names": {
+      "en": [
+        "dextrose",
+        "dextrose monohydrate"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Dextrose; declared ingredient mapped to added_sugar, sugar_alias.",
+    "confidence": "high"
+  },
+  {
+    "id": "fructose",
+    "names": {
+      "en": [
+        "fructose"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Fructose; declared ingredient mapped to added_sugar, sugar_alias.",
+    "confidence": "high"
+  },
+  {
+    "id": "hfcs",
+    "names": {
+      "en": [
+        "hfcs",
+        "high fructose corn syrup"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Hfcs; declared ingredient mapped to added_sugar, sugar_alias.",
+    "confidence": "high"
+  },
+  {
+    "id": "corn_syrup",
+    "names": {
+      "en": [
+        "corn syrup",
+        "corn syrup solids"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Corn syrup; declared ingredient mapped to added_sugar, sugar_alias.",
+    "confidence": "high"
+  },
+  {
+    "id": "maltodextrin",
+    "names": {
+      "en": [
+        "maltodextrin"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "LabelLens sugar-signal category. Maltodextrin is a glucose polymer, not chemically a sugar; date paste may contain intrinsic sugars. This signal only requests a quantitative sugar check.",
+    "confidence": "high"
+  },
+  {
+    "id": "maltose",
+    "names": {
+      "en": [
+        "maltose"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Maltose; declared ingredient mapped to added_sugar, sugar_alias.",
+    "confidence": "high"
+  },
+  {
+    "id": "date_syrup",
+    "names": {
+      "en": [
+        "date syrup",
+        "date paste"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "LabelLens sugar-signal category. Maltodextrin is a glucose polymer, not chemically a sugar; date paste may contain intrinsic sugars. This signal only requests a quantitative sugar check.",
+    "confidence": "high"
+  },
+  {
+    "id": "sucrose",
+    "names": {
+      "en": [
+        "sucrose"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Sucrose; declared ingredient mapped to added_sugar, sugar_alias.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_420",
+    "names": {
+      "en": [
+        "sorbitol",
+        "sorbitol syrup"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "420"
+    ],
+    "categories": [
+      "polyol"
+    ],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Sorbitol; declared ingredient mapped to polyol.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_421",
+    "names": {
+      "en": [
+        "mannitol"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "421"
+    ],
+    "categories": [
+      "polyol"
+    ],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Mannitol; declared ingredient mapped to polyol.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_953",
+    "names": {
+      "en": [
+        "isomalt"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "953"
+    ],
+    "categories": [
+      "polyol"
+    ],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Isomalt; declared ingredient mapped to polyol.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_965",
+    "names": {
+      "en": [
+        "maltitol",
+        "maltitol syrup"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "965"
+    ],
+    "categories": [
+      "polyol"
+    ],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Maltitol; declared ingredient mapped to polyol.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_967",
+    "names": {
+      "en": [
+        "xylitol"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "967"
+    ],
+    "categories": [
+      "polyol"
+    ],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Xylitol; declared ingredient mapped to polyol.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_968",
+    "names": {
+      "en": [
+        "erythritol"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "968"
+    ],
+    "categories": [
+      "polyol"
+    ],
+    "possible_categories": [],
+    "origin": "microbial",
+    "notes": "Erythritol; declared ingredient mapped to polyol.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_966",
+    "names": {
+      "en": [
+        "lactitol"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "966"
+    ],
+    "categories": [
+      "polyol",
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Lactose-derived polyol. Milk-origin screening category does not establish residual milk protein or a clinical allergy risk.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_950",
+    "names": {
+      "en": [
+        "acesulfame k",
+        "acesulfame potassium"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "950"
+    ],
+    "categories": [
+      "artificial_sweetener"
+    ],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Acesulfame k; declared ingredient mapped to artificial_sweetener.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_951",
+    "names": {
+      "en": [
+        "aspartame"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "951"
+    ],
+    "categories": [
+      "artificial_sweetener"
+    ],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Aspartame; declared ingredient mapped to artificial_sweetener.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_952",
+    "names": {
+      "en": [
+        "cyclamate",
+        "sodium cyclamate"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "952"
+    ],
+    "categories": [
+      "artificial_sweetener"
+    ],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Cyclamate; declared ingredient mapped to artificial_sweetener.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_954",
+    "names": {
+      "en": [
+        "saccharin",
+        "sodium saccharin"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "954"
+    ],
+    "categories": [
+      "artificial_sweetener"
+    ],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Saccharin; declared ingredient mapped to artificial_sweetener.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_955",
+    "names": {
+      "en": [
+        "sucralose"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "955"
+    ],
+    "categories": [
+      "artificial_sweetener"
+    ],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Sucralose; declared ingredient mapped to artificial_sweetener.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_961",
+    "names": {
+      "en": [
+        "neotame"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "961"
+    ],
+    "categories": [
+      "artificial_sweetener"
+    ],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Neotame; declared ingredient mapped to artificial_sweetener.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_960",
+    "names": {
+      "en": [
+        "steviol glycosides",
+        "stevia"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "960"
+    ],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Plant-derived sweetener; not counted as artificial in this catalog.",
+    "confidence": "high"
+  },
+  {
+    "id": "palm_oil",
+    "names": {
+      "en": [
+        "palm oil",
+        "palmolein",
+        "palm olein",
+        "palm fat",
+        "palm kernel oil",
+        "palm",
+        "edible vegetable oil palm"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "palm_oil"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Palm oil; declared ingredient mapped to palm_oil.",
+    "confidence": "high"
+  },
+  {
+    "id": "caffeine",
+    "names": {
+      "en": [
+        "caffeine"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "caffeine"
+    ],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Caffeine is the tracked stimulant regardless of natural or synthetic source; source is not established by the unqualified name.",
+    "confidence": "high"
+  },
+  {
+    "id": "coffee",
+    "names": {
+      "en": [
+        "coffee",
+        "coffee powder",
+        "coffee extract"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "caffeine"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Coffee; declared ingredient mapped to caffeine.",
+    "confidence": "high"
+  },
+  {
+    "id": "decaf_coffee",
+    "names": {
+      "en": [
+        "decaffeinated coffee",
+        "decaf coffee"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [
+      "caffeine"
+    ],
+    "origin": "varies",
+    "notes": "Decaffeinated coffee can retain small amounts of caffeine; amount is not inferred.",
+    "confidence": "medium"
+  },
+  {
+    "id": "guarana",
+    "names": {
+      "en": [
+        "guarana"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "caffeine"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Guarana; declared ingredient mapped to caffeine.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_621",
+    "names": {
+      "en": [
+        "monosodium glutamate",
+        "msg"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "621"
+    ],
+    "categories": [
+      "added_msg"
+    ],
+    "possible_categories": [],
+    "origin": "microbial",
+    "notes": "Monosodium glutamate; declared ingredient mapped to added_msg.",
+    "confidence": "high"
+  },
+  {
+    "id": "salt",
+    "names": {
+      "en": [
+        "salt",
+        "iodised salt",
+        "iodized salt",
+        "sodium chloride"
+      ],
+      "hi": [
+        "नमक"
+      ],
+      "te": [
+        "ఉప్పు"
+      ]
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "mineral",
+    "notes": "Salt; declared ingredient mapped to no tracked restriction category.",
+    "confidence": "high"
+  },
+  {
+    "id": "cocoa_butter",
+    "names": {
+      "en": [
+        "cocoa butter",
+        "cacao butter"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Cocoa butter; declared ingredient mapped to no tracked restriction category.",
+    "confidence": "high"
+  },
+  {
+    "id": "cocoa_solids",
+    "names": {
+      "en": [
+        "cocoa solids",
+        "cocoa powder",
+        "cacao powder",
+        "cocoa"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Cocoa solids; declared ingredient mapped to no tracked restriction category.",
+    "confidence": "high"
+  },
+  {
+    "id": "coconut",
+    "names": {
+      "en": [
+        "coconut",
+        "coconut milk",
+        "coconut cream",
+        "coconut oil",
+        "nariyal",
+        "coconut butter"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Coconut; declared ingredient mapped to no tracked restriction category.",
+    "confidence": "high"
+  },
+  {
+    "id": "sunflower_oil",
+    "names": {
+      "en": [
+        "sunflower oil"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Sunflower oil; declared ingredient mapped to no tracked restriction category.",
+    "confidence": "high"
+  },
+  {
+    "id": "sunflower_lecithin",
+    "names": {
+      "en": [
+        "sunflower lecithin"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Sunflower lecithin; declared ingredient mapped to no tracked restriction category.",
+    "confidence": "high"
+  },
+  {
+    "id": "rice",
+    "names": {
+      "en": [
+        "rice",
+        "rice flour",
+        "rice rava",
+        "rice semolina",
+        "rice milk"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Rice; declared ingredient mapped to no tracked restriction category.",
+    "confidence": "high"
+  },
+  {
+    "id": "corn",
+    "names": {
+      "en": [
+        "corn",
+        "maize",
+        "corn flour",
+        "cornflour",
+        "corn starch"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Corn; declared ingredient mapped to no tracked restriction category.",
+    "confidence": "high"
+  },
+  {
+    "id": "water",
+    "names": {
+      "en": [
+        "water"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Water; declared ingredient mapped to no tracked restriction category.",
+    "confidence": "high"
+  },
+  {
+    "id": "vanilla",
+    "names": {
+      "en": [
+        "vanilla",
+        "vanilla extract"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Vanilla; declared ingredient mapped to no tracked restriction category.",
+    "confidence": "high"
+  },
+  {
+    "id": "tapioca",
+    "names": {
+      "en": [
+        "tapioca",
+        "cassava",
+        "sabudana"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "root_vegetable"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Tapioca; declared ingredient mapped to root_vegetable.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_500",
+    "names": {
+      "en": [
+        "sodium carbonates",
+        "sodium carbonate",
+        "sodium bicarbonate",
+        "baking soda"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "500",
+      "500(i)",
+      "500(ii)",
+      "500(iii)"
+    ],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "mineral",
+    "notes": "Sodium carbonates; declared ingredient mapped to no tracked restriction category.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_503",
+    "names": {
+      "en": [
+        "ammonium carbonates",
+        "ammonium carbonate",
+        "ammonium bicarbonate"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "503",
+      "503(i)",
+      "503(ii)"
+    ],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Ammonium carbonates; declared ingredient mapped to no tracked restriction category.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_330",
+    "names": {
+      "en": [
+        "citric acid"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "330"
+    ],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "microbial",
+    "notes": "Citric acid; declared ingredient mapped to no tracked restriction category.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_270",
+    "names": {
+      "en": [
+        "lactic acid"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "270"
+    ],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "microbial",
+    "notes": "Lactic acid is not milk just because its name resembles lactose; no milk category inferred.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_300",
+    "names": {
+      "en": [
+        "ascorbic acid",
+        "vitamin c"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "300"
+    ],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Ascorbic acid; declared ingredient mapped to no tracked restriction category.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_202",
+    "names": {
+      "en": [
+        "potassium sorbate"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "202"
+    ],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Potassium sorbate; declared ingredient mapped to no tracked restriction category.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_211",
+    "names": {
+      "en": [
+        "sodium benzoate"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "211"
+    ],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "Sodium benzoate; declared ingredient mapped to no tracked restriction category.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_415",
+    "names": {
+      "en": [
+        "xanthan gum"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "415"
+    ],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "microbial",
+    "notes": "Xanthan gum; declared ingredient mapped to no tracked restriction category.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_440",
+    "names": {
+      "en": [
+        "pectin"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "440"
+    ],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Pectin; declared ingredient mapped to no tracked restriction category.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_406",
+    "names": {
+      "en": [
+        "agar",
+        "agar agar"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "406"
+    ],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Agar; declared ingredient mapped to no tracked restriction category.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_410",
+    "names": {
+      "en": [
+        "locust bean gum",
+        "carob bean gum"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "410"
+    ],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Locust bean gum; declared ingredient mapped to no tracked restriction category.",
+    "confidence": "high"
+  },
+  {
+    "id": "ins_412",
+    "names": {
+      "en": [
+        "guar gum"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "412"
+    ],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Guar gum; declared ingredient mapped to no tracked restriction category.",
+    "confidence": "high"
+  },
+  {
+    "id": "shea_butter",
+    "names": {
+      "en": [
+        "shea butter"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Plant fat from shea kernels; the word butter does not indicate dairy.",
+    "confidence": "high"
+  },
+  {
+    "id": "cream_of_tartar",
+    "names": {
+      "en": [
+        "cream of tartar",
+        "potassium bitartrate"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "mineral",
+    "notes": "Tartrate salt; the word cream does not indicate dairy.",
+    "confidence": "high"
+  },
+  {
+    "id": "butter_beans",
+    "names": {
+      "en": [
+        "butter beans",
+        "lima beans"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Beans; the compound name does not indicate dairy.",
+    "confidence": "high"
+  },
+  {
+    "id": "butter_flavour",
+    "names": {
+      "en": [
+        "butter flavour",
+        "butter flavor",
+        "artificial butter flavour",
+        "artificial butter flavor"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [
+      "milk",
+      "dairy"
+    ],
+    "origin": "varies",
+    "notes": "Butter flavour descriptions do not establish whether actual milk-derived ingredients are present.",
+    "confidence": "medium"
+  },
+  {
+    "id": "non_dairy_creamer",
+    "names": {
+      "en": [
+        "non dairy creamer",
+        "nondairy creamer"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [
+      "milk",
+      "dairy"
+    ],
+    "origin": "varies",
+    "notes": "A non-dairy creamer description alone does not rule out milk-derived caseinates. Read the component list.",
+    "confidence": "medium"
+  }
+]

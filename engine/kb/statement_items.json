@@ -1,0 +1,197 @@
+[
+  {
+    "names": [
+      "milk",
+      "milk"
+    ],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": []
+  },
+  {
+    "names": [
+      "egg",
+      "egg"
+    ],
+    "categories": [
+      "egg",
+      "egg_derived"
+    ],
+    "possible_categories": []
+  },
+  {
+    "names": [
+      "peanut",
+      "peanut"
+    ],
+    "categories": [
+      "peanut"
+    ],
+    "possible_categories": []
+  },
+  {
+    "names": [
+      "tree_nut",
+      "tree nut"
+    ],
+    "categories": [
+      "tree_nut"
+    ],
+    "possible_categories": []
+  },
+  {
+    "names": [
+      "soy",
+      "soy"
+    ],
+    "categories": [
+      "soy"
+    ],
+    "possible_categories": []
+  },
+  {
+    "names": [
+      "wheat",
+      "wheat"
+    ],
+    "categories": [
+      "wheat",
+      "gluten"
+    ],
+    "possible_categories": []
+  },
+  {
+    "names": [
+      "gluten",
+      "gluten"
+    ],
+    "categories": [
+      "gluten"
+    ],
+    "possible_categories": []
+  },
+  {
+    "names": [
+      "fish",
+      "fish"
+    ],
+    "categories": [
+      "fish",
+      "fish_derived"
+    ],
+    "possible_categories": []
+  },
+  {
+    "names": [
+      "crustacean",
+      "crustacean"
+    ],
+    "categories": [
+      "crustacean",
+      "animal_derived"
+    ],
+    "possible_categories": []
+  },
+  {
+    "names": [
+      "mollusc",
+      "mollusc"
+    ],
+    "categories": [
+      "mollusc",
+      "animal_derived"
+    ],
+    "possible_categories": []
+  },
+  {
+    "names": [
+      "sesame",
+      "sesame"
+    ],
+    "categories": [
+      "sesame"
+    ],
+    "possible_categories": []
+  },
+  {
+    "names": [
+      "mustard",
+      "mustard"
+    ],
+    "categories": [
+      "mustard"
+    ],
+    "possible_categories": []
+  },
+  {
+    "names": [
+      "celery",
+      "celery"
+    ],
+    "categories": [
+      "celery"
+    ],
+    "possible_categories": []
+  },
+  {
+    "names": [
+      "lupin",
+      "lupin"
+    ],
+    "categories": [
+      "lupin"
+    ],
+    "possible_categories": []
+  },
+  {
+    "names": [
+      "sulphite",
+      "sulphite"
+    ],
+    "categories": [
+      "sulphite"
+    ],
+    "possible_categories": []
+  },
+  {
+    "names": [
+      "tree nuts"
+    ],
+    "categories": [
+      "tree_nut"
+    ],
+    "possible_categories": []
+  },
+  {
+    "names": [
+      "nuts"
+    ],
+    "categories": [
+      "tree_nut"
+    ],
+    "possible_categories": [
+      "peanut"
+    ]
+  },
+  {
+    "names": [
+      "cereals containing gluten"
+    ],
+    "categories": [
+      "gluten"
+    ],
+    "possible_categories": []
+  },
+  {
+    "names": [
+      "sulfites",
+      "sulphites"
+    ],
+    "categories": [
+      "sulphite"
+    ],
+    "possible_categories": []
+  }
+]

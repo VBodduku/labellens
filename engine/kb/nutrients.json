@@ -1,0 +1,145 @@
+[
+  {
+    "key": "energy_kcal",
+    "names": [
+      "energy"
+    ],
+    "unit": "kcal",
+    "conversions": {
+      "kcal": 1,
+      "kj": 0.2390057361376673
+    }
+  },
+  {
+    "key": "protein_g",
+    "names": [
+      "protein"
+    ],
+    "unit": "g",
+    "conversions": {
+      "g": 1,
+      "mg": 0.001,
+      "mcg": 1e-06
+    }
+  },
+  {
+    "key": "carbohydrate_g",
+    "names": [
+      "carbohydrate"
+    ],
+    "unit": "g",
+    "conversions": {
+      "g": 1,
+      "mg": 0.001,
+      "mcg": 1e-06
+    }
+  },
+  {
+    "key": "total_sugars_g",
+    "names": [
+      "total sugars"
+    ],
+    "unit": "g",
+    "conversions": {
+      "g": 1,
+      "mg": 0.001,
+      "mcg": 1e-06
+    }
+  },
+  {
+    "key": "added_sugars_g",
+    "names": [
+      "added sugars"
+    ],
+    "unit": "g",
+    "conversions": {
+      "g": 1,
+      "mg": 0.001,
+      "mcg": 1e-06
+    }
+  },
+  {
+    "key": "total_fat_g",
+    "names": [
+      "total fat"
+    ],
+    "unit": "g",
+    "conversions": {
+      "g": 1,
+      "mg": 0.001,
+      "mcg": 1e-06
+    }
+  },
+  {
+    "key": "saturated_fat_g",
+    "names": [
+      "saturated fat"
+    ],
+    "unit": "g",
+    "conversions": {
+      "g": 1,
+      "mg": 0.001,
+      "mcg": 1e-06
+    }
+  },
+  {
+    "key": "trans_fat_g",
+    "names": [
+      "trans fat"
+    ],
+    "unit": "g",
+    "conversions": {
+      "g": 1,
+      "mg": 0.001,
+      "mcg": 1e-06
+    }
+  },
+  {
+    "key": "cholesterol_mg",
+    "names": [
+      "cholesterol"
+    ],
+    "unit": "mg",
+    "conversions": {
+      "g": 1000,
+      "mg": 1,
+      "mcg": 0.001
+    }
+  },
+  {
+    "key": "sodium_mg",
+    "names": [
+      "sodium"
+    ],
+    "unit": "mg",
+    "conversions": {
+      "g": 1000,
+      "mg": 1,
+      "mcg": 0.001
+    }
+  },
+  {
+    "key": "fibre_g",
+    "names": [
+      "fibre"
+    ],
+    "unit": "g",
+    "conversions": {
+      "g": 1,
+      "mg": 0.001,
+      "mcg": 1e-06
+    }
+  },
+  {
+    "key": "other",
+    "names": [
+      "other"
+    ],
+    "unit": "g",
+    "conversions": {
+      "g": 1,
+      "mg": 0.001,
+      "mcg": 1e-06
+    }
+  }
+]

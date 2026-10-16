@@ -1,0 +1,394 @@
+[
+  {
+    "key": "peanut",
+    "kind": "allergy",
+    "label_en": "Peanut allergy",
+    "default_severity": "strict",
+    "categories": [
+      "peanut"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Peanuts, groundnuts and peanut-derived ingredients."
+  },
+  {
+    "key": "tree_nut",
+    "kind": "allergy",
+    "label_en": "Tree nut allergy",
+    "default_severity": "strict",
+    "categories": [
+      "tree_nut"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Almond, cashew, walnut, pistachio, hazelnut and similar."
+  },
+  {
+    "key": "milk",
+    "kind": "allergy",
+    "label_en": "Milk allergy",
+    "default_severity": "strict",
+    "categories": [
+      "milk"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Milk and milk-derived ingredients such as whey and casein."
+  },
+  {
+    "key": "egg",
+    "kind": "allergy",
+    "label_en": "Egg allergy",
+    "default_severity": "strict",
+    "categories": [
+      "egg"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Egg and egg-derived ingredients."
+  },
+  {
+    "key": "wheat",
+    "kind": "allergy",
+    "label_en": "Wheat allergy",
+    "default_severity": "strict",
+    "categories": [
+      "wheat"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Wheat, maida, atta, semolina, durum."
+  },
+  {
+    "key": "soy",
+    "kind": "allergy",
+    "label_en": "Soy allergy",
+    "default_severity": "strict",
+    "categories": [
+      "soy"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Soybean and soy-derived ingredients."
+  },
+  {
+    "key": "sesame",
+    "kind": "allergy",
+    "label_en": "Sesame allergy",
+    "default_severity": "strict",
+    "categories": [
+      "sesame"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Sesame seeds, til, sesame oil."
+  },
+  {
+    "key": "fish",
+    "kind": "allergy",
+    "label_en": "Fish allergy",
+    "default_severity": "strict",
+    "categories": [
+      "fish"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Fish and fish-derived ingredients."
+  },
+  {
+    "key": "crustacean",
+    "kind": "allergy",
+    "label_en": "Shellfish (crustacean) allergy",
+    "default_severity": "strict",
+    "categories": [
+      "crustacean"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Prawn, shrimp, crab, lobster."
+  },
+  {
+    "key": "mustard",
+    "kind": "allergy",
+    "label_en": "Mustard allergy",
+    "default_severity": "strict",
+    "categories": [
+      "mustard"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Mustard seed, mustard oil, rai."
+  },
+  {
+    "key": "sulphite",
+    "kind": "allergy",
+    "label_en": "Sulphite sensitivity",
+    "default_severity": "strict",
+    "categories": [
+      "sulphite"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Sulphites and sulphur dioxide (INS 220-228)."
+  },
+  {
+    "key": "lactose",
+    "kind": "intolerance",
+    "label_en": "Lactose intolerance",
+    "default_severity": "preference",
+    "categories": [
+      "milk"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Milk-derived ingredients that may contain lactose."
+  },
+  {
+    "key": "gluten",
+    "kind": "intolerance",
+    "label_en": "Gluten-free (coeliac)",
+    "default_severity": "strict",
+    "categories": [
+      "gluten",
+      "wheat"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Wheat, barley, rye and oats unless labelled gluten-free."
+  },
+  {
+    "key": "vegetarian",
+    "kind": "diet",
+    "label_en": "Vegetarian (no egg)",
+    "default_severity": "strict",
+    "categories": [
+      "meat",
+      "poultry",
+      "fish_derived",
+      "egg_derived",
+      "gelatin",
+      "animal_derived",
+      "insect_derived"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Indian vegetarian: no meat, fish, egg, gelatin or insect-derived colours."
+  },
+  {
+    "key": "eggetarian",
+    "kind": "diet",
+    "label_en": "Vegetarian (egg OK)",
+    "default_severity": "strict",
+    "categories": [
+      "meat",
+      "poultry",
+      "fish_derived",
+      "gelatin",
+      "animal_derived",
+      "insect_derived"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Vegetarian that allows egg."
+  },
+  {
+    "key": "vegan",
+    "kind": "diet",
+    "label_en": "Vegan",
+    "default_severity": "strict",
+    "categories": [
+      "meat",
+      "poultry",
+      "fish_derived",
+      "egg_derived",
+      "gelatin",
+      "animal_derived",
+      "insect_derived",
+      "dairy",
+      "honey"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "No animal-derived ingredients at all."
+  },
+  {
+    "key": "jain",
+    "kind": "diet",
+    "label_en": "Jain",
+    "default_severity": "strict",
+    "categories": [
+      "meat",
+      "poultry",
+      "fish_derived",
+      "egg_derived",
+      "gelatin",
+      "animal_derived",
+      "insect_derived",
+      "honey",
+      "onion",
+      "garlic",
+      "root_vegetable",
+      "alcohol"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Vegetarian, plus no onion, garlic, root vegetables, honey or alcohol."
+  },
+  {
+    "key": "no_onion_garlic",
+    "kind": "diet",
+    "label_en": "No onion / garlic",
+    "default_severity": "strict",
+    "categories": [
+      "onion",
+      "garlic"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Avoids onion and garlic in any form."
+  },
+  {
+    "key": "diabetes_sugar",
+    "kind": "health_limit",
+    "label_en": "Diabetic: limit sugar",
+    "default_severity": "strict",
+    "categories": [
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "needs_threshold": true,
+    "default_threshold": {
+      "nutrient": "total_sugars_g",
+      "max_value": 22.5,
+      "basis": "per_100g",
+      "source_note": "UK FSA front-of-pack 'high' threshold"
+    },
+    "description_en": "Flags sugar above your limit per 100 g and hidden sugar ingredients."
+  },
+  {
+    "key": "low_sodium",
+    "kind": "health_limit",
+    "label_en": "Low sodium (BP)",
+    "default_severity": "strict",
+    "categories": [],
+    "needs_threshold": true,
+    "default_threshold": {
+      "nutrient": "sodium_mg",
+      "max_value": 600.0,
+      "basis": "per_100g",
+      "source_note": "UK FSA front-of-pack 'high' threshold"
+    },
+    "description_en": "Flags sodium above your limit per 100 g."
+  },
+  {
+    "key": "low_sat_fat",
+    "kind": "health_limit",
+    "label_en": "Limit saturated fat",
+    "default_severity": "preference",
+    "categories": [],
+    "needs_threshold": true,
+    "default_threshold": {
+      "nutrient": "saturated_fat_g",
+      "max_value": 5.0,
+      "basis": "per_100g",
+      "source_note": "UK FSA front-of-pack 'high' threshold"
+    },
+    "description_en": "Flags saturated fat above your limit per 100 g."
+  },
+  {
+    "key": "palm_oil",
+    "kind": "avoid",
+    "label_en": "Avoid palm oil",
+    "default_severity": "preference",
+    "categories": [
+      "palm_oil"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Palm oil, palmolein and palm fat."
+  },
+  {
+    "key": "artificial_sweetener",
+    "kind": "avoid",
+    "label_en": "Avoid artificial sweeteners",
+    "default_severity": "preference",
+    "categories": [
+      "artificial_sweetener"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Aspartame, sucralose, acesulfame-K, saccharin and similar."
+  },
+  {
+    "key": "caffeine",
+    "kind": "avoid",
+    "label_en": "Avoid caffeine",
+    "default_severity": "preference",
+    "categories": [
+      "caffeine"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Caffeine, coffee, guarana."
+  },
+  {
+    "key": "added_msg",
+    "kind": "avoid",
+    "label_en": "Avoid MSG",
+    "default_severity": "preference",
+    "categories": [
+      "added_msg"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Monosodium glutamate (INS 621) and added glutamates."
+  },
+  {
+    "key": "alcohol",
+    "kind": "avoid",
+    "label_en": "Avoid alcohol",
+    "default_severity": "preference",
+    "categories": [
+      "alcohol"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Alcohol and alcohol-based flavourings when declared."
+  },
+  {
+    "key": "mollusc",
+    "kind": "allergy",
+    "label_en": "Mollusc allergy",
+    "default_severity": "strict",
+    "categories": [
+      "mollusc"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Declared mollusc ingredients."
+  },
+  {
+    "key": "celery",
+    "kind": "allergy",
+    "label_en": "Celery allergy",
+    "default_severity": "strict",
+    "categories": [
+      "celery"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Declared celery ingredients."
+  },
+  {
+    "key": "lupin",
+    "kind": "allergy",
+    "label_en": "Lupin allergy",
+    "default_severity": "strict",
+    "categories": [
+      "lupin"
+    ],
+    "needs_threshold": false,
+    "default_threshold": null,
+    "description_en": "Declared lupin ingredients."
+  }
+]

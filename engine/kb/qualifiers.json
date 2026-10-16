@@ -1,0 +1,161 @@
+[
+  {
+    "phrases": [
+      "from sunflower",
+      "sunflower"
+    ],
+    "origin": "plant",
+    "add_categories": [],
+    "remove_categories": [
+      "soy",
+      "egg",
+      "egg_derived"
+    ],
+    "term_ids": [
+      "ins_322"
+    ]
+  },
+  {
+    "phrases": [
+      "plant source",
+      "vegetable origin",
+      "of vegetable origin",
+      "vegetable source",
+      "plant origin"
+    ],
+    "origin": "plant",
+    "add_categories": [],
+    "remove_categories": [
+      "animal_derived",
+      "fish_derived",
+      "egg",
+      "egg_derived",
+      "dairy"
+    ],
+    "term_ids": [
+      "rennet",
+      "enzymes",
+      "ins_920",
+      "ins_471",
+      "ins_472a",
+      "ins_472b",
+      "ins_472c",
+      "ins_472d",
+      "ins_472e",
+      "ins_472f",
+      "ins_627",
+      "ins_631",
+      "ins_635",
+      "natural_flavours",
+      "ins_322"
+    ]
+  },
+  {
+    "phrases": [
+      "soy",
+      "soya",
+      "from soy",
+      "soy source"
+    ],
+    "origin": "plant",
+    "add_categories": [
+      "soy"
+    ],
+    "remove_categories": [
+      "egg",
+      "egg_derived"
+    ],
+    "term_ids": [
+      "ins_322"
+    ]
+  },
+  {
+    "phrases": [
+      "egg",
+      "from egg",
+      "egg source"
+    ],
+    "origin": "animal",
+    "add_categories": [
+      "egg",
+      "egg_derived"
+    ],
+    "remove_categories": [
+      "soy"
+    ],
+    "term_ids": [
+      "ins_322"
+    ]
+  },
+  {
+    "phrases": [
+      "microbial",
+      "microbial origin",
+      "microbial source",
+      "fermentation"
+    ],
+    "origin": "microbial",
+    "add_categories": [],
+    "remove_categories": [
+      "animal_derived",
+      "fish_derived"
+    ],
+    "term_ids": [
+      "rennet",
+      "enzymes",
+      "ins_920",
+      "ins_471",
+      "ins_472a",
+      "ins_472b",
+      "ins_472c",
+      "ins_472d",
+      "ins_472e",
+      "ins_472f",
+      "ins_627",
+      "ins_631",
+      "ins_635",
+      "natural_flavours"
+    ]
+  },
+  {
+    "phrases": [
+      "animal source",
+      "animal origin"
+    ],
+    "origin": "animal",
+    "add_categories": [
+      "animal_derived"
+    ],
+    "remove_categories": [],
+    "term_ids": [
+      "rennet",
+      "enzymes",
+      "ins_920",
+      "ins_471",
+      "ins_472a",
+      "ins_472b",
+      "ins_472c",
+      "ins_472d",
+      "ins_472e",
+      "ins_472f",
+      "ins_627",
+      "ins_631",
+      "ins_635",
+      "natural_flavours"
+    ]
+  },
+  {
+    "phrases": [
+      "gluten free",
+      "certified gluten free"
+    ],
+    "origin": "plant",
+    "add_categories": [],
+    "remove_categories": [
+      "gluten"
+    ],
+    "term_ids": [
+      "oats"
+    ]
+  }
+]
