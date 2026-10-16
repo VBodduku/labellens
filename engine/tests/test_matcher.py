@@ -18,6 +18,7 @@ from engine.matcher import annotation, match_ingredients, match_text
     ("Chocolate (sugar, cocoa butter, milk solids)", {"added_sugar", "milk", "dairy"}, set()),
     ("onion & garlic powder", {"onion", "garlic"}, set()),
     ("dehydrated onion", {"onion"}, set()), ("garlic flakes", {"garlic"}, set()),
+    ("INS 407", set(), {"animal_derived", "gelatin"}), ("carrageenan", set(), {"animal_derived"}),
     ("dried ginger", set(), {"root_vegetable"}), ("fresh ginger", {"root_vegetable"}, set()),
     ("rice rava", set(), {"wheat", "gluten"}), ("rava", {"wheat", "gluten"}, set()),
     ("maida", {"wheat", "gluten"}, set()), ("atta", {"wheat", "gluten"}, set()),

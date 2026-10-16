@@ -3254,6 +3254,29 @@
     "confidence": "high"
   },
   {
+    "id": "ins_407",
+    "names": {
+      "en": [
+        "carrageenan",
+        "carrageenans",
+        "carrageenan gum",
+        "irish moss",
+        "processed eucheuma seaweed"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [
+      "407",
+      "407a"
+    ],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Thickener/stabiliser extracted from red seaweed (407a: processed eucheuma seaweed); not animal-derived.",
+    "confidence": "high"
+  },
+  {
     "id": "ins_410",
     "names": {
       "en": [
