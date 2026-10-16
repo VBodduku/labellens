@@ -1,0 +1,2851 @@
+{
+  "contract_version": "1.0.0",
+  "scan_id": "scan_demo_0001",
+  "lang": "en",
+  "created_at": "2026-10-16T13:00:00+05:30",
+  "extraction": {
+    "scan_id": "scan_demo_0001",
+    "images": [
+      {
+        "image_id": "img_0",
+        "width": 1000,
+        "height": 1400,
+        "panel_hint": "back",
+        "quality": {
+          "ok": true,
+          "blur_score": 812.4,
+          "glare_ratio": 0.004,
+          "brightness": 214.0,
+          "issues": []
+        }
+      }
+    ],
+    "ocr_tokens": [
+      {
+        "token_id": "img_0:t0",
+        "image_id": "img_0",
+        "text": "NUVO",
+        "box": {
+          "x": 0.06,
+          "y": 0.0421,
+          "w": 0.1056,
+          "h": 0.033
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t1",
+        "image_id": "img_0",
+        "text": "CHOCO",
+        "box": {
+          "x": 0.06,
+          "y": 0.0872,
+          "w": 0.102,
+          "h": 0.0255
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t2",
+        "image_id": "img_0",
+        "text": "NUT",
+        "box": {
+          "x": 0.19,
+          "y": 0.0872,
+          "w": 0.0612,
+          "h": 0.0255
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t3",
+        "image_id": "img_0",
+        "text": "CRUNCH",
+        "box": {
+          "x": 0.273,
+          "y": 0.0872,
+          "w": 0.1224,
+          "h": 0.0255
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t4",
+        "image_id": "img_0",
+        "text": "BAR",
+        "box": {
+          "x": 0.416,
+          "y": 0.0872,
+          "w": 0.0612,
+          "h": 0.0255
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t5",
+        "image_id": "img_0",
+        "text": "HIGH",
+        "box": {
+          "x": 0.06,
+          "y": 0.1288,
+          "w": 0.0576,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t6",
+        "image_id": "img_0",
+        "text": "PROTEIN",
+        "box": {
+          "x": 0.14,
+          "y": 0.1288,
+          "w": 0.1008,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t7",
+        "image_id": "img_0",
+        "text": "Net",
+        "box": {
+          "x": 0.64,
+          "y": 0.1288,
+          "w": 0.0432,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t8",
+        "image_id": "img_0",
+        "text": "Wt.",
+        "box": {
+          "x": 0.703,
+          "y": 0.1288,
+          "w": 0.0432,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t9",
+        "image_id": "img_0",
+        "text": "120",
+        "box": {
+          "x": 0.766,
+          "y": 0.1288,
+          "w": 0.0432,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t10",
+        "image_id": "img_0",
+        "text": "g",
+        "box": {
+          "x": 0.829,
+          "y": 0.1288,
+          "w": 0.0144,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t11",
+        "image_id": "img_0",
+        "text": "INGREDIENTS:",
+        "box": {
+          "x": 0.06,
+          "y": 0.1919,
+          "w": 0.1872,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t12",
+        "image_id": "img_0",
+        "text": "Sugar,",
+        "box": {
+          "x": 0.06,
+          "y": 0.2205,
+          "w": 0.0936,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t13",
+        "image_id": "img_0",
+        "text": "Peanuts",
+        "box": {
+          "x": 0.1692,
+          "y": 0.2205,
+          "w": 0.1092,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t14",
+        "image_id": "img_0",
+        "text": "(22%),",
+        "box": {
+          "x": 0.294,
+          "y": 0.2205,
+          "w": 0.0936,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t15",
+        "image_id": "img_0",
+        "text": "Milk",
+        "box": {
+          "x": 0.4032,
+          "y": 0.2205,
+          "w": 0.0624,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t16",
+        "image_id": "img_0",
+        "text": "Solids",
+        "box": {
+          "x": 0.4812,
+          "y": 0.2205,
+          "w": 0.0936,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t17",
+        "image_id": "img_0",
+        "text": "(12%),",
+        "box": {
+          "x": 0.5904,
+          "y": 0.2205,
+          "w": 0.0936,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t18",
+        "image_id": "img_0",
+        "text": "Refined",
+        "box": {
+          "x": 0.6996,
+          "y": 0.2205,
+          "w": 0.1092,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t19",
+        "image_id": "img_0",
+        "text": "Wheat",
+        "box": {
+          "x": 0.8244,
+          "y": 0.2205,
+          "w": 0.078,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t20",
+        "image_id": "img_0",
+        "text": "Flour",
+        "box": {
+          "x": 0.06,
+          "y": 0.2476,
+          "w": 0.078,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t21",
+        "image_id": "img_0",
+        "text": "(Maida),",
+        "box": {
+          "x": 0.1536,
+          "y": 0.2476,
+          "w": 0.1248,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t22",
+        "image_id": "img_0",
+        "text": "Cocoa",
+        "box": {
+          "x": 0.294,
+          "y": 0.2476,
+          "w": 0.078,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t23",
+        "image_id": "img_0",
+        "text": "Butter,",
+        "box": {
+          "x": 0.3876,
+          "y": 0.2476,
+          "w": 0.1092,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t24",
+        "image_id": "img_0",
+        "text": "Edible",
+        "box": {
+          "x": 0.5124,
+          "y": 0.2476,
+          "w": 0.0936,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t25",
+        "image_id": "img_0",
+        "text": "Vegetable",
+        "box": {
+          "x": 0.6216,
+          "y": 0.2476,
+          "w": 0.1404,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t26",
+        "image_id": "img_0",
+        "text": "Oil",
+        "box": {
+          "x": 0.7776,
+          "y": 0.2476,
+          "w": 0.0468,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t27",
+        "image_id": "img_0",
+        "text": "(Palm),",
+        "box": {
+          "x": 0.06,
+          "y": 0.2748,
+          "w": 0.1092,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t28",
+        "image_id": "img_0",
+        "text": "Invert",
+        "box": {
+          "x": 0.1848,
+          "y": 0.2748,
+          "w": 0.0936,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t29",
+        "image_id": "img_0",
+        "text": "Sugar",
+        "box": {
+          "x": 0.294,
+          "y": 0.2748,
+          "w": 0.078,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t30",
+        "image_id": "img_0",
+        "text": "Syrup,",
+        "box": {
+          "x": 0.3876,
+          "y": 0.2748,
+          "w": 0.0936,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t31",
+        "image_id": "img_0",
+        "text": "Emulsifier",
+        "box": {
+          "x": 0.4968,
+          "y": 0.2748,
+          "w": 0.156,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t32",
+        "image_id": "img_0",
+        "text": "(INS",
+        "box": {
+          "x": 0.6684,
+          "y": 0.2748,
+          "w": 0.0624,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t33",
+        "image_id": "img_0",
+        "text": "322",
+        "box": {
+          "x": 0.7464,
+          "y": 0.2748,
+          "w": 0.0468,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t34",
+        "image_id": "img_0",
+        "text": "[Soy]),",
+        "box": {
+          "x": 0.8088,
+          "y": 0.2748,
+          "w": 0.1092,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t35",
+        "image_id": "img_0",
+        "text": "Iodised",
+        "box": {
+          "x": 0.06,
+          "y": 0.3019,
+          "w": 0.1092,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t36",
+        "image_id": "img_0",
+        "text": "Salt,",
+        "box": {
+          "x": 0.1848,
+          "y": 0.3019,
+          "w": 0.078,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t37",
+        "image_id": "img_0",
+        "text": "Raising",
+        "box": {
+          "x": 0.2784,
+          "y": 0.3019,
+          "w": 0.1092,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t38",
+        "image_id": "img_0",
+        "text": "Agent",
+        "box": {
+          "x": 0.4032,
+          "y": 0.3019,
+          "w": 0.078,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t39",
+        "image_id": "img_0",
+        "text": "(INS",
+        "box": {
+          "x": 0.4968,
+          "y": 0.3019,
+          "w": 0.0624,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t40",
+        "image_id": "img_0",
+        "text": "500(ii)),",
+        "box": {
+          "x": 0.5748,
+          "y": 0.3019,
+          "w": 0.1404,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t41",
+        "image_id": "img_0",
+        "text": "Natural",
+        "box": {
+          "x": 0.7308,
+          "y": 0.3019,
+          "w": 0.1092,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t42",
+        "image_id": "img_0",
+        "text": "Flavours.",
+        "box": {
+          "x": 0.06,
+          "y": 0.3291,
+          "w": 0.1404,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t43",
+        "image_id": "img_0",
+        "text": "CONTAINS:",
+        "box": {
+          "x": 0.06,
+          "y": 0.3719,
+          "w": 0.1404,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t44",
+        "image_id": "img_0",
+        "text": "PEANUT,",
+        "box": {
+          "x": 0.216,
+          "y": 0.3719,
+          "w": 0.1092,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t45",
+        "image_id": "img_0",
+        "text": "MILK,",
+        "box": {
+          "x": 0.3408,
+          "y": 0.3719,
+          "w": 0.078,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t46",
+        "image_id": "img_0",
+        "text": "WHEAT,",
+        "box": {
+          "x": 0.4344,
+          "y": 0.3719,
+          "w": 0.0936,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t47",
+        "image_id": "img_0",
+        "text": "SOY.",
+        "box": {
+          "x": 0.5436,
+          "y": 0.3719,
+          "w": 0.0624,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t48",
+        "image_id": "img_0",
+        "text": "MAY",
+        "box": {
+          "x": 0.06,
+          "y": 0.3991,
+          "w": 0.0468,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t49",
+        "image_id": "img_0",
+        "text": "CONTAIN",
+        "box": {
+          "x": 0.1224,
+          "y": 0.3991,
+          "w": 0.1092,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t50",
+        "image_id": "img_0",
+        "text": "TRACES",
+        "box": {
+          "x": 0.2472,
+          "y": 0.3991,
+          "w": 0.0936,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t51",
+        "image_id": "img_0",
+        "text": "OF",
+        "box": {
+          "x": 0.3564,
+          "y": 0.3991,
+          "w": 0.0312,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t52",
+        "image_id": "img_0",
+        "text": "TREE",
+        "box": {
+          "x": 0.4032,
+          "y": 0.3991,
+          "w": 0.0624,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t53",
+        "image_id": "img_0",
+        "text": "NUTS.",
+        "box": {
+          "x": 0.4812,
+          "y": 0.3991,
+          "w": 0.078,
+          "h": 0.0195
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t54",
+        "image_id": "img_0",
+        "text": "NUTRITION",
+        "box": {
+          "x": 0.06,
+          "y": 0.4536,
+          "w": 0.1512,
+          "h": 0.021
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t55",
+        "image_id": "img_0",
+        "text": "INFORMATION",
+        "box": {
+          "x": 0.23,
+          "y": 0.4536,
+          "w": 0.1848,
+          "h": 0.021
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t56",
+        "image_id": "img_0",
+        "text": "(Approx.)",
+        "box": {
+          "x": 0.433,
+          "y": 0.4536,
+          "w": 0.1512,
+          "h": 0.021
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t57",
+        "image_id": "img_0",
+        "text": "Serving",
+        "box": {
+          "x": 0.06,
+          "y": 0.4871,
+          "w": 0.0924,
+          "h": 0.0165
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t58",
+        "image_id": "img_0",
+        "text": "size:",
+        "box": {
+          "x": 0.156,
+          "y": 0.4871,
+          "w": 0.066,
+          "h": 0.0165
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t59",
+        "image_id": "img_0",
+        "text": "40",
+        "box": {
+          "x": 0.23,
+          "y": 0.4871,
+          "w": 0.0264,
+          "h": 0.0165
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t60",
+        "image_id": "img_0",
+        "text": "g",
+        "box": {
+          "x": 0.264,
+          "y": 0.4871,
+          "w": 0.0132,
+          "h": 0.0165
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t61",
+        "image_id": "img_0",
+        "text": "|",
+        "box": {
+          "x": 0.3,
+          "y": 0.4871,
+          "w": 0.0132,
+          "h": 0.0165
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t62",
+        "image_id": "img_0",
+        "text": "Servings",
+        "box": {
+          "x": 0.33,
+          "y": 0.4871,
+          "w": 0.1056,
+          "h": 0.0165
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t63",
+        "image_id": "img_0",
+        "text": "per",
+        "box": {
+          "x": 0.44,
+          "y": 0.4871,
+          "w": 0.0396,
+          "h": 0.0165
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t64",
+        "image_id": "img_0",
+        "text": "pack:",
+        "box": {
+          "x": 0.487,
+          "y": 0.4871,
+          "w": 0.066,
+          "h": 0.0165
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t65",
+        "image_id": "img_0",
+        "text": "3",
+        "box": {
+          "x": 0.562,
+          "y": 0.4871,
+          "w": 0.0132,
+          "h": 0.0165
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t66",
+        "image_id": "img_0",
+        "text": "Nutrient",
+        "box": {
+          "x": 0.06,
+          "y": 0.5217,
+          "w": 0.1152,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t67",
+        "image_id": "img_0",
+        "text": "Per",
+        "box": {
+          "x": 0.6,
+          "y": 0.5217,
+          "w": 0.0432,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t68",
+        "image_id": "img_0",
+        "text": "100",
+        "box": {
+          "x": 0.65,
+          "y": 0.5217,
+          "w": 0.0432,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t69",
+        "image_id": "img_0",
+        "text": "g",
+        "box": {
+          "x": 0.709,
+          "y": 0.5217,
+          "w": 0.0144,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t70",
+        "image_id": "img_0",
+        "text": "Per",
+        "box": {
+          "x": 0.79,
+          "y": 0.5217,
+          "w": 0.0432,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t71",
+        "image_id": "img_0",
+        "text": "serving",
+        "box": {
+          "x": 0.84,
+          "y": 0.5217,
+          "w": 0.1008,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t72",
+        "image_id": "img_0",
+        "text": "Energy",
+        "box": {
+          "x": 0.06,
+          "y": 0.5545,
+          "w": 0.0864,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t73",
+        "image_id": "img_0",
+        "text": "520 kcal",
+        "box": {
+          "x": 0.65,
+          "y": 0.5545,
+          "w": 0.1152,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t74",
+        "image_id": "img_0",
+        "text": "208 kcal",
+        "box": {
+          "x": 0.84,
+          "y": 0.5545,
+          "w": 0.1152,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t75",
+        "image_id": "img_0",
+        "text": "Protein",
+        "box": {
+          "x": 0.06,
+          "y": 0.5874,
+          "w": 0.1008,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t76",
+        "image_id": "img_0",
+        "text": "9.5 g",
+        "box": {
+          "x": 0.65,
+          "y": 0.5874,
+          "w": 0.072,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t77",
+        "image_id": "img_0",
+        "text": "3.8 g",
+        "box": {
+          "x": 0.84,
+          "y": 0.5874,
+          "w": 0.072,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t78",
+        "image_id": "img_0",
+        "text": "Carbohydrate",
+        "box": {
+          "x": 0.06,
+          "y": 0.6202,
+          "w": 0.1728,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t79",
+        "image_id": "img_0",
+        "text": "58.0 g",
+        "box": {
+          "x": 0.65,
+          "y": 0.6202,
+          "w": 0.0864,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t80",
+        "image_id": "img_0",
+        "text": "23.2 g",
+        "box": {
+          "x": 0.84,
+          "y": 0.6202,
+          "w": 0.0864,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t81",
+        "image_id": "img_0",
+        "text": "Total",
+        "box": {
+          "x": 0.06,
+          "y": 0.6531,
+          "w": 0.072,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t82",
+        "image_id": "img_0",
+        "text": "Sugars",
+        "box": {
+          "x": 0.1464,
+          "y": 0.6531,
+          "w": 0.0864,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t83",
+        "image_id": "img_0",
+        "text": "38.0 g",
+        "box": {
+          "x": 0.65,
+          "y": 0.6531,
+          "w": 0.0864,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t84",
+        "image_id": "img_0",
+        "text": "15.2 g",
+        "box": {
+          "x": 0.84,
+          "y": 0.6531,
+          "w": 0.0864,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t85",
+        "image_id": "img_0",
+        "text": "Added",
+        "box": {
+          "x": 0.06,
+          "y": 0.6859,
+          "w": 0.072,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t86",
+        "image_id": "img_0",
+        "text": "Sugars",
+        "box": {
+          "x": 0.1464,
+          "y": 0.6859,
+          "w": 0.0864,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t87",
+        "image_id": "img_0",
+        "text": "30.0 g",
+        "box": {
+          "x": 0.65,
+          "y": 0.6859,
+          "w": 0.0864,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t88",
+        "image_id": "img_0",
+        "text": "12.0 g",
+        "box": {
+          "x": 0.84,
+          "y": 0.6859,
+          "w": 0.0864,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t89",
+        "image_id": "img_0",
+        "text": "Total",
+        "box": {
+          "x": 0.06,
+          "y": 0.7188,
+          "w": 0.072,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t90",
+        "image_id": "img_0",
+        "text": "Fat",
+        "box": {
+          "x": 0.1464,
+          "y": 0.7188,
+          "w": 0.0432,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t91",
+        "image_id": "img_0",
+        "text": "28.0 g",
+        "box": {
+          "x": 0.65,
+          "y": 0.7188,
+          "w": 0.0864,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t92",
+        "image_id": "img_0",
+        "text": "11.2 g",
+        "box": {
+          "x": 0.84,
+          "y": 0.7188,
+          "w": 0.0864,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t93",
+        "image_id": "img_0",
+        "text": "Saturated",
+        "box": {
+          "x": 0.06,
+          "y": 0.7517,
+          "w": 0.1296,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t94",
+        "image_id": "img_0",
+        "text": "Fat",
+        "box": {
+          "x": 0.204,
+          "y": 0.7517,
+          "w": 0.0432,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t95",
+        "image_id": "img_0",
+        "text": "14.0 g",
+        "box": {
+          "x": 0.65,
+          "y": 0.7517,
+          "w": 0.0864,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t96",
+        "image_id": "img_0",
+        "text": "5.6 g",
+        "box": {
+          "x": 0.84,
+          "y": 0.7517,
+          "w": 0.072,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t97",
+        "image_id": "img_0",
+        "text": "Trans",
+        "box": {
+          "x": 0.06,
+          "y": 0.7845,
+          "w": 0.072,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t98",
+        "image_id": "img_0",
+        "text": "Fat",
+        "box": {
+          "x": 0.1464,
+          "y": 0.7845,
+          "w": 0.0432,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t99",
+        "image_id": "img_0",
+        "text": "0.1 g",
+        "box": {
+          "x": 0.65,
+          "y": 0.7845,
+          "w": 0.072,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t100",
+        "image_id": "img_0",
+        "text": "0.0 g",
+        "box": {
+          "x": 0.84,
+          "y": 0.7845,
+          "w": 0.072,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t101",
+        "image_id": "img_0",
+        "text": "Sodium",
+        "box": {
+          "x": 0.06,
+          "y": 0.8174,
+          "w": 0.0864,
+          "h": 0.018
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t102",
+        "image_id": "img_0",
+        "text": "1?5",
+        "box": {
+          "x": 0.65,
+          "y": 0.8174,
+          "w": 0.0432,
+          "h": 0.018
+        },
+        "confidence": 0.21
+      },
+      {
+        "token_id": "img_0:t103",
+        "image_id": "img_0",
+        "text": "??",
+        "box": {
+          "x": 0.84,
+          "y": 0.8174,
+          "w": 0.0288,
+          "h": 0.018
+        },
+        "confidence": 0.18
+      },
+      {
+        "token_id": "img_0:t104",
+        "image_id": "img_0",
+        "text": "Mfd.",
+        "box": {
+          "x": 0.06,
+          "y": 0.8669,
+          "w": 0.048,
+          "h": 0.015
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t105",
+        "image_id": "img_0",
+        "text": "by:",
+        "box": {
+          "x": 0.116,
+          "y": 0.8669,
+          "w": 0.036,
+          "h": 0.015
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t106",
+        "image_id": "img_0",
+        "text": "Nuvo",
+        "box": {
+          "x": 0.16,
+          "y": 0.8669,
+          "w": 0.048,
+          "h": 0.015
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t107",
+        "image_id": "img_0",
+        "text": "Foods,",
+        "box": {
+          "x": 0.216,
+          "y": 0.8669,
+          "w": 0.072,
+          "h": 0.015
+        },
+        "confidence": 0.97
+      },
+      {
+        "token_id": "img_0:t108",
+        "image_id": "img_0",
+        "text": "Hyderabad.",
+        "box": {
+          "x": 0.29,
+          "y": 0.8669,
+          "w": 0.12,
+          "h": 0.015
+        },
+        "confidence": 0.97
+      }
+    ],
+    "product_name": "Nuvo Choco Nut Crunch Bar",
+    "languages_detected": [
+      "en"
+    ],
+    "ingredients": [
+      {
+        "id": "ing_0",
+        "raw_text": "Sugar",
+        "name": "Sugar",
+        "percentage": null,
+        "sub_ingredients": [],
+        "evidence": [
+          {
+            "image_id": "img_0",
+            "text": "Sugar",
+            "box": {
+              "x": 0.06,
+              "y": 0.2205,
+              "w": 0.0936,
+              "h": 0.0195
+            },
+            "token_ids": [
+              "img_0:t12"
+            ],
+            "match_score": 0.96,
+            "status": "verified"
+          }
+        ],
+        "readability": "clear",
+        "confidence": 0.95
+      },
+      {
+        "id": "ing_1",
+        "raw_text": "Peanuts (22%)",
+        "name": "Peanuts (22%)",
+        "percentage": 22.0,
+        "sub_ingredients": [],
+        "evidence": [
+          {
+            "image_id": "img_0",
+            "text": "Peanuts (22%)",
+            "box": {
+              "x": 0.1692,
+              "y": 0.2205,
+              "w": 0.2184,
+              "h": 0.0195
+            },
+            "token_ids": [
+              "img_0:t13",
+              "img_0:t14"
+            ],
+            "match_score": 0.96,
+            "status": "verified"
+          }
+        ],
+        "readability": "clear",
+        "confidence": 0.95
+      },
+      {
+        "id": "ing_2",
+        "raw_text": "Milk Solids (12%)",
+        "name": "Milk Solids (12%)",
+        "percentage": 12.0,
+        "sub_ingredients": [],
+        "evidence": [
+          {
+            "image_id": "img_0",
+            "text": "Milk Solids (12%)",
+            "box": {
+              "x": 0.4032,
+              "y": 0.2205,
+              "w": 0.2808,
+              "h": 0.0195
+            },
+            "token_ids": [
+              "img_0:t15",
+              "img_0:t16",
+              "img_0:t17"
+            ],
+            "match_score": 0.96,
+            "status": "verified"
+          }
+        ],
+        "readability": "clear",
+        "confidence": 0.95
+      },
+      {
+        "id": "ing_3",
+        "raw_text": "Refined Wheat Flour (Maida)",
+        "name": "Refined Wheat Flour (Maida)",
+        "percentage": null,
+        "sub_ingredients": [],
+        "evidence": [
+          {
+            "image_id": "img_0",
+            "text": "Refined Wheat",
+            "box": {
+              "x": 0.6996,
+              "y": 0.2205,
+              "w": 0.2028,
+              "h": 0.0195
+            },
+            "token_ids": [
+              "img_0:t18",
+              "img_0:t19"
+            ],
+            "match_score": 0.96,
+            "status": "verified"
+          },
+          {
+            "image_id": "img_0",
+            "text": "Flour (Maida),",
+            "box": {
+              "x": 0.06,
+              "y": 0.2476,
+              "w": 0.2184,
+              "h": 0.0195
+            },
+            "token_ids": [
+              "img_0:t20",
+              "img_0:t21"
+            ],
+            "match_score": 0.96,
+            "status": "verified"
+          }
+        ],
+        "readability": "clear",
+        "confidence": 0.95
+      },
+      {
+        "id": "ing_4",
+        "raw_text": "Cocoa Butter",
+        "name": "Cocoa Butter",
+        "percentage": null,
+        "sub_ingredients": [],
+        "evidence": [
+          {
+            "image_id": "img_0",
+            "text": "Cocoa Butter",
+            "box": {
+              "x": 0.294,
+              "y": 0.2476,
+              "w": 0.2028,
+              "h": 0.0195
+            },
+            "token_ids": [
+              "img_0:t22",
+              "img_0:t23"
+            ],
+            "match_score": 0.96,
+            "status": "verified"
+          }
+        ],
+        "readability": "clear",
+        "confidence": 0.95
+      },
+      {
+        "id": "ing_5",
+        "raw_text": "Edible Vegetable Oil (Palm)",
+        "name": "Edible Vegetable Oil (Palm)",
+        "percentage": null,
+        "sub_ingredients": [],
+        "evidence": [
+          {
+            "image_id": "img_0",
+            "text": "Edible Vegetable Oil",
+            "box": {
+              "x": 0.5124,
+              "y": 0.2476,
+              "w": 0.312,
+              "h": 0.0195
+            },
+            "token_ids": [
+              "img_0:t24",
+              "img_0:t25",
+              "img_0:t26"
+            ],
+            "match_score": 0.96,
+            "status": "verified"
+          },
+          {
+            "image_id": "img_0",
+            "text": "(Palm),",
+            "box": {
+              "x": 0.06,
+              "y": 0.2748,
+              "w": 0.1092,
+              "h": 0.0195
+            },
+            "token_ids": [
+              "img_0:t27"
+            ],
+            "match_score": 0.96,
+            "status": "verified"
+          }
+        ],
+        "readability": "clear",
+        "confidence": 0.95
+      },
+      {
+        "id": "ing_6",
+        "raw_text": "Invert Sugar Syrup",
+        "name": "Invert Sugar Syrup",
+        "percentage": null,
+        "sub_ingredients": [],
+        "evidence": [
+          {
+            "image_id": "img_0",
+            "text": "Invert Sugar Syrup",
+            "box": {
+              "x": 0.1848,
+              "y": 0.2748,
+              "w": 0.2964,
+              "h": 0.0195
+            },
+            "token_ids": [
+              "img_0:t28",
+              "img_0:t29",
+              "img_0:t30"
+            ],
+            "match_score": 0.96,
+            "status": "verified"
+          }
+        ],
+        "readability": "clear",
+        "confidence": 0.95
+      },
+      {
+        "id": "ing_7",
+        "raw_text": "Emulsifier (INS 322 [Soy])",
+        "name": "Emulsifier (INS 322 [Soy])",
+        "percentage": null,
+        "sub_ingredients": [],
+        "evidence": [
+          {
+            "image_id": "img_0",
+            "text": "Emulsifier (INS 322 [Soy])",
+            "box": {
+              "x": 0.4968,
+              "y": 0.2748,
+              "w": 0.4212,
+              "h": 0.0195
+            },
+            "token_ids": [
+              "img_0:t31",
+              "img_0:t32",
+              "img_0:t33",
+              "img_0:t34"
+            ],
+            "match_score": 0.96,
+            "status": "verified"
+          }
+        ],
+        "readability": "clear",
+        "confidence": 0.95
+      },
+      {
+        "id": "ing_8",
+        "raw_text": "Iodised Salt",
+        "name": "Iodised Salt",
+        "percentage": null,
+        "sub_ingredients": [],
+        "evidence": [
+          {
+            "image_id": "img_0",
+            "text": "Iodised Salt",
+            "box": {
+              "x": 0.06,
+              "y": 0.3019,
+              "w": 0.2028,
+              "h": 0.0195
+            },
+            "token_ids": [
+              "img_0:t35",
+              "img_0:t36"
+            ],
+            "match_score": 0.96,
+            "status": "verified"
+          }
+        ],
+        "readability": "clear",
+        "confidence": 0.95
+      },
+      {
+        "id": "ing_9",
+        "raw_text": "Raising Agent (INS 500(ii))",
+        "name": "Raising Agent (INS 500(ii))",
+        "percentage": null,
+        "sub_ingredients": [],
+        "evidence": [
+          {
+            "image_id": "img_0",
+            "text": "Raising Agent (INS 500(ii))",
+            "box": {
+              "x": 0.2784,
+              "y": 0.3019,
+              "w": 0.4368,
+              "h": 0.0195
+            },
+            "token_ids": [
+              "img_0:t37",
+              "img_0:t38",
+              "img_0:t39",
+              "img_0:t40"
+            ],
+            "match_score": 0.96,
+            "status": "verified"
+          }
+        ],
+        "readability": "clear",
+        "confidence": 0.95
+      },
+      {
+        "id": "ing_10",
+        "raw_text": "Natural Flavours",
+        "name": "Natural Flavours",
+        "percentage": null,
+        "sub_ingredients": [],
+        "evidence": [
+          {
+            "image_id": "img_0",
+            "text": "Natural",
+            "box": {
+              "x": 0.7308,
+              "y": 0.3019,
+              "w": 0.1092,
+              "h": 0.0195
+            },
+            "token_ids": [
+              "img_0:t41"
+            ],
+            "match_score": 0.96,
+            "status": "verified"
+          },
+          {
+            "image_id": "img_0",
+            "text": "Flavours.",
+            "box": {
+              "x": 0.06,
+              "y": 0.3291,
+              "w": 0.1404,
+              "h": 0.0195
+            },
+            "token_ids": [
+              "img_0:t42"
+            ],
+            "match_score": 0.96,
+            "status": "verified"
+          }
+        ],
+        "readability": "clear",
+        "confidence": 0.95
+      }
+    ],
+    "ingredients_section": {
+      "presence": "found",
+      "complete": true,
+      "issues": [],
+      "unreadable_regions": []
+    },
+    "nutrition": {
+      "serving_size": 40.0,
+      "serving_unit": "g",
+      "servings_per_pack": 3.0,
+      "pack_size": 120.0,
+      "pack_unit": "g",
+      "rows": [
+        {
+          "key": "energy_kcal",
+          "raw_label": "Energy",
+          "values": [
+            {
+              "basis": "per_100g",
+              "amount": 520.0,
+              "unit": "kcal",
+              "raw_text": "520 kcal",
+              "evidence": {
+                "image_id": "img_0",
+                "text": "520 kcal",
+                "box": {
+                  "x": 0.65,
+                  "y": 0.5545,
+                  "w": 0.1152,
+                  "h": 0.018
+                },
+                "token_ids": [
+                  "img_0:t73"
+                ],
+                "match_score": 0.98,
+                "status": "verified"
+              },
+              "readability": "clear",
+              "corrected_by_user": false
+            },
+            {
+              "basis": "per_serving",
+              "amount": 208.0,
+              "unit": "kcal",
+              "raw_text": "208 kcal",
+              "evidence": {
+                "image_id": "img_0",
+                "text": "208 kcal",
+                "box": {
+                  "x": 0.84,
+                  "y": 0.5545,
+                  "w": 0.1152,
+                  "h": 0.018
+                },
+                "token_ids": [
+                  "img_0:t74"
+                ],
+                "match_score": 0.98,
+                "status": "verified"
+              },
+              "readability": "clear",
+              "corrected_by_user": false
+            }
+          ]
+        },
+        {
+          "key": "protein_g",
+          "raw_label": "Protein",
+          "values": [
+            {
+              "basis": "per_100g",
+              "amount": 9.5,
+              "unit": "g",
+              "raw_text": "9.5 g",
+              "evidence": {
+                "image_id": "img_0",
+                "text": "9.5 g",
+                "box": {
+                  "x": 0.65,
+                  "y": 0.5874,
+                  "w": 0.072,
+                  "h": 0.018
+                },
+                "token_ids": [
+                  "img_0:t76"
+                ],
+                "match_score": 0.98,
+                "status": "verified"
+              },
+              "readability": "clear",
+              "corrected_by_user": false
+            },
+            {
+              "basis": "per_serving",
+              "amount": 3.8,
+              "unit": "g",
+              "raw_text": "3.8 g",
+              "evidence": {
+                "image_id": "img_0",
+                "text": "3.8 g",
+                "box": {
+                  "x": 0.84,
+                  "y": 0.5874,
+                  "w": 0.072,
+                  "h": 0.018
+                },
+                "token_ids": [
+                  "img_0:t77"
+                ],
+                "match_score": 0.98,
+                "status": "verified"
+              },
+              "readability": "clear",
+              "corrected_by_user": false
+            }
+          ]
+        },
+        {
+          "key": "carbohydrate_g",
+          "raw_label": "Carbohydrate",
+          "values": [
+            {
+              "basis": "per_100g",
+              "amount": 58.0,
+              "unit": "g",
+              "raw_text": "58.0 g",
+              "evidence": {
+                "image_id": "img_0",
+                "text": "58.0 g",
+                "box": {
+                  "x": 0.65,
+                  "y": 0.6202,
+                  "w": 0.0864,
+                  "h": 0.018
+                },
+                "token_ids": [
+                  "img_0:t79"
+                ],
+                "match_score": 0.98,
+                "status": "verified"
+              },
+              "readability": "clear",
+              "corrected_by_user": false
+            },
+            {
+              "basis": "per_serving",
+              "amount": 23.2,
+              "unit": "g",
+              "raw_text": "23.2 g",
+              "evidence": {
+                "image_id": "img_0",
+                "text": "23.2 g",
+                "box": {
+                  "x": 0.84,
+                  "y": 0.6202,
+                  "w": 0.0864,
+                  "h": 0.018
+                },
+                "token_ids": [
+                  "img_0:t80"
+                ],
+                "match_score": 0.98,
+                "status": "verified"
+              },
+              "readability": "clear",
+              "corrected_by_user": false
+            }
+          ]
+        },
+        {
+          "key": "total_sugars_g",
+          "raw_label": "Total Sugars",
+          "values": [
+            {
+              "basis": "per_100g",
+              "amount": 38.0,
+              "unit": "g",
+              "raw_text": "38.0 g",
+              "evidence": {
+                "image_id": "img_0",
+                "text": "38.0 g",
+                "box": {
+                  "x": 0.65,
+                  "y": 0.6531,
+                  "w": 0.0864,
+                  "h": 0.018
+                },
+                "token_ids": [
+                  "img_0:t83"
+                ],
+                "match_score": 0.98,
+                "status": "verified"
+              },
+              "readability": "clear",
+              "corrected_by_user": false
+            },
+            {
+              "basis": "per_serving",
+              "amount": 15.2,
+              "unit": "g",
+              "raw_text": "15.2 g",
+              "evidence": {
+                "image_id": "img_0",
+                "text": "15.2 g",
+                "box": {
+                  "x": 0.84,
+                  "y": 0.6531,
+                  "w": 0.0864,
+                  "h": 0.018
+                },
+                "token_ids": [
+                  "img_0:t84"
+                ],
+                "match_score": 0.98,
+                "status": "verified"
+              },
+              "readability": "clear",
+              "corrected_by_user": false
+            }
+          ]
+        },
+        {
+          "key": "added_sugars_g",
+          "raw_label": "Added Sugars",
+          "values": [
+            {
+              "basis": "per_100g",
+              "amount": 30.0,
+              "unit": "g",
+              "raw_text": "30.0 g",
+              "evidence": {
+                "image_id": "img_0",
+                "text": "30.0 g",
+                "box": {
+                  "x": 0.65,
+                  "y": 0.6859,
+                  "w": 0.0864,
+                  "h": 0.018
+                },
+                "token_ids": [
+                  "img_0:t87"
+                ],
+                "match_score": 0.98,
+                "status": "verified"
+              },
+              "readability": "clear",
+              "corrected_by_user": false
+            },
+            {
+              "basis": "per_serving",
+              "amount": 12.0,
+              "unit": "g",
+              "raw_text": "12.0 g",
+              "evidence": {
+                "image_id": "img_0",
+                "text": "12.0 g",
+                "box": {
+                  "x": 0.84,
+                  "y": 0.6859,
+                  "w": 0.0864,
+                  "h": 0.018
+                },
+                "token_ids": [
+                  "img_0:t88"
+                ],
+                "match_score": 0.98,
+                "status": "verified"
+              },
+              "readability": "clear",
+              "corrected_by_user": false
+            }
+          ]
+        },
+        {
+          "key": "total_fat_g",
+          "raw_label": "Total Fat",
+          "values": [
+            {
+              "basis": "per_100g",
+              "amount": 28.0,
+              "unit": "g",
+              "raw_text": "28.0 g",
+              "evidence": {
+                "image_id": "img_0",
+                "text": "28.0 g",
+                "box": {
+                  "x": 0.65,
+                  "y": 0.7188,
+                  "w": 0.0864,
+                  "h": 0.018
+                },
+                "token_ids": [
+                  "img_0:t91"
+                ],
+                "match_score": 0.98,
+                "status": "verified"
+              },
+              "readability": "clear",
+              "corrected_by_user": false
+            },
+            {
+              "basis": "per_serving",
+              "amount": 11.2,
+              "unit": "g",
+              "raw_text": "11.2 g",
+              "evidence": {
+                "image_id": "img_0",
+                "text": "11.2 g",
+                "box": {
+                  "x": 0.84,
+                  "y": 0.7188,
+                  "w": 0.0864,
+                  "h": 0.018
+                },
+                "token_ids": [
+                  "img_0:t92"
+                ],
+                "match_score": 0.98,
+                "status": "verified"
+              },
+              "readability": "clear",
+              "corrected_by_user": false
+            }
+          ]
+        },
+        {
+          "key": "saturated_fat_g",
+          "raw_label": "Saturated Fat",
+          "values": [
+            {
+              "basis": "per_100g",
+              "amount": 14.0,
+              "unit": "g",
+              "raw_text": "14.0 g",
+              "evidence": {
+                "image_id": "img_0",
+                "text": "14.0 g",
+                "box": {
+                  "x": 0.65,
+                  "y": 0.7517,
+                  "w": 0.0864,
+                  "h": 0.018
+                },
+                "token_ids": [
+                  "img_0:t95"
+                ],
+                "match_score": 0.98,
+                "status": "verified"
+              },
+              "readability": "clear",
+              "corrected_by_user": false
+            },
+            {
+              "basis": "per_serving",
+              "amount": 5.6,
+              "unit": "g",
+              "raw_text": "5.6 g",
+              "evidence": {
+                "image_id": "img_0",
+                "text": "5.6 g",
+                "box": {
+                  "x": 0.84,
+                  "y": 0.7517,
+                  "w": 0.072,
+                  "h": 0.018
+                },
+                "token_ids": [
+                  "img_0:t96"
+                ],
+                "match_score": 0.98,
+                "status": "verified"
+              },
+              "readability": "clear",
+              "corrected_by_user": false
+            }
+          ]
+        },
+        {
+          "key": "trans_fat_g",
+          "raw_label": "Trans Fat",
+          "values": [
+            {
+              "basis": "per_100g",
+              "amount": 0.1,
+              "unit": "g",
+              "raw_text": "0.1 g",
+              "evidence": {
+                "image_id": "img_0",
+                "text": "0.1 g",
+                "box": {
+                  "x": 0.65,
+                  "y": 0.7845,
+                  "w": 0.072,
+                  "h": 0.018
+                },
+                "token_ids": [
+                  "img_0:t99"
+                ],
+                "match_score": 0.98,
+                "status": "verified"
+              },
+              "readability": "clear",
+              "corrected_by_user": false
+            },
+            {
+              "basis": "per_serving",
+              "amount": 0.0,
+              "unit": "g",
+              "raw_text": "0.0 g",
+              "evidence": {
+                "image_id": "img_0",
+                "text": "0.0 g",
+                "box": {
+                  "x": 0.84,
+                  "y": 0.7845,
+                  "w": 0.072,
+                  "h": 0.018
+                },
+                "token_ids": [
+                  "img_0:t100"
+                ],
+                "match_score": 0.98,
+                "status": "verified"
+              },
+              "readability": "clear",
+              "corrected_by_user": false
+            }
+          ]
+        },
+        {
+          "key": "sodium_mg",
+          "raw_label": "Sodium",
+          "values": [
+            {
+              "basis": "per_100g",
+              "amount": null,
+              "unit": "mg",
+              "raw_text": "",
+              "evidence": {
+                "image_id": "img_0",
+                "text": "",
+                "box": {
+                  "x": 0.65,
+                  "y": 0.8174,
+                  "w": 0.0432,
+                  "h": 0.018
+                },
+                "token_ids": [
+                  "img_0:t102"
+                ],
+                "match_score": 0.0,
+                "status": "verified"
+              },
+              "readability": "unreadable",
+              "corrected_by_user": false
+            },
+            {
+              "basis": "per_serving",
+              "amount": null,
+              "unit": "mg",
+              "raw_text": "",
+              "evidence": {
+                "image_id": "img_0",
+                "text": "",
+                "box": {
+                  "x": 0.84,
+                  "y": 0.8174,
+                  "w": 0.0288,
+                  "h": 0.018
+                },
+                "token_ids": [
+                  "img_0:t103"
+                ],
+                "match_score": 0.0,
+                "status": "verified"
+              },
+              "readability": "unreadable",
+              "corrected_by_user": false
+            }
+          ]
+        }
+      ]
+    },
+    "nutrition_section": {
+      "presence": "found",
+      "complete": false,
+      "issues": [
+        "unreadable_span"
+      ],
+      "unreadable_regions": [
+        {
+          "image_id": "img_0",
+          "text": "",
+          "box": {
+            "x": 0.65,
+            "y": 0.8174,
+            "w": 0.2188,
+            "h": 0.018
+          },
+          "token_ids": [
+            "img_0:t102",
+            "img_0:t103"
+          ],
+          "match_score": 0.0,
+          "status": "verified"
+        }
+      ]
+    },
+    "allergen_statements": [
+      {
+        "id": "alg_0",
+        "type": "contains",
+        "raw_text": "CONTAINS: PEANUT, MILK, WHEAT, SOY.",
+        "items": [
+          "Peanut",
+          "Milk",
+          "Wheat",
+          "Soy"
+        ],
+        "evidence": [
+          {
+            "image_id": "img_0",
+            "text": "CONTAINS: PEANUT, MILK, WHEAT, SOY.",
+            "box": {
+              "x": 0.06,
+              "y": 0.3719,
+              "w": 0.546,
+              "h": 0.0195
+            },
+            "token_ids": [
+              "img_0:t43",
+              "img_0:t44",
+              "img_0:t45",
+              "img_0:t46",
+              "img_0:t47"
+            ],
+            "match_score": 0.96,
+            "status": "verified"
+          }
+        ]
+      },
+      {
+        "id": "alg_1",
+        "type": "may_contain",
+        "raw_text": "MAY CONTAIN TRACES OF TREE NUTS.",
+        "items": [
+          "Tree Nuts"
+        ],
+        "evidence": [
+          {
+            "image_id": "img_0",
+            "text": "MAY CONTAIN TRACES OF TREE NUTS.",
+            "box": {
+              "x": 0.06,
+              "y": 0.3991,
+              "w": 0.4992,
+              "h": 0.0195
+            },
+            "token_ids": [
+              "img_0:t48",
+              "img_0:t49",
+              "img_0:t50",
+              "img_0:t51",
+              "img_0:t52",
+              "img_0:t53"
+            ],
+            "match_score": 0.96,
+            "status": "verified"
+          }
+        ]
+      }
+    ],
+    "allergen_section": {
+      "presence": "found",
+      "complete": true,
+      "issues": [],
+      "unreadable_regions": []
+    },
+    "veg_mark": {
+      "value": "veg",
+      "evidence": {
+        "image_id": "img_0",
+        "text": "Green vegetarian mark",
+        "box": {
+          "x": 0.86,
+          "y": 0.0286,
+          "w": 0.08,
+          "h": 0.0571
+        },
+        "token_ids": [],
+        "match_score": 0.0,
+        "status": "approximate"
+      }
+    },
+    "claims": [
+      {
+        "id": "clm_0",
+        "raw_text": "HIGH PROTEIN",
+        "evidence": [
+          {
+            "image_id": "img_0",
+            "text": "HIGH PROTEIN",
+            "box": {
+              "x": 0.06,
+              "y": 0.1288,
+              "w": 0.1808,
+              "h": 0.018
+            },
+            "token_ids": [
+              "img_0:t5",
+              "img_0:t6"
+            ],
+            "match_score": 0.99,
+            "status": "verified"
+          }
+        ]
+      }
+    ],
+    "user_corrections": [],
+    "meta": {
+      "provider": "fixture",
+      "model": "fixture",
+      "attempts": 2,
+      "retries": [
+        {
+          "reason": "nutrition_value_unreadable:sodium_mg",
+          "action": "reread_region:img_0",
+          "outcome": "unchanged"
+        }
+      ],
+      "duration_ms": 4120,
+      "cache_hit": false
+    }
+  },
+  "annotations": [
+    {
+      "ingredient_id": "ing_0",
+      "canonical_ids": [
+        "sugar"
+      ],
+      "categories": [
+        "added_sugar"
+      ],
+      "origin": "plant",
+      "source": "kb",
+      "note": null
+    },
+    {
+      "ingredient_id": "ing_1",
+      "canonical_ids": [
+        "peanut"
+      ],
+      "categories": [
+        "peanut"
+      ],
+      "origin": "plant",
+      "source": "kb",
+      "note": null
+    },
+    {
+      "ingredient_id": "ing_2",
+      "canonical_ids": [
+        "milk_solids"
+      ],
+      "categories": [
+        "milk",
+        "dairy"
+      ],
+      "origin": "animal",
+      "source": "kb",
+      "note": null
+    },
+    {
+      "ingredient_id": "ing_3",
+      "canonical_ids": [
+        "wheat_flour"
+      ],
+      "categories": [
+        "wheat",
+        "gluten"
+      ],
+      "origin": "plant",
+      "source": "kb",
+      "note": null
+    },
+    {
+      "ingredient_id": "ing_4",
+      "canonical_ids": [
+        "cocoa_butter"
+      ],
+      "categories": [],
+      "origin": "plant",
+      "source": "kb",
+      "note": null
+    },
+    {
+      "ingredient_id": "ing_5",
+      "canonical_ids": [
+        "palm_oil"
+      ],
+      "categories": [
+        "palm_oil"
+      ],
+      "origin": "plant",
+      "source": "kb",
+      "note": null
+    },
+    {
+      "ingredient_id": "ing_6",
+      "canonical_ids": [
+        "invert_sugar"
+      ],
+      "categories": [
+        "added_sugar",
+        "sugar_alias"
+      ],
+      "origin": "plant",
+      "source": "kb",
+      "note": null
+    },
+    {
+      "ingredient_id": "ing_7",
+      "canonical_ids": [
+        "ins_322"
+      ],
+      "categories": [
+        "soy"
+      ],
+      "origin": "plant",
+      "source": "kb",
+      "note": null
+    },
+    {
+      "ingredient_id": "ing_8",
+      "canonical_ids": [
+        "salt"
+      ],
+      "categories": [],
+      "origin": "mineral",
+      "source": "kb",
+      "note": null
+    },
+    {
+      "ingredient_id": "ing_9",
+      "canonical_ids": [
+        "ins_500"
+      ],
+      "categories": [],
+      "origin": "mineral",
+      "source": "kb",
+      "note": null
+    },
+    {
+      "ingredient_id": "ing_10",
+      "canonical_ids": [
+        "natural_flavours"
+      ],
+      "categories": [],
+      "origin": "varies",
+      "source": "kb",
+      "note": "Source not declared on label"
+    }
+  ],
+  "nutrition_analysis": {
+    "per_100": {
+      "energy_kcal": 520.0,
+      "protein_g": 9.5,
+      "carbohydrate_g": 58.0,
+      "total_sugars_g": 38.0,
+      "added_sugars_g": 30.0,
+      "total_fat_g": 28.0,
+      "saturated_fat_g": 14.0,
+      "trans_fat_g": 0.1
+    },
+    "per_100_unit": "g",
+    "per_pack": {
+      "energy_kcal": 624.0,
+      "protein_g": 11.4,
+      "carbohydrate_g": 69.6,
+      "total_sugars_g": 45.6,
+      "added_sugars_g": 36.0,
+      "total_fat_g": 33.6,
+      "saturated_fat_g": 16.8,
+      "trans_fat_g": 0.12
+    },
+    "servings_per_pack": 3.0,
+    "consistency": {
+      "status": "consistent",
+      "declared_kcal": 520.0,
+      "computed_kcal": 522.0,
+      "deviation_pct": 0.38,
+      "suspect_keys": [],
+      "message_key": "nutrition.consistency.ok"
+    },
+    "notes": [
+      "nutrition.serving_small"
+    ]
+  },
+  "reports": [
+    {
+      "profile_id": "p_aarav",
+      "overall": "conflict",
+      "results": [
+        {
+          "restriction_id": "r_aarav_peanut",
+          "state": "conflict",
+          "unknown_kind": null,
+          "reason_code": "CONFLICT_INGREDIENT",
+          "message_key": "verdict.conflict.ingredient",
+          "message_params": {
+            "term": "Peanuts (22%)",
+            "category": "peanut"
+          },
+          "explanation": "Lists Peanuts (22%) — this counts as peanut.",
+          "evidence": [
+            {
+              "image_id": "img_0",
+              "text": "Peanuts (22%)",
+              "box": {
+                "x": 0.1692,
+                "y": 0.2205,
+                "w": 0.2184,
+                "h": 0.0195
+              },
+              "token_ids": [
+                "img_0:t13",
+                "img_0:t14"
+              ],
+              "match_score": 0.96,
+              "status": "verified"
+            },
+            {
+              "image_id": "img_0",
+              "text": "CONTAINS: PEANUT, MILK, WHEAT, SOY.",
+              "box": {
+                "x": 0.06,
+                "y": 0.3719,
+                "w": 0.546,
+                "h": 0.0195
+              },
+              "token_ids": [
+                "img_0:t43",
+                "img_0:t44",
+                "img_0:t45",
+                "img_0:t46",
+                "img_0:t47"
+              ],
+              "match_score": 0.96,
+              "status": "verified"
+            }
+          ],
+          "matches": [
+            {
+              "ingredient_id": "ing_1",
+              "term": "Peanuts",
+              "canonical_id": "peanut",
+              "category": "peanut",
+              "source": "kb",
+              "note": null
+            },
+            {
+              "ingredient_id": null,
+              "term": "PEANUT",
+              "canonical_id": null,
+              "category": "peanut",
+              "source": "allergen_statement",
+              "note": null
+            }
+          ],
+          "confidence": 1.0
+        },
+        {
+          "restriction_id": "r_aarav_treenut",
+          "state": "possible",
+          "unknown_kind": null,
+          "reason_code": "POSSIBLE_MAY_CONTAIN",
+          "message_key": "verdict.possible.may_contain",
+          "message_params": {
+            "item": "TREE NUTS"
+          },
+          "explanation": "The label warns it may contain TREE NUTS.",
+          "evidence": [
+            {
+              "image_id": "img_0",
+              "text": "MAY CONTAIN TRACES OF TREE NUTS.",
+              "box": {
+                "x": 0.06,
+                "y": 0.3991,
+                "w": 0.4992,
+                "h": 0.0195
+              },
+              "token_ids": [
+                "img_0:t48",
+                "img_0:t49",
+                "img_0:t50",
+                "img_0:t51",
+                "img_0:t52",
+                "img_0:t53"
+              ],
+              "match_score": 0.96,
+              "status": "verified"
+            }
+          ],
+          "matches": [
+            {
+              "ingredient_id": null,
+              "term": "TREE NUTS",
+              "canonical_id": null,
+              "category": "tree_nut",
+              "source": "allergen_statement",
+              "note": null
+            }
+          ],
+          "confidence": 1.0
+        }
+      ],
+      "summary": "Not suitable for Aarav: it contains peanuts, and the label warns it may contain tree nuts.",
+      "summary_lang": "en"
+    },
+    {
+      "profile_id": "p_thatha",
+      "overall": "conflict",
+      "results": [
+        {
+          "restriction_id": "r_thatha_sugar",
+          "state": "conflict",
+          "unknown_kind": null,
+          "reason_code": "CONFLICT_THRESHOLD",
+          "message_key": "verdict.conflict.threshold",
+          "message_params": {
+            "nutrient": "total_sugars_g",
+            "value": 38.0,
+            "unit": "g",
+            "basis": "per_100g",
+            "limit": 22.5
+          },
+          "explanation": "Total sugars is 38.0 g per 100 g, above your limit of 22.5 g.",
+          "evidence": [
+            {
+              "image_id": "img_0",
+              "text": "Total Sugars 38.0 g",
+              "box": {
+                "x": 0.06,
+                "y": 0.6531,
+                "w": 0.8664,
+                "h": 0.018
+              },
+              "token_ids": [
+                "img_0:t81",
+                "img_0:t82",
+                "img_0:t83",
+                "img_0:t84"
+              ],
+              "match_score": 0.97,
+              "status": "verified"
+            },
+            {
+              "image_id": "img_0",
+              "text": "Sugar",
+              "box": {
+                "x": 0.06,
+                "y": 0.2205,
+                "w": 0.0936,
+                "h": 0.0195
+              },
+              "token_ids": [
+                "img_0:t12"
+              ],
+              "match_score": 0.96,
+              "status": "verified"
+            },
+            {
+              "image_id": "img_0",
+              "text": "Invert Sugar Syrup",
+              "box": {
+                "x": 0.1848,
+                "y": 0.2748,
+                "w": 0.2964,
+                "h": 0.0195
+              },
+              "token_ids": [
+                "img_0:t28",
+                "img_0:t29",
+                "img_0:t30"
+              ],
+              "match_score": 0.96,
+              "status": "verified"
+            }
+          ],
+          "matches": [
+            {
+              "ingredient_id": null,
+              "term": "Total Sugars 38.0 g",
+              "canonical_id": null,
+              "category": "added_sugar",
+              "source": "nutrition",
+              "note": null
+            },
+            {
+              "ingredient_id": "ing_0",
+              "term": "Sugar",
+              "canonical_id": "sugar",
+              "category": "added_sugar",
+              "source": "kb",
+              "note": null
+            },
+            {
+              "ingredient_id": "ing_6",
+              "term": "Invert Sugar Syrup",
+              "canonical_id": "invert_sugar",
+              "category": "sugar_alias",
+              "source": "kb",
+              "note": null
+            }
+          ],
+          "confidence": 1.0
+        },
+        {
+          "restriction_id": "r_thatha_sodium",
+          "state": "unknown",
+          "unknown_kind": "undeterminable",
+          "reason_code": "UNKNOWN_NUTRIENT_MISSING",
+          "message_key": "verdict.unknown.nutrient_missing",
+          "message_params": {
+            "nutrient": "sodium_mg"
+          },
+          "explanation": "Sodium is not readable on this label.",
+          "evidence": [
+            {
+              "image_id": "img_0",
+              "text": "",
+              "box": {
+                "x": 0.65,
+                "y": 0.8174,
+                "w": 0.2188,
+                "h": 0.018
+              },
+              "token_ids": [
+                "img_0:t102",
+                "img_0:t103"
+              ],
+              "match_score": 0.0,
+              "status": "verified"
+            }
+          ],
+          "matches": [],
+          "confidence": 1.0
+        }
+      ],
+      "summary": "Too much sugar for Thatha (38 g per 100 g, limit 22.5 g). Sodium couldn't be read.",
+      "summary_lang": "en"
+    },
+    {
+      "profile_id": "p_lakshmi",
+      "overall": "possible",
+      "results": [
+        {
+          "restriction_id": "r_lakshmi_jain",
+          "state": "possible",
+          "unknown_kind": null,
+          "reason_code": "POSSIBLE_AMBIGUOUS_SOURCE",
+          "message_key": "verdict.possible.ambiguous_source",
+          "message_params": {
+            "term": "Natural Flavours",
+            "category": "onion|garlic"
+          },
+          "explanation": "Natural Flavours can come from onion or garlic sources; the label does not say which.",
+          "evidence": [
+            {
+              "image_id": "img_0",
+              "text": "Natural",
+              "box": {
+                "x": 0.7308,
+                "y": 0.3019,
+                "w": 0.1092,
+                "h": 0.0195
+              },
+              "token_ids": [
+                "img_0:t41"
+              ],
+              "match_score": 0.96,
+              "status": "verified"
+            },
+            {
+              "image_id": "img_0",
+              "text": "Flavours.",
+              "box": {
+                "x": 0.06,
+                "y": 0.3291,
+                "w": 0.1404,
+                "h": 0.0195
+              },
+              "token_ids": [
+                "img_0:t42"
+              ],
+              "match_score": 0.96,
+              "status": "verified"
+            },
+            {
+              "image_id": "img_0",
+              "text": "Green vegetarian mark",
+              "box": {
+                "x": 0.86,
+                "y": 0.0286,
+                "w": 0.08,
+                "h": 0.0571
+              },
+              "token_ids": [],
+              "match_score": 0.0,
+              "status": "approximate"
+            }
+          ],
+          "matches": [
+            {
+              "ingredient_id": "ing_10",
+              "term": "Natural Flavours",
+              "canonical_id": "natural_flavours",
+              "category": null,
+              "source": "kb",
+              "note": "Green veg mark rules out meat/egg; onion/garlic/root vegetables cannot be ruled out."
+            }
+          ],
+          "confidence": 0.7
+        },
+        {
+          "restriction_id": "r_lakshmi_sesame",
+          "state": "not_listed",
+          "unknown_kind": null,
+          "reason_code": "NOT_LISTED_COMPLETE",
+          "message_key": "verdict.not_listed.complete",
+          "message_params": {},
+          "explanation": "Not listed anywhere in the full ingredient list.",
+          "evidence": [],
+          "matches": [],
+          "confidence": 1.0
+        }
+      ],
+      "summary": "Probably fine for Lakshmi's sesame allergy. For Jain rules, 'natural flavours' doesn't say what it is made from.",
+      "summary_lang": "en"
+    }
+  ],
+  "unknowns": [
+    {
+      "section": "nutrition",
+      "message_key": "unknown.unreadable_span",
+      "detail": "Sodium row",
+      "region": {
+        "image_id": "img_0",
+        "text": "",
+        "box": {
+          "x": 0.65,
+          "y": 0.8174,
+          "w": 0.2188,
+          "h": 0.018
+        },
+        "token_ids": [
+          "img_0:t102",
+          "img_0:t103"
+        ],
+        "match_score": 0.0,
+        "status": "verified"
+      }
+    }
+  ]
+}

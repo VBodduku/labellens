@@ -1,0 +1,55 @@
+{
+  "_comment": "Source of truth for every engine/backend message_key. Part 1 translates these into frontend/src/i18n/hi.json and te.json. Placeholders in {braces} must be kept. Param conventions: category = category id or ids joined by | (translate each, join with the locale word for or); nutrient = nutrient key (total_sugars_g); basis = basis id (per_100g); term/item = label text shown verbatim; value/limit/servings/deviation = numbers; unit = unit string. Add keys only on main (contract change protocol).",
+
+  "verdict.conflict.ingredient": "Lists {term} — this counts as {category}.",
+  "verdict.conflict.statement": "The label states it contains {item}.",
+  "verdict.conflict.veg_mark": "Carries the brown non-vegetarian mark.",
+  "verdict.conflict.threshold": "{nutrient} is {value} {unit} per {basis}, above your limit of {limit} {unit}.",
+
+  "verdict.possible.may_contain": "The label warns it may contain {item}.",
+  "verdict.possible.facility": "Made in a facility that also handles {item}.",
+  "verdict.possible.ambiguous_source": "{term} can come from {category} sources; the label does not say which.",
+  "verdict.possible.llm_interpretation": "{term} was interpreted by AI as {category}. Please verify on the pack.",
+  "verdict.possible.sugar_alias": "{term} is a form of sugar.",
+
+  "verdict.not_listed.complete": "Not listed anywhere in the full ingredient list.",
+  "verdict.not_listed.within_limit": "{nutrient} is {value} {unit} per {basis}, within your limit of {limit} {unit}.",
+  "verdict.not_listed.trace_note": "Not listed as an ingredient, but the label mentions possible traces of {item}.",
+  "verdict.not_listed.veg_mark": "Carries the green vegetarian mark and no non-vegetarian ingredients are listed.",
+
+  "verdict.unknown.truncated": "Part of the ingredient list is cut off. No {category} found in the readable part.",
+  "verdict.unknown.unreadable": "Some ingredients are unreadable. No {category} found in the readable part.",
+  "verdict.unknown.section_missing": "No ingredient list was found in these photos.",
+  "verdict.unknown.nutrient_missing": "{nutrient} is not readable on this label.",
+  "verdict.unknown.nutrition_missing": "No nutrition table was found in these photos.",
+  "verdict.unknown.not_on_labels": "Packaged-food labels do not usually show this, so it cannot be determined.",
+  "verdict.unknown.suspect_value": "{nutrient} may have been misread, so it is not used for this check.",
+
+  "overall.conflict": "Conflicts with this profile",
+  "overall.possible": "Check before eating",
+  "overall.not_listed": "No conflicts on the readable label",
+  "overall.unknown": "Can't fully check this label",
+
+  "state.conflict": "Conflict",
+  "state.possible": "Check this",
+  "state.not_listed": "Not listed",
+  "state.unknown.not_detected": "Not detected",
+  "state.unknown.undeterminable": "Can't determine",
+
+  "nutrition.consistency.ok": "Calories match the listed nutrients.",
+  "nutrition.consistency.mismatch": "Calories don't match the listed nutrients ({deviation}% off). A value may be misread.",
+  "nutrition.consistency.insufficient": "Not enough nutrition values to cross-check.",
+  "nutrition.serving_small": "This pack holds {servings} servings. Values per pack are much higher than per serving.",
+
+  "unknown.retake_region": "Take a closer photo of this area.",
+  "unknown.ingredients_truncated": "The ingredient list continues beyond the photo.",
+  "unknown.unreadable_span": "Part of the text is unreadable (blur, glare or a fold).",
+  "unknown.no_allergen_statement": "No allergen statement was found.",
+  "unknown.veg_mark_unclear": "The veg / non-veg mark could not be read clearly.",
+
+  "quality.blurry": "The photo is blurry. Hold steady.",
+  "quality.glare": "There is glare on the label. Tilt the pack slightly.",
+  "quality.too_dark": "The photo is too dark. Move to better light.",
+  "quality.low_resolution": "Move closer so the text is larger.",
+  "quality.cropped_edge": "The text runs off the edge. Include the whole panel."
+}
