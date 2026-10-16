@@ -82,3 +82,13 @@ def test_contains_opening_its_own_line_counts_even_without_a_full_stop_before() 
               + line_tokens(["CONTAINSMILK,SOY.MAYCONTAIN", "WHEAT,", "BARLEY."], 0.12, start=2))
     assert [(s.type, s.items) for s in find_statements(tokens)] == [
         ("contains", ["MILK", "SOY"]), ("may_contain", ["WHEAT", "BARLEY"])]
+
+
+def test_ingredients_are_read_from_their_own_column_beside_a_graphic() -> None:
+    graphic = [(["THIS", "BAR"], 0.12), (["CONTAINS"], 0.14), (["No", "Artificial"], 0.16), (["Flavours"], 0.18)]
+    ingredients = [(["Ingredients:Whole", "Grains"], 0.10), (["(Oats,", "Millets),", "Fructo-oligosaccha-"], 0.12),
+                   (["rides,Date", "Syrup,"], 0.14), (["Paste,Honey,Cocoa", "Powder,Peanut"], 0.16),
+                   (["Butter,Seeds（Sunflower,Chia).", "Store", "cool."], 0.18)]
+    names = [i.name for i in find_ingredients(_page(graphic, ingredients, x0s=(0.05, 0.5)))[0]]
+    assert names == ["Whole Grains (Oats, Millets)", "Fructo-oligosaccharides", "Date Syrup", "Paste", "Honey",
+                     "Cocoa Powder", "Peanut Butter", "Seeds（Sunflower,Chia)"]
