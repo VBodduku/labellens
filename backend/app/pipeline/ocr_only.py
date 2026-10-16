@@ -109,34 +109,150 @@ def find_ingredients(tokens: Sequence[OcrToken]) -> tuple[list[Ingredient], bool
     return ingredients, True
 
 
-def _statement_type(words: str) -> StatementType | None:
-    if words.startswith("contains"):
+_ADVICE_HEADING = re.compile(r"^allerg(en|y|ens)(advice|information|info|declaration|statement|warning)?$")
+_FACILITY = re.compile(r"^(processed|manufactured|produced|packed|made)(in|on)")
+_FACILITY_WORDS = re.compile(r"\b(plant|facility|factory|unit|premises|equipment|machinery|line|also|where)\b")
+_CONTAINS = re.compile(r"contains?(?!er|ing)")
+_FACILITY_ITEMS = (re.compile(r"(?i)\bwhere\s+(?:other\s+)?(.+?)\s+(?:are|is)\b"),
+                   re.compile(r"(?i)\b(?:handles?|process(?:es)?|uses?)\s+(?:other\s+)?(.+)$"))
+_SENTENCE_END = re.compile(r"\.(?!\d)")
+_MAY_CONTAIN = re.compile(r"(?i)\bmay\s*contain")
+_COLUMN_GAP = 2.5           # horizontal gap, in token heights, that separates side-by-side columns
+_LINE_GAP = 1.0             # vertical gap, in token heights, that ends a printed block
+_MAX_ITEM_WORDS = 4
+
+
+def _line(tokens: Sequence[OcrToken], anchor: OcrToken) -> list[OcrToken]:
+    return next(line for line in split_lines(tokens) if anchor in line)
+
+
+def _starts_sentence(tokens: Sequence[OcrToken], n: int) -> bool:
+    """Statement wording counts only when it opens a sentence: after a full stop or colon, or at the
+    start of a line with its list on the same line. "THIS BAR / CONTAINS" over an ingredient list is a graphic."""
+    anchor = tokens[n]
+    column = _column(tokens, anchor)
+    line = [t for t in _line(tokens, anchor) if _in_column(t, column, anchor.box.h)]
+    for prev in reversed(tokens[max(0, n - 12):n]):
+        if _in_column(prev, column, anchor.box.h) and prev.box.y + prev.box.h >= anchor.box.y - anchor.box.h:
+            if prev.text.rstrip().endswith((".", ":", ";", "!")) or _ADVICE_HEADING.match(compact(prev.text)):
+                return True
+            merged = len(compact(anchor.text)) > len("contains")     # "CONTAINSMILK,SOY." carries its list
+            return prev not in line and (merged or line[-1] is not anchor)
+    return True
+
+
+def _column(tokens: Sequence[OcrToken], anchor: OcrToken) -> tuple[float, float]:
+    """x range of the anchor's printed column: its line's neighbours joined by word-sized gaps."""
+    line = _line(tokens, anchor)
+    gap = _COLUMN_GAP * anchor.box.h
+    at = line.index(anchor)
+    left = right = at
+    while left > 0 and line[left].box.x - (line[left - 1].box.x + line[left - 1].box.w) <= gap:
+        left -= 1
+    while right < len(line) - 1 and line[right + 1].box.x - (line[right].box.x + line[right].box.w) <= gap:
+        right += 1
+    return line[left].box.x, line[right].box.x + line[right].box.w
+
+
+def _in_column(token: OcrToken, column: tuple[float, float], height: float) -> bool:
+    gap = _COLUMN_GAP * height
+    return token.box.x < column[1] + gap and token.box.x + token.box.w > column[0] - gap
+
+
+def _block(tokens: Sequence[OcrToken], n: int) -> list[OcrToken]:
+    """The anchor and the tokens after it in its own column, until a blank line ends the block."""
+    anchor = tokens[n]
+    column = _column(tokens, anchor)
+    block, bottom = [anchor], anchor.box.y + anchor.box.h
+    for token in tokens[n + 1:]:
+        if not _in_column(token, column, anchor.box.h):
+            continue
+        if token.box.y - bottom > _LINE_GAP * anchor.box.h:
+            break
+        block.append(token)
+        column = (min(column[0], token.box.x), max(column[1], token.box.x + token.box.w))
+        bottom = max(bottom, token.box.y + token.box.h)
+    return block
+
+
+def _sentences(block: list[OcrToken]) -> list[tuple[str, list[OcrToken]]]:
+    """Split a block at full stops and "may contain", keeping the tokens behind each piece.
+    Line breaks are kept so a wrapped all-caps list can use them as separators."""
+    text = ""
+    spans: list[tuple[int, int, OcrToken]] = []
+    for line in split_lines(block):
+        for m, token in enumerate(line):
+            text += ("\n" if text and m == 0 else " " if text else "")
+            spans.append((len(text), len(text) + len(token.text), token))
+            text += token.text
+    cuts = sorted({0, len(text)} | {m.end() for m in _SENTENCE_END.finditer(text)}
+                  | {m.start() for m in _MAY_CONTAIN.finditer(text)})
+    pieces: list[tuple[str, list[OcrToken]]] = []
+    for start, end in zip(cuts, cuts[1:]):
+        if text[start:end].strip():
+            pieces.append((text[start:end].strip(), [t for s, e, t in spans if s < end and e > start]))
+    return pieces
+
+
+def _statement_type(sentence: str) -> StatementType | None:
+    words = re.sub(r"^allerg\w*( (advice|information|info|declaration|statement|warning))? ", "", norm(sentence))
+    if _CONTAINS.match(compact(words)):
         return "contains"
-    if words.startswith("may contain"):
+    if compact(words).startswith("maycontain"):
         return "may_contain"
+    if _FACILITY.match(compact(words)) and _FACILITY_WORDS.search(words):
+        return "facility"
     return None
 
 
+def _items(kind: StatementType, sentence: str) -> list[str]:
+    """Printed items, or [] when the text is not a short list (then nothing is claimed)."""
+    if kind == "facility":
+        match = next((m for p in _FACILITY_ITEMS if (m := p.search(sentence.replace("\n", " ")))), None)
+        body = match.group(1) if match else ""
+    else:
+        body = re.split(r"(?i)contains?\s*:?|traces of", sentence)[-1]
+    if body.upper() != body:    # only an all-caps list splits at a wrap: OCR often drops its comma there
+        body = body.replace("\n", " ")
+    items = [clean_item_text(i).strip(" .:") for i in re.split(r",|;|\band\b|&|\n", body)]
+    items = [i for i in items if i]
+    if any(len(i.split()) > _MAX_ITEM_WORDS or any(c.isdigit() for c in i) for i in items):
+        return []
+    return items
+
+
+def _is_trigger(tokens: Sequence[OcrToken], n: int) -> bool:
+    head = compact(" ".join(t.text for t in tokens[n:n + 4]))
+    if _ADVICE_HEADING.match(compact(tokens[n].text)):
+        return True
+    if head.startswith("maycontain") or _FACILITY.match(head):
+        return _starts_sentence(tokens, n)
+    if _CONTAINS.match(compact(tokens[n].text)):
+        return re.match(r"(?i)contains?:", tokens[n].text) is not None or _starts_sentence(tokens, n)
+    return False
+
+
 def find_statements(tokens: Sequence[OcrToken]) -> list[AllergenStatement]:
+    """Allergen statements read block by block: a statement starts at "Allergen advice", "Contains" or
+    "May contain" wording that opens a sentence, and ends at its full stop or at the end of its own
+    column block. A statement whose text is not a short list is left out rather than guessed."""
     statements: list[AllergenStatement] = []
-    n = 0
-    while n < len(tokens):
-        kind = _statement_type(norm(" ".join(t.text for t in tokens[n:n + 2])))
-        if kind is None:
-            n += 1
+    used: set[str] = set()
+    for n, token in enumerate(tokens):
+        if token.token_id in used or not _is_trigger(tokens, n):
             continue
-        end = n
-        while end < len(tokens) - 1 and not tokens[end].text.rstrip().endswith("."):
-            end += 1
-        span = list(tokens[n:end + 1])
-        text = " ".join(t.text for t in span)
-        body = re.split(r"(?i)contains?:?|traces of", text)[-1]
-        items = [i.strip(" .") for i in re.split(r",|\band\b|&", body) if i.strip(" .")]
-        statements.append(AllergenStatement(
-            id=f"alg_{len(statements)}", type=kind, raw_text=text.strip(), items=items,
-            evidence=line_evidence(span, 1.0),
-        ))
-        n = end + 1
+        block = _block(tokens, n)
+        for sentence, span in _sentences(block):
+            kind = _statement_type(sentence)
+            if kind is None:
+                break
+            used.update(t.token_id for t in span)
+            items = _items(kind, sentence)
+            if items:
+                statements.append(AllergenStatement(
+                    id=f"alg_{len(statements)}", type=kind, raw_text=" ".join(sentence.split()), items=items,
+                    evidence=line_evidence(span, 1.0),
+                ))
     return statements
 
 
