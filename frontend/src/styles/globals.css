@@ -1,0 +1,106 @@
+@import "./fonts.css";
+@import "./tokens.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-indic: "Noto Sans Devanagari Variable", "Noto Sans Telugu Variable";
+  }
+
+  html {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body), var(--font-indic);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html:lang(hi) {
+    font-family: var(--font-body), "Noto Sans Devanagari Variable", sans-serif;
+  }
+
+  html:lang(te) {
+    font-family: var(--font-body), "Noto Sans Telugu Variable", sans-serif;
+  }
+
+  /* Indic scripts need more vertical room for stacked vowel signs and conjuncts. */
+  :lang(te) {
+    line-height: 1.6;
+  }
+
+  :lang(hi) {
+    line-height: 1.55;
+  }
+
+  body {
+    min-height: 100dvh;
+    background: var(--bg);
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display), var(--font-indic);
+    letter-spacing: -0.02em;
+  }
+
+  :lang(hi) h1,
+  :lang(hi) h2,
+  :lang(hi) h3,
+  :lang(te) h1,
+  :lang(te) h2,
+  :lang(te) h3 {
+    letter-spacing: 0;
+    line-height: 1.35;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--beam) 35%, transparent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--beam);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+}
+
+@layer components {
+  /* Inner-border elevation instead of heavy shadows (spec §4). */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius-card);
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+
+  .text-beam-gradient {
+    background: var(--beam-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Diagonal hatch: the pattern that marks "unknown" states without relying on colour. */
+  .hatch {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      color-mix(in srgb, var(--unknown) 28%, transparent) 0 2px,
+      transparent 2px 7px
+    );
+  }
+
+  .evidence-text {
+    font-family: var(--font-mono), var(--font-indic);
+    font-feature-settings: "calt" 0;
+  }
+
+  .page-gutter {
+    padding-inline: max(1rem, env(safe-area-inset-left));
+  }
+}
