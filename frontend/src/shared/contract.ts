@@ -9,7 +9,7 @@
  * rendered through the frontend i18n files, never from free LLM text.
  */
 
-export const CONTRACT_VERSION = "1.0.0";
+export const CONTRACT_VERSION = "1.0.1";
 
 export type Lang = "en" | "hi" | "te";
 
@@ -81,6 +81,8 @@ export interface Ingredient {
   evidence: Evidence[];
   readability: Readability;
   confidence: number;
+  /** What the user confirmed by checking the pack, per category. Added in 1.0.1. */
+  confirmations?: Record<string, "present" | "absent">;
 }
 
 export type StatementType = "contains" | "may_contain" | "facility" | "free_from";
@@ -285,6 +287,22 @@ export interface UnknownItem {
   region?: Evidence | null;
 }
 
+export interface VerdictRef { profile_id: string; restriction_id?: string | null }
+
+export type ContradictionKind = "veg_mark" | "free_from" | "claim" | "ai_vs_print" | "panels";
+
+/** Two readings that disagree; the engine keeps the stricter side and the UI asks the user to check. Added in 1.0.1. */
+export interface Contradiction {
+  id: string;
+  kind: ContradictionKind;
+  message_key: string;
+  message_params: Record<string, string | number>;
+  explanation: string;
+  evidence: Evidence[];
+  affects: VerdictRef[];
+  field_path?: string | null;
+}
+
 export interface ScanResult {
   contract_version: string;
   scan_id: string;
@@ -295,6 +313,8 @@ export interface ScanResult {
   nutrition_analysis?: NutritionAnalysis | null;
   reports: ProfileReport[];
   unknowns: UnknownItem[];
+  /** Added in 1.0.1. */
+  contradictions?: Contradiction[];
 }
 
 // ---------------------------------------------------------------- HTTP API
@@ -308,7 +328,6 @@ export interface RecheckRequest { extraction: LabelExtraction; profiles: Profile
 
 export interface AskRequest { question: string; lang: Lang; scan: ScanResult; profiles: Profile[] }
 export interface ToolCallTrace { tool: string; args: Record<string, unknown>; result_summary: string }
-export interface VerdictRef { profile_id: string; restriction_id?: string | null }
 export interface AskResponse {
   answer: string;
   lang: Lang;

@@ -5,6 +5,7 @@
   "verdict.conflict.statement": "The label states it contains {item}.",
   "verdict.conflict.veg_mark": "Carries the brown non-vegetarian mark.",
   "verdict.conflict.threshold": "{nutrient} is {value} {unit} per {basis}, above your limit of {limit} {unit}.",
+  "verdict.conflict.user_confirmed": "You checked the pack: {term} contains {category}.",
 
   "verdict.possible.may_contain": "The label warns it may contain {item}.",
   "verdict.possible.facility": "Made in a facility that also handles {item}.",
@@ -16,6 +17,7 @@
   "verdict.not_listed.within_limit": "{nutrient} is {value} {unit} per {basis}, within your limit of {limit} {unit}.",
   "verdict.not_listed.trace_note": "Not listed as an ingredient, but the label mentions possible traces of {item}.",
   "verdict.not_listed.veg_mark": "Carries the green vegetarian mark and no non-vegetarian ingredients are listed.",
+  "verdict.not_listed.user_confirmed": "Not listed in the full ingredient list. You checked the pack: {term} has no {category}.",
 
   "verdict.unknown.truncated": "Part of the ingredient list is cut off. No {category} found in the readable part.",
   "verdict.unknown.unreadable": "Some ingredients are unreadable. No {category} found in the readable part.",
@@ -24,6 +26,13 @@
   "verdict.unknown.nutrition_missing": "No nutrition table was found in these photos.",
   "verdict.unknown.not_on_labels": "Packaged-food labels do not usually show this, so it cannot be determined.",
   "verdict.unknown.suspect_value": "{nutrient} may have been misread, so it is not used for this check.",
+  "verdict.unknown.unresolved_term": "We don't know what {term} is made of, so {category} can't be ruled out. Check the pack.",
+
+  "contradiction.veg_mark": "The green vegetarian mark disagrees with {term}, which counts as {category}.",
+  "contradiction.free_from": "The label says it is free from {item}, but it also lists {term}.",
+  "contradiction.claim": "The claim \"{claim}\" disagrees with {term}.",
+  "contradiction.ai_vs_print": "The AI read {nutrient} as {ai_value}, but the photo's text reads {value}. Neither is used until you check the pack.",
+  "contradiction.panels": "The photos show different {nutrient} values ({value} and {other}). The clearer reading is used.",
 
   "overall.conflict": "Conflicts with this profile",
   "overall.possible": "Check before eating",

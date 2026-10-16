@@ -23,7 +23,7 @@ from typing import Literal, Optional, Union
 
 from pydantic import BaseModel, Field
 
-CONTRACT_VERSION = "1.0.0"
+CONTRACT_VERSION = "1.0.1"
 
 Lang = Literal["en", "hi", "te"]
 
@@ -116,6 +116,8 @@ class Ingredient(BaseModel):
     evidence: list[Evidence] = []
     readability: Readability = "clear"
     confidence: float = 1.0
+    # What the user confirmed by checking the pack, per category: {"animal_derived": "absent"}. Added in 1.0.1.
+    confirmations: dict[str, Literal["present", "absent"]] = {}
 
 
 StatementType = Literal["contains", "may_contain", "facility", "free_from"]
@@ -353,6 +355,33 @@ class UnknownItem(BaseModel):
     region: Optional[Evidence] = None       # where to retake (image_id + box)
 
 
+class VerdictRef(BaseModel):
+    profile_id: str
+    restriction_id: Optional[str] = None
+
+
+ContradictionKind = Literal[
+    "veg_mark",     # green veg mark vs a non-vegetarian ingredient or "contains" item
+    "free_from",    # "free from X" vs an ingredient or "contains" item that is X
+    "claim",        # front-of-pack claim ("No added sugar") vs the ingredients or nutrition table
+    "ai_vs_print",  # the AI's number vs the number printed on the photo (the printed one is used)
+    "panels",       # two photos show different values for the same nutrient
+]
+
+
+class Contradiction(BaseModel):
+    """Two readings that disagree. Never resolved silently: the engine keeps the stricter side and says so,
+    and the UI asks the user to check the pack or correct a misread. Added in 1.0.1."""
+    id: str
+    kind: ContradictionKind
+    message_key: str                # key in shared/messages.en.json ("contradiction.*")
+    message_params: dict[str, Union[str, float]] = {}
+    explanation: str                # English rendering of message_key
+    evidence: list[Evidence] = []   # both sides, as printed
+    affects: list[VerdictRef] = []  # restriction results this touches
+    field_path: Optional[str] = None    # what to correct if one side was misread
+
+
 class ScanResult(BaseModel):
     contract_version: str = CONTRACT_VERSION
     scan_id: str
@@ -363,6 +392,7 @@ class ScanResult(BaseModel):
     nutrition_analysis: Optional[NutritionAnalysis] = None
     reports: list[ProfileReport] = []
     unknowns: list[UnknownItem] = []
+    contradictions: list[Contradiction] = []    # added in 1.0.1
 
 
 # --------------------------------------------------------------------------------------------
@@ -388,11 +418,6 @@ class ToolCallTrace(BaseModel):
     tool: str
     args: dict = {}
     result_summary: str
-
-
-class VerdictRef(BaseModel):
-    profile_id: str
-    restriction_id: Optional[str] = None
 
 
 class AskResponse(BaseModel):

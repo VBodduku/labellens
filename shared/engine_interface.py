@@ -19,6 +19,7 @@ from typing import Optional, Protocol
 from pydantic import BaseModel
 
 from shared.contract import (
+    Contradiction,
     ExplainResponse,
     IngredientAnnotation,
     LabelExtraction,
@@ -51,6 +52,7 @@ class EngineOutput(BaseModel):
     reports: list[ProfileReport]    # summary fields left empty; Part 2 fills them
     unknowns: list[UnknownItem]
     unresolved_terms: list[UnresolvedTerm]
+    contradictions: list[Contradiction] = []    # added with contract 1.0.1
 
 
 class EngineAPI(Protocol):
