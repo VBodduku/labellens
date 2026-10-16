@@ -19,7 +19,7 @@ from backend.app.pipeline.assemble import build_scan_result
 from backend.app.pipeline.images import BadImageError, PreparedImage, decode_upload, image_id
 from backend.app.pipeline.orchestrator import SCAN_BUDGET_S, ScanInput, run_scan
 from backend.app.pipeline.scan_memory import SCAN_MEMORY
-from backend.app.pipeline.verify import merge_unknowns, pending_unknowns
+from backend.app.pipeline.verify import scan_unknowns
 from shared.contract import Lang, PanelHint, Profile, RecheckRequest, ScanResult
 
 router = APIRouter(prefix="/api")
@@ -115,6 +115,6 @@ async def recheck(body: RecheckRequest, router: LLMRouter = Depends(get_router))
     if record is not None and summaries:
         record.lang = body.lang
         record.remember_summaries(reports)
-    unknowns = merge_unknowns(output.unknowns, pending_unknowns(body.extraction, body.profiles))
+    unknowns = scan_unknowns(body.extraction, body.profiles, output.unknowns)
     return build_scan_result(body.extraction, output.model_copy(update={"reports": reports, "unknowns": unknowns}),
                              body.lang)

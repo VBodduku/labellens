@@ -34,7 +34,7 @@ from backend.app.pipeline.merge import MergedLabel, evidence_of, merge_panels
 from backend.app.pipeline.quality import add_cropped_edge, assess
 from backend.app.pipeline.scan_memory import SCAN_MEMORY, ScanRecord, fingerprint
 from backend.app.pipeline.structure import PROMPT_VERSION, Citations, structure
-from backend.app.pipeline.verify import merge_unknowns, pending_unknowns, verify
+from backend.app.pipeline.verify import scan_unknowns, verify
 from shared.contract import (
     ExtractionMeta,
     ImageInfo,
@@ -253,7 +253,7 @@ async def run_scan(scan: ScanInput, router: LLMRouter, cache: ExtractionCache) -
         cache.put_extras(key, extras)
 
     reports = summarize.apply(output.reports, summaries, scan.lang)
-    unknowns = merge_unknowns(output.unknowns, pending_unknowns(extraction, scan.profiles))
+    unknowns = scan_unknowns(extraction, scan.profiles, output.unknowns)
     record = ScanRecord(lang=scan.lang, interpretations=interpretations)
     record.remember_summaries(reports)
     SCAN_MEMORY.put(extraction.scan_id, record)

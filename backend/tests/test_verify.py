@@ -17,8 +17,10 @@ from backend.app.pipeline.verify import (
     merge_unknowns,
     padded_crop,
     pending_unknowns,
+    scan_unknowns,
     verify,
 )
+from backend.app.pipeline import verify as verify_module
 from backend.scripts.make_test_label import fixture_tokens, render_label
 from backend.tests.fakes import REREAD, FakeLLM, token
 from shared.contract import Box, Evidence, LabelExtraction, Profile, UnknownItem
@@ -162,3 +164,33 @@ def test_pipeline_unknowns_with_regions_replace_engine_duplicates() -> None:
     merged = merge_unknowns(engine, pipeline)
     assert [(u.message_key, u.region is not None) for u in merged] == [
         ("unknown.ingredients_truncated", True), ("unknown.veg_mark_unclear", False)]
+
+
+def test_a_retake_names_the_row_as_printed_not_an_internal_code() -> None:
+    e = extraction()
+    sodium = next(r.raw_label for r in e.nutrition.rows if r.key == "sodium_mg")  # type: ignore[union-attr]
+    retakes = [u for u in pending_unknowns(e, PROFILES) if u.section == "nutrition"]
+    assert sodium in [u.detail for u in retakes]
+    assert not any(":" in (u.detail or "") or "_" in (u.detail or "") for u in pending_unknowns(e, PROFILES))
+
+
+def test_the_same_unreadable_words_on_several_lines_are_one_item() -> None:
+    def span(detail: str | None, y: float) -> UnknownItem:
+        region = Evidence(image_id="img_0", text="", box=Box(x=0, y=y, w=0.5, h=0.05), status="approximate")
+        return UnknownItem(section="ingredients", message_key="unknown.unreadable_span", detail=detail, region=region)
+
+    merged = merge_unknowns([span("MILK SOLIDS", 0.1), span("MILK SOLIDS", 0.2), span(None, 0.3), span(None, 0.4)], [])
+    assert [(u.detail, u.region.box.y) for u in merged] == [  # type: ignore[union-attr]
+        ("MILK SOLIDS", 0.1), (None, 0.3), (None, 0.4)]
+
+
+def test_photo_problems_lead_the_list_only_when_something_could_not_be_read(monkeypatch: pytest.MonkeyPatch) -> None:
+    e = extraction()
+    glare = e.images[0].quality.model_copy(update={"issues": ["glare"], "ok": False})
+    e = e.model_copy(update={"images": [e.images[0].model_copy(update={"quality": glare})]})
+    missing = scan_unknowns(e, PROFILES, [UnknownItem(section="veg_mark", message_key="unknown.veg_mark_unclear")])
+    assert (missing[0].section, missing[0].message_key) == ("image", "quality.glare")
+    assert missing[0].region is not None and missing[0].region.box == Box(x=0, y=0, w=1, h=1)
+
+    monkeypatch.setattr(verify_module, "pending_unknowns", lambda extraction, profiles: [])
+    assert scan_unknowns(e, PROFILES, []) == []

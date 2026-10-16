@@ -70,6 +70,7 @@ class Trigger:
     box: Box
     focus: str
     reread: bool = True
+    label: str | None = None        # what the user is asked to retake, as printed (e.g. "Sodium (mg)")
 
 
 # ------------------------------------------------------------------------------------------------
@@ -113,6 +114,10 @@ def needed_nutrients(profiles: Sequence[Profile]) -> list[str]:
     return keys
 
 
+def _row_label(nutrition: NutritionTable | None, key: str) -> str | None:
+    return next((r.raw_label for r in nutrition.rows if r.key == key), None) if nutrition else None
+
+
 def _readable(nutrition: NutritionTable | None, key: str) -> bool:
     return nutrition is not None and any(
         v.amount is not None for r in nutrition.rows if r.key == key for v in r.values)
@@ -153,7 +158,7 @@ def find_triggers(extraction: LabelExtraction, profiles: Sequence[Profile]) -> l
             evidence = _value_evidence(extraction.nutrition, {key}) or _value_evidence(extraction.nutrition)
             image_id, box = _region(evidence, first_image)
             triggers.append(Trigger(f"nutrition_value_unreadable:{key}", "nutrition", image_id, box,
-                                    f"the {key} row"))
+                                    f"the {key} row", label=_row_label(extraction.nutrition, key)))
 
     if unverified_ratio(extraction) > UNVERIFIED_MAX:
         image_id, box = _region(_ingredient_evidence(extraction), first_image)
@@ -311,7 +316,7 @@ def retake_unknown(trigger: Trigger) -> UnknownItem:
     return UnknownItem(
         section=trigger.section,
         message_key="unknown.ingredients_truncated" if truncated else "unknown.retake_region",
-        detail=trigger.reason,
+        detail=trigger.label,
         region=Evidence(image_id=trigger.image_id, text="", box=trigger.box, status="approximate"),
     )
 
@@ -380,6 +385,30 @@ def pending_unknowns(extraction: LabelExtraction, profiles: Sequence[Profile]) -
 
 
 def merge_unknowns(engine: Sequence[UnknownItem], pipeline: Sequence[UnknownItem]) -> list[UnknownItem]:
-    """Pipeline unknowns (always with a retake region) win over engine items of the same kind."""
+    """Pipeline unknowns (always with a retake region) win over engine items of the same kind; the same
+    unreadable words found on several printed lines are one item (its first region)."""
     covered = {(u.section, u.message_key) for u in pipeline}
-    return [*pipeline, *(u for u in engine if (u.section, u.message_key) not in covered)]
+    merged: list[UnknownItem] = []
+    seen: set[tuple[str, str, str]] = set()
+    for item in [*pipeline, *(u for u in engine if (u.section, u.message_key) not in covered)]:
+        key = (item.section, item.message_key, item.detail or "")
+        if item.detail and key in seen:
+            continue
+        seen.add(key)
+        merged.append(item)
+    return merged
+
+
+def scan_unknowns(extraction: LabelExtraction, profiles: Sequence[Profile],
+                  engine: Sequence[UnknownItem]) -> list[UnknownItem]:
+    """Everything the user should know we could not read. When anything is missing, the photo problems
+    that explain it come first, each with a retake for that photo."""
+    found = merge_unknowns(engine, pending_unknowns(extraction, profiles))
+    return [*photo_unknowns(extraction), *found] if found else []
+
+
+def photo_unknowns(extraction: LabelExtraction) -> list[UnknownItem]:
+    whole = Box(x=0, y=0, w=1, h=1)
+    return [UnknownItem(section="image", message_key=f"quality.{issue}",
+                        region=Evidence(image_id=image.image_id, text="", box=whole, status="approximate"))
+            for image in extraction.images for issue in image.quality.issues]
