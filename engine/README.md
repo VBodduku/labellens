@@ -32,7 +32,7 @@ keep canonical category/nutrient/basis IDs and exact ingredient/statement text.
 
 ## Matching and rules
 
-The KB contains **157 entries**. Import validates every file, category, alias, code
+The KB contains **224 entries**. Import validates every file, category, alias, code
 and catalog key. Hindi/Telugu combining marks survive normalization. Codes retain
 their letter and Roman suffixes; an unknown suffix is unresolved, not silently
 treated as a known parent additive. Qualifiers apply to the attached item, not to
@@ -70,9 +70,9 @@ only when the carbohydrate row explicitly says it includes fibre.
 Energy deviation up to 15% is accepted. Larger deviations trigger single-field
 hypotheses (x10, /10, missing decimals, 0/8, 1/7 and 5/6 substitutions). All plausible
 fields that can bring the mismatch within 5% are suspect; if none can, all four
-core fields are suspect. No hypothesis changes an extracted value. Sugar/carbohydrate,
+core fields are suspect. No hypothesis changes an extracted value. Serving-ratio checks allow discrepancies explained by printed rounding, including very small values rounded to zero. Sugar/carbohydrate,
 saturated/total-fat, added/total-sugar, duplicate-value and serving-ratio checks also
-feed suspect_keys. Thresholds skip suspect fields. Missing macros produce
+feed suspect_keys. Status follows the energy check; independent sanity suspects can exist even with status consistent. Thresholds skip suspect fields. Missing macros produce
 insufficient_data, with any independently detected sanity suspects retained.
 
 ## Extending the KB
@@ -104,4 +104,13 @@ Saved responses must use the profile IDs in `eval/eval_profiles.json`. The runne
 writes report.json, report.md and metrics.json. It scores ingredient precision/recall,
 nutrients, statements, veg marks, four-state verdicts, dangerous misses, evidence,
 unknowns and latency, with its present scoring limitations recorded in the report.
-It rejects an empty real dataset. No real-packet accuracy has been measured yet.
+It rejects empty and mixed real/synthetic datasets. Annotated printed rounding and per-100 mass/volume units are supported. No real-packet accuracy has been measured yet.
+
+Two fixture-derived cases and their reports are checked in under `eval/synthetic/` and `eval/reports/`. To reproduce:
+
+```
+python -m engine.eval.build_synthetic
+python -m engine.eval.run_eval --dataset engine/eval/synthetic/dataset --responses engine/eval/synthetic/responses
+```
+
+The report is labelled synthetic, has zero real packets, and includes a deliberate carbohydrate misread. Real collection uses `engine/eval/dataset/<case_id>/truth.json` with `img_0.jpg` (up to three panels), plus `engine/eval/responses/<case_id>.json`; see the dataset guide for the complete format and clean/imperfect pairing.

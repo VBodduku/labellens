@@ -6,3 +6,10 @@ __pycache__/
 .ruff_cache/
 eval/reports/*
 !eval/reports/.gitkeep
+!eval/reports/report.json
+!eval/reports/report.md
+!eval/reports/metrics.json
+eval/responses/
+eval/dataset/**/*.jpg
+eval/dataset/**/*.jpeg
+eval/dataset/**/*.png

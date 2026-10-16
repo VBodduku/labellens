@@ -2,8 +2,47 @@
   "product": "Replace with the printed product name",
   "ingredients": [],
   "ingredients_complete_in_photos": false,
-  "allergen_statements": {"contains": [], "may_contain": []},
+  "allergen_statements": {
+    "contains": [],
+    "may_contain": []
+  },
   "veg_mark": "not_found",
   "nutrition_per_100": {},
-  "expected": []
+  "expected": [
+    {
+      "eval_profile": "peanut",
+      "state": "unknown"
+    },
+    {
+      "eval_profile": "milk",
+      "state": "unknown"
+    },
+    {
+      "eval_profile": "gluten",
+      "state": "unknown"
+    },
+    {
+      "eval_profile": "vegetarian",
+      "state": "unknown"
+    },
+    {
+      "eval_profile": "vegan",
+      "state": "unknown"
+    },
+    {
+      "eval_profile": "jain",
+      "state": "unknown"
+    },
+    {
+      "eval_profile": "diabetes_sugar",
+      "state": "unknown"
+    },
+    {
+      "eval_profile": "low_sodium",
+      "state": "unknown"
+    }
+  ],
+  "source": "real",
+  "nutrition_per_100_unit": "g",
+  "nutrition_rounding": {}
 }

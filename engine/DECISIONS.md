@@ -37,3 +37,18 @@
 - Derive servings per pack only from positive finite compatible pack/serving sizes when the explicit count is missing; never infer density.
 - A concrete NutritionTable supplies readable signals even if stale section metadata says not_found, matching the ingredient-rule principle that positive evidence survives incomplete sections.
 - A green mark inconsistency note applies to every affected restriction, including an egg allergy, rather than only diet-category matches.
+
+- If a formula explicitly requires fibre or a declared polyol row but its value is unreadable, return insufficient_data instead of assuming zero.
+- Preserve exact printed nutrient labels but strip their unit suffix for matching, so Salt (g) still converts to sodium rather than being treated as sodium mass.
+- Expand the KB to 224 distinct ingredient entries; retain soy-sauce wheat/gluten variability as possible, and add no unverified additive numbers.
+- Evaluation truth optionally records per-100 g/ml units and an absolute printed-rounding tolerance; mismatched mass/volume analyses do not score as correct nutrients.
+- Evaluation reports carry dataset_kind; reject mixed real/synthetic runs, and leave synthetic latency unmeasured. The two synthetic cases retain manual expectations and one deliberate extraction error.
+- Keep generated synthetic examples and report artifacts in Git for reproducibility, while ignoring real images and local responses until human review.
+
+- Phase 2 supersedes the Phase 1 parent-skip policy: an unreadable parent name is skipped, but independently readable structured children still match and can conflict.
+
+- Serving-ratio checks accept either the 10% range or a discrepancy explained by printed last-digit rounding (the larger allowance, not their sum). This preserves the fixture's legitimate 0.1 g per-100 / 0.0 g per-serving trans-fat rounding.
+
+- A green-mark ambiguity resolution is supporting evidence, not a competing verdict signal; explicit trace notes retain their table-order reason when absence is otherwise justified.
+
+- Consistency status follows the specified 15% energy rule. Independent sanity failures still populate suspect_keys even with status consistent; threshold checks always inspect those keys.

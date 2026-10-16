@@ -1,0 +1,85 @@
+{
+  "source": "synthetic",
+  "product": "Fixture Nuvo Choco Nut Crunch Bar",
+  "ingredients": [
+    "Sugar",
+    "Peanuts (22%)",
+    "Milk Solids (12%)",
+    "Refined Wheat Flour (Maida)",
+    "Cocoa Butter",
+    "Edible Vegetable Oil (Palm)",
+    "Invert Sugar Syrup",
+    "Emulsifier (INS 322 [Soy])",
+    "Iodised Salt",
+    "Raising Agent (INS 500(ii))",
+    "Natural Flavours"
+  ],
+  "ingredients_complete_in_photos": true,
+  "allergen_statements": {
+    "contains": [
+      "Peanut",
+      "Milk",
+      "Wheat",
+      "Soy"
+    ],
+    "may_contain": [
+      "Tree Nuts"
+    ]
+  },
+  "veg_mark": "veg",
+  "nutrition_per_100": {
+    "energy_kcal": 520.0,
+    "protein_g": 9.5,
+    "carbohydrate_g": 58.0,
+    "total_sugars_g": 38.0,
+    "added_sugars_g": 30.0,
+    "total_fat_g": 28.0,
+    "saturated_fat_g": 14.0,
+    "trans_fat_g": 0.1
+  },
+  "nutrition_per_100_unit": "g",
+  "nutrition_rounding": {
+    "energy_kcal": 0.05,
+    "protein_g": 0.05,
+    "carbohydrate_g": 0.05,
+    "total_sugars_g": 0.05,
+    "added_sugars_g": 0.05,
+    "total_fat_g": 0.05,
+    "saturated_fat_g": 0.05,
+    "trans_fat_g": 0.05
+  },
+  "expected": [
+    {
+      "eval_profile": "peanut",
+      "state": "conflict"
+    },
+    {
+      "eval_profile": "milk",
+      "state": "conflict"
+    },
+    {
+      "eval_profile": "gluten",
+      "state": "conflict"
+    },
+    {
+      "eval_profile": "vegetarian",
+      "state": "not_listed"
+    },
+    {
+      "eval_profile": "vegan",
+      "state": "conflict"
+    },
+    {
+      "eval_profile": "jain",
+      "state": "possible"
+    },
+    {
+      "eval_profile": "diabetes_sugar",
+      "state": "conflict"
+    },
+    {
+      "eval_profile": "low_sodium",
+      "state": "unknown"
+    }
+  ]
+}
