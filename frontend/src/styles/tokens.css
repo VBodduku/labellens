@@ -21,6 +21,7 @@
   --possible: #ffb547;
   --not-listed: #3ddc97;
   --unknown: #9aa4ff;
+  --on-verdict: #0b0d12;
 
   --font-display: "Bricolage Grotesque Variable", "Bricolage Grotesque", system-ui, sans-serif;
   --font-body: "Manrope Variable", "Manrope", system-ui, sans-serif;
@@ -53,6 +54,7 @@
     --possible: #a35f00;
     --not-listed: #17855a;
     --unknown: #4d56c9;
+    --on-verdict: #ffffff;
   }
 }
 
@@ -71,6 +73,7 @@
   --possible: #a35f00;
   --not-listed: #17855a;
   --unknown: #4d56c9;
+  --on-verdict: #ffffff;
 }
 
 @media (prefers-reduced-motion: reduce) {

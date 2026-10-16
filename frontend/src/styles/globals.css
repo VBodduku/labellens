@@ -103,4 +103,27 @@
   .page-gutter {
     padding-inline: max(1rem, env(safe-area-inset-left));
   }
+
+  /* The beam track is as tall as its container and starts above it, so translateY(100%) carries the
+     line from the top edge to the bottom edge using transform only. */
+  .scan-beam-track {
+    animation: beam-sweep 3.4s var(--ease-out) infinite alternate;
+    will-change: transform;
+  }
+}
+
+@keyframes beam-sweep {
+  from {
+    transform: translateY(4%);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scan-beam-track {
+    animation: none;
+    transform: translateY(38%);
+  }
 }

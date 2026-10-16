@@ -3,12 +3,7 @@ import type { Config } from "tailwindcss";
 const token = (name: string) => `var(--${name})`;
 
 /** Colour backed by a CSS variable that still supports Tailwind opacity modifiers (bg-conflict/15). */
-const colorToken =
-  (name: string) =>
-  ({ opacityValue }: { opacityValue?: string }) =>
-    opacityValue === undefined || opacityValue === "1"
-      ? `var(--${name})`
-      : `color-mix(in srgb, var(--${name}) calc(${opacityValue} * 100%), transparent)`;
+const colorToken = (name: string) => `color-mix(in srgb, var(--${name}) calc(<alpha-value> * 100%), transparent)`;
 
 export default {
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
@@ -28,6 +23,7 @@ export default {
         possible: colorToken("possible"),
         "not-listed": colorToken("not-listed"),
         unknown: colorToken("unknown"),
+        "on-verdict": colorToken("on-verdict"),
       },
       fontFamily: {
         display: token("font-display"),

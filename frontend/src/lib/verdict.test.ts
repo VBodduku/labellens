@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { sortWorstFirst, stateLabelKey, worstState } from "./verdict";
+import { sortByStateWorstFirst, sortWorstFirst, stateLabelKey, worstState } from "./verdict";
 
 describe("verdict ordering", () => {
   it("sorts worst-first and keeps ties in their original order", () => {
@@ -11,6 +11,14 @@ describe("verdict ordering", () => {
       { id: "e", state: "conflict" as const },
     ];
     expect(sortWorstFirst(items).map((item) => item.id)).toEqual(["c", "e", "d", "b", "a"]);
+  });
+
+  it("sorts by a custom state accessor", () => {
+    const reports = [
+      { id: "lakshmi", overall: "possible" as const },
+      { id: "aarav", overall: "conflict" as const },
+    ];
+    expect(sortByStateWorstFirst(reports, (report) => report.overall).map((report) => report.id)).toEqual(["aarav", "lakshmi"]);
   });
 
   it("finds the worst state", () => {

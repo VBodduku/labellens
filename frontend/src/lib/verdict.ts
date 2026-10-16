@@ -4,12 +4,16 @@ export function verdictRank(state: VerdictState): number {
   return VERDICT_ORDER.indexOf(state);
 }
 
-/** Worst-first (conflict → possible → unknown → not_listed); stable for equal states. */
-export function sortWorstFirst<T extends { state: VerdictState }>(items: readonly T[]): T[] {
+/** Worst-first (conflict → possible → unknown → not_listed) by any state accessor; stable for ties. */
+export function sortByStateWorstFirst<T>(items: readonly T[], stateOf: (item: T) => VerdictState): T[] {
   return items
     .map((item, index) => ({ item, index }))
-    .sort((a, b) => verdictRank(a.item.state) - verdictRank(b.item.state) || a.index - b.index)
+    .sort((a, b) => verdictRank(stateOf(a.item)) - verdictRank(stateOf(b.item)) || a.index - b.index)
     .map(({ item }) => item);
+}
+
+export function sortWorstFirst<T extends { state: VerdictState }>(items: readonly T[]): T[] {
+  return sortByStateWorstFirst(items, (item) => item.state);
 }
 
 export function worstState(states: readonly VerdictState[]): VerdictState | null {
