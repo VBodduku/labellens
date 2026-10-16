@@ -1,0 +1,195 @@
+import { Camera, ImagePlus, ScanText, Users } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useLocation, useNavigate } from "react-router-dom";
+import { EvidenceViewer } from "../components/evidence/EvidenceViewer";
+import type { OverlayItem } from "../components/evidence/EvidenceOverlay";
+import { CorrectionEditor, type EditTarget } from "../components/label/CorrectionEditor";
+import { ExtractionMetaBadges } from "../components/label/ExtractionMetaBadges";
+import { IngredientsList } from "../components/label/IngredientsList";
+import { NutritionTable } from "../components/label/NutritionTable";
+import { UnknownsPanel } from "../components/label/UnknownsPanel";
+import { RouteFallback } from "../components/layout/RouteFallback";
+import { useDemoLauncher } from "../components/landing/useDemoLauncher";
+import { Button, ButtonLink } from "../components/ui/Button";
+import { ErrorNotice } from "../components/ui/ErrorNotice";
+import { Spinner } from "../components/ui/Spinner";
+import { Tabs } from "../components/ui/Tabs";
+import { panelId, tabId } from "../components/ui/tabIds";
+import { AnalysingView } from "../components/verdict/AnalysingView";
+import { FamilyStrip } from "../components/verdict/FamilyStrip";
+import { ProfileVerdictCard } from "../components/verdict/ProfileVerdictCard";
+import { makeCorrection } from "../lib/corrections";
+import { sortByStateWorstFirst } from "../lib/verdict";
+import type { Box, ScanResult } from "../shared/contract";
+import { useScanStore, type Panel } from "../store/scan";
+import { useUiStore } from "../store/ui";
+
+type TabKey = "verdicts" | "ingredients" | "nutrition" | "unknowns";
+const TAB_PREFIX = "result";
+
+function EmptyResult() {
+  const { t } = useTranslation();
+  const demo = useDemoLauncher();
+  return (
+    <div className="page-gutter mx-auto max-w-xl py-16 text-center">
+      <span className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-surface-2 text-beam">
+        <ImagePlus className="size-7" aria-hidden="true" />
+      </span>
+      <h1 className="mt-5 text-3xl font-bold">{t("result.empty.title")}</h1>
+      <p className="mt-3 text-text-dim">{t("result.empty.body")}</p>
+      <div className="mt-7 flex flex-wrap justify-center gap-3">
+        <ButtonLink to="/scan" icon={<Camera className="size-4" aria-hidden="true" />}>
+          {t("landing.cta.scan")}
+        </ButtonLink>
+        <Button
+          variant="secondary"
+          loading={demo.state === "loading"}
+          onClick={() => void demo.launch()}
+          icon={<ScanText className="size-4" aria-hidden="true" />}
+        >
+          {t("landing.cta.demo")}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function ResultView({ result, panels }: { result: ScanResult; panels: Panel[] }) {
+  const { t } = useTranslation();
+  const { scanProfiles, isDemo, status, corrections, changedVerdicts, addCorrection } = useScanStore();
+  const { lang, selectedProfileId, selectProfile } = useUiStore();
+  const [tab, setTab] = useState<TabKey>("verdicts");
+  const [editing, setEditing] = useState<EditTarget | null>(null);
+
+  const reports = useMemo(() => sortByStateWorstFirst(result.reports, (report) => report.overall), [result.reports]);
+  const selected = reports.find((report) => report.profile_id === selectedProfileId) ?? reports[0];
+
+  useEffect(() => {
+    const worst = reports[0];
+    if (worst && !reports.some((report) => report.profile_id === selectedProfileId)) selectProfile(worst.profile_id);
+  }, [reports, selectedProfileId, selectProfile]);
+
+  const overlayItems = useMemo<OverlayItem[]>(() => {
+    if (!selected) return [];
+    return selected.results.flatMap((item) =>
+      item.evidence.flatMap((evidence) =>
+        evidence.box && evidence.status !== "unverified" ? [{ evidence: { ...evidence, box: evidence.box as Box }, state: item.state }] : [],
+      ),
+    );
+  }, [selected]);
+
+  function saveCorrection(fieldPath: string, value: string | number) {
+    setEditing(null);
+    void addCorrection(makeCorrection(result.extraction, fieldPath, value), lang);
+  }
+
+  const tabs = [
+    { id: "verdicts" as const, label: t("result.tabs.verdicts") },
+    { id: "ingredients" as const, label: t("result.tabs.ingredients") },
+    { id: "nutrition" as const, label: t("result.tabs.nutrition") },
+    { id: "unknowns" as const, label: t("result.tabs.unknowns"), badge: result.unknowns.length },
+  ];
+
+  return (
+    <div className="page-gutter mx-auto max-w-page pb-16 pt-4 lg:pt-8">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <h1 className="text-2xl font-bold sm:text-3xl">{result.extraction.product_name ?? t("result.unnamedProduct")}</h1>
+        {isDemo && <span className="rounded-chip bg-surface-2 px-3 py-1 text-xs font-semibold text-beam">{t("result.demoBadge")}</span>}
+        {status === "rechecking" && (
+          <span role="status" className="inline-flex items-center gap-1.5 text-xs font-semibold text-text-dim">
+            <Spinner className="size-3.5" />
+            {t("result.rechecking")}
+          </span>
+        )}
+        <ButtonLink to="/scan" variant="ghost" className="ml-auto max-sm:hidden" icon={<Camera className="size-4" aria-hidden="true" />}>
+          {t("result.scanAgain")}
+        </ButtonLink>
+      </div>
+      <div className="mt-2">
+        <ExtractionMetaBadges meta={result.extraction.meta} />
+      </div>
+
+      <div className="mt-4 grid gap-5 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-8">
+        <div className="sticky top-16 z-20 -mx-4 bg-bg/95 px-4 pb-2 pt-1 backdrop-blur lg:top-24 lg:mx-0 lg:h-[calc(100svh-7.5rem)] lg:self-start lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
+          <EvidenceViewer panels={panels} images={result.extraction.images} items={overlayItems} className="lg:h-full" />
+        </div>
+
+        <div className="min-w-0 space-y-4">
+          {reports.length > 0 && selected && (
+            <FamilyStrip reports={reports} profiles={scanProfiles} selectedId={selected.profile_id} onSelect={selectProfile} />
+          )}
+          <Tabs tabs={tabs} value={tab} onChange={setTab} label={t("result.tabs.label")} idPrefix={TAB_PREFIX} />
+          <div role="tabpanel" id={panelId(TAB_PREFIX, tab)} aria-labelledby={tabId(TAB_PREFIX, tab)} tabIndex={0} className="focus-visible:outline-none">
+            {tab === "verdicts" &&
+              (selected ? (
+                <ProfileVerdictCard
+                  report={selected}
+                  profile={scanProfiles.find((profile) => profile.profile_id === selected.profile_id)}
+                  changed={changedVerdicts}
+                />
+              ) : (
+                <div className="card p-6">
+                  <h2 className="text-lg font-bold">{t("result.noProfiles.title")}</h2>
+                  <p className="mt-2 text-sm text-text-dim">{t("result.noProfiles.body")}</p>
+                  <ButtonLink to="/profiles" variant="secondary" className="mt-4" icon={<Users className="size-4" aria-hidden="true" />}>
+                    {t("result.noProfiles.action")}
+                  </ButtonLink>
+                </div>
+              ))}
+            {tab === "ingredients" && <IngredientsList result={result} corrections={corrections} onEdit={setEditing} />}
+            {tab === "nutrition" && <NutritionTable result={result} onEdit={setEditing} />}
+            {tab === "unknowns" && <UnknownsPanel unknowns={result.unknowns} panels={panels} />}
+          </div>
+        </div>
+      </div>
+
+      <CorrectionEditor target={editing} onClose={() => setEditing(null)} onSave={saveCorrection} />
+    </div>
+  );
+}
+
+export default function Result() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { search } = useLocation();
+  const { status, result, panels, error, hydrated, attemptProfiles, analyse, cancel } = useScanStore();
+  const lang = useUiStore((state) => state.lang);
+
+  if (status === "analysing") {
+    return (
+      <AnalysingView
+        panels={panels}
+        profileCount={attemptProfiles.length}
+        onCancel={() => {
+          cancel();
+          navigate({ pathname: "/scan", search });
+        }}
+      />
+    );
+  }
+  if (status === "error" && error) {
+    return (
+      <div className="page-gutter mx-auto max-w-xl py-10">
+        <ErrorNotice
+          error={error}
+          title={t("result.error.title")}
+          actions={
+            <>
+              {panels.length > 0 && (
+                <Button onClick={() => void analyse({ profiles: attemptProfiles, lang })}>
+                  {t("common.retry")}
+                </Button>
+              )}
+              <ButtonLink to={{ pathname: "/scan", search }} variant="secondary">
+                {t("analysing.editPhotos")}
+              </ButtonLink>
+            </>
+          }
+        />
+      </div>
+    );
+  }
+  if (!result) return hydrated ? <EmptyResult /> : <RouteFallback />;
+  return <ResultView result={result} panels={panels} />;
+}

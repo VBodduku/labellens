@@ -1,0 +1,85 @@
+/* LabelLens "Lens" design tokens (frontend spec §4). Dark is the default; light follows the system
+   preference unless the user picks a theme (html[data-theme]). Verdict states always pair colour with
+   an icon, a text label and a pattern — never colour alone. */
+
+:root {
+  color-scheme: dark;
+
+  --bg: #0b0d12;
+  --surface: #12151c;
+  --surface-2: #1a1f29;
+  --line: #262c38;
+  --text: #eef1f6;
+  --text-dim: #9aa3b2;
+
+  --beam: #7cf5ff;
+  --beam-2: #a98bff;
+  --beam-gradient: linear-gradient(90deg, var(--beam), var(--beam-2));
+  --on-beam: #06121a;
+
+  --conflict: #ff5a4e;
+  --possible: #ffb547;
+  --not-listed: #3ddc97;
+  --unknown: #9aa4ff;
+  --on-verdict: #0b0d12;
+
+  --font-display: "Bricolage Grotesque Variable", "Bricolage Grotesque", system-ui, sans-serif;
+  --font-body: "Manrope Variable", "Manrope", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
+
+  --radius-card: 14px;
+  --radius-chip: 999px;
+
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 160ms;
+  --dur-base: 260ms;
+  --dur-slow: 420ms;
+
+  --glow-beam: 0 0 24px color-mix(in srgb, var(--beam) 45%, transparent);
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --bg: #f6f4ef;
+    --surface: #ffffff;
+    --surface-2: #eeeae2;
+    --line: #dcd6ca;
+    --text: #15181f;
+    --text-dim: #5a6271;
+    --beam: #0a8fa0;
+    --beam-2: #6a4fd8;
+    --on-beam: #ffffff;
+    --conflict: #c8382d;
+    --possible: #a35f00;
+    --not-listed: #17855a;
+    --unknown: #4d56c9;
+    --on-verdict: #ffffff;
+  }
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f6f4ef;
+  --surface: #ffffff;
+  --surface-2: #eeeae2;
+  --line: #dcd6ca;
+  --text: #15181f;
+  --text-dim: #5a6271;
+  --beam: #0a8fa0;
+  --beam-2: #6a4fd8;
+  --on-beam: #ffffff;
+  --conflict: #c8382d;
+  --possible: #a35f00;
+  --not-listed: #17855a;
+  --unknown: #4d56c9;
+  --on-verdict: #ffffff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-base: 120ms;
+    --dur-slow: 160ms;
+  }
+}
