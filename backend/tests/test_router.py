@@ -78,3 +78,16 @@ def test_all_rate_limited_reports_shortest_retry() -> None:
     with pytest.raises(AllProvidersFailedError) as info:
         run(router)
     assert info.value.rate_limited is True and info.value.retry_after_s == 12
+
+
+def test_timed_out_provider_is_skipped_until_cooldown_ends() -> None:
+    clock = Clock()
+    slow = FakeLLM([GOOD], name="ollama", delay_s=1.0)
+    router = LLMRouter([slow], 0.05, clock=clock)
+    for _ in range(2):
+        with pytest.raises(AllProvidersFailedError):
+            run(router)
+    assert len(slow.prompts) == 1
+    assert router.provider_status()["ollama"] is False
+    clock.now += 301
+    assert router.provider_status()["ollama"] is True

@@ -21,6 +21,7 @@ logger = logging.getLogger("labellens.llm")
 
 M = TypeVar("M", bound=BaseModel)
 
+TIMEOUT_COOLDOWN_S = 300       # a provider too slow for the scan budget is skipped for a while (local Ollama)
 REPAIR_INSTRUCTION = (
     "\n\nYour previous answer did not match the required JSON schema. Validation errors:\n{errors}\n"
     "Return the corrected JSON only."
@@ -93,7 +94,11 @@ class LLMRouter:
                     retry_after.append(exc.retry_after_s)
                     self._fail(state, f"rate limited for {exc.retry_after_s}s")
                     break
-                except (LLMError, TimeoutError) as exc:
+                except TimeoutError:
+                    state.cooldown_until = self._clock() + TIMEOUT_COOLDOWN_S
+                    self._fail(state, f"timed out; skipped for {TIMEOUT_COOLDOWN_S}s")
+                    break
+                except LLMError as exc:
                     self._fail(state, str(exc) or type(exc).__name__)
                     break
                 state.last_ok, state.last_error = self._clock(), None
