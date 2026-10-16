@@ -6,16 +6,6 @@ import { VitePWA } from "vite-plugin-pwa";
 
 const ENV_DIR = "..";
 
-/** Vendor groups that must stay out of every chunk except the landing page (checked by scripts/check-chunks.mjs). */
-function landingOnlyChunk(id: string): string | undefined {
-  if (!id.includes("node_modules")) return undefined;
-  if (/node_modules[\\/](three|three-stdlib|@react-three|three-mesh-bvh|troika-|camera-controls|maath)/.test(id)) {
-    return "vendor-three";
-  }
-  if (/node_modules[\\/]lenis[\\/]/.test(id)) return "vendor-lenis";
-  return undefined;
-}
-
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, ENV_DIR, "VITE_");
   const plugins: PluginOption[] = [
@@ -61,9 +51,6 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       manifest: true,
-      rollupOptions: {
-        output: { manualChunks: landingOnlyChunk },
-      },
     },
     test: {
       environment: "jsdom",
