@@ -1,8 +1,9 @@
 import { Camera, ListChecks, ScanSearch, ScanText, Sparkles } from "lucide-react";
-import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
+import { motion, useReducedMotion, useScroll, type MotionValue } from "motion/react";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { SectionHeading } from "./Reveal";
+import { useScrollRange } from "./useScrollRange";
 
 const STEPS = [
   { id: "capture", Icon: Camera },
@@ -14,9 +15,10 @@ const STEPS = [
 
 function Step({ index, progress, children }: { index: number; progress: MotionValue<number>; children: React.ReactNode }) {
   const at = index / (STEPS.length - 1);
-  const lit = useTransform(progress, [Math.max(0, at - 0.12), at], [0.35, 1]);
+  const lit = useScrollRange(progress, [Math.max(0, at - 0.12) - 0.001, at], [0.35, 1]);
+  const reduce = useReducedMotion();
   return (
-    <motion.li style={{ opacity: lit }} className="relative flex gap-4 lg:flex-col lg:gap-5">
+    <motion.li style={{ opacity: reduce ? 1 : lit }} className="relative flex gap-4 lg:flex-col lg:gap-5">
       {children}
     </motion.li>
   );
@@ -27,6 +29,9 @@ export function HowItWorks() {
   const { t } = useTranslation();
   const list = useRef<HTMLOListElement>(null);
   const { scrollYProgress } = useScroll({ target: list, offset: ["start 0.85", "end 0.55"] });
+  const reduce = useReducedMotion();
+  const scrolled = useScrollRange(scrollYProgress, [0, 1]);
+  const line = reduce ? 1 : scrolled;
 
   return (
     <section aria-labelledby="how-title" className="relative overflow-hidden border-y border-line bg-surface py-20 lg:py-28">
@@ -35,13 +40,13 @@ export function HowItWorks() {
         <div className="relative mt-12 lg:mt-16">
           <div aria-hidden="true" className="absolute bottom-6 left-[1.375rem] top-6 w-px bg-line lg:hidden">
             <motion.div
-              style={{ scaleY: scrollYProgress }}
+              style={{ scaleY: line }}
               className="absolute inset-0 origin-top bg-[linear-gradient(to_bottom,var(--beam),var(--beam-2))] shadow-[0_0_10px_var(--beam)]"
             />
           </div>
           <div aria-hidden="true" className="absolute left-6 right-6 top-[1.375rem] hidden h-px bg-line lg:block">
             <motion.div
-              style={{ scaleX: scrollYProgress }}
+              style={{ scaleX: line }}
               className="absolute inset-0 origin-left bg-[var(--beam-gradient)] shadow-[0_0_10px_var(--beam)]"
             />
           </div>

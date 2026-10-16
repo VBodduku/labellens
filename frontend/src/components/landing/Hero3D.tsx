@@ -64,7 +64,7 @@ function useLabelTexture(onLoaded: () => void): CanvasTexture | null {
   return texture;
 }
 
-/** Soft vertical falloff for the beam's glow band. */
+/** Soft vertical falloff for the beam's glow band (alphaMap reads the green channel, so draw grey on black). */
 function useGlowTexture(): CanvasTexture {
   const texture = useMemo(() => {
     const canvas = document.createElement("canvas");
@@ -73,9 +73,9 @@ function useGlowTexture(): CanvasTexture {
     const context = canvas.getContext("2d");
     if (context) {
       const gradient = context.createLinearGradient(0, 0, 0, 128);
-      gradient.addColorStop(0, "rgba(255,255,255,0)");
-      gradient.addColorStop(0.5, "rgba(255,255,255,1)");
-      gradient.addColorStop(1, "rgba(255,255,255,0)");
+      gradient.addColorStop(0, "#000");
+      gradient.addColorStop(0.5, "#fff");
+      gradient.addColorStop(1, "#000");
       context.fillStyle = gradient;
       context.fillRect(0, 0, 4, 128);
     }

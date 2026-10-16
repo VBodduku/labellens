@@ -1,9 +1,10 @@
 import { ChevronDown } from "lucide-react";
-import { motion, useMotionValue, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { motion, useMotionValue, useReducedMotion, useScroll } from "motion/react";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { HeroActions } from "./HeroActions";
 import { HeroStage } from "./HeroStage";
+import { useScrollRange } from "./useScrollRange";
 
 /**
  * A sticky hero on a tall scroll runway: scrolling drives the chip story on the label.
@@ -16,7 +17,7 @@ export function Hero() {
   const { scrollYProgress } = useScroll({ target: runway, offset: ["start start", "end end"] });
   const finished = useMotionValue(1);
   const progress = reduce ? finished : scrollYProgress;
-  const hintOpacity = useTransform(scrollYProgress, [0, 0.05], [1, 0]);
+  const hintOpacity = useScrollRange(scrollYProgress, [0, 0.05], [1, 0]);
 
   return (
     <section ref={runway} aria-labelledby="hero-title" className={reduce ? "relative" : "relative h-[220vh] lg:h-[260vh]"}>
@@ -32,7 +33,7 @@ export function Hero() {
             </p>
             <h1
               id="hero-title"
-              className="text-[clamp(1.85rem,7.4vw,2.5rem)] font-extrabold leading-[1.04] sm:text-5xl lg:text-[3.5rem] xl:text-[4rem]"
+              className="text-[clamp(1.85rem,7.4vw,2.5rem)] font-extrabold leading-[1.04] sm:text-5xl lg:text-[3.2rem] xl:text-[3.6rem]"
             >
               <span className="block">{t("landing.hero.title.lead")}</span>
               <span className="text-beam-gradient block pb-1">{t("landing.hero.title.accent")}</span>

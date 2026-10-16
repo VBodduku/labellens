@@ -1,4 +1,4 @@
-import { ArrowRight, EyeOff, Users } from "lucide-react";
+import { ArrowRight, EyeOff, Tags, Users } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Reveal, SectionHeading } from "./Reveal";
@@ -78,7 +78,7 @@ export function ProblemSection() {
       <div className="mt-10 grid gap-4 md:grid-cols-3 lg:mt-14 lg:gap-5">
         <PainCard
           delay={0}
-          icon={<span className="evidence-text text-sm font-bold">E</span>}
+          icon={<Tags className="size-5" aria-hidden="true" />}
           title={t("landing.problem.hidden.title")}
           body={t("landing.problem.hidden.body")}
           visual={<HiddenNamesVisual />}

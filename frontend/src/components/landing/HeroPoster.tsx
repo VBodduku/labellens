@@ -2,6 +2,9 @@ import { useTranslation } from "react-i18next";
 import { sampleLabelUrl } from "../../api/fixtures";
 import { ScanBeam } from "./ScanBeam";
 
+/** React 18 only forwards the lowercase attribute; it marks the poster as the LCP image. */
+const FETCH_PRIORITY_HIGH = { fetchpriority: "high" } as Record<string, string>;
+
 /**
  * Static stand-in for the 3D packet: shown while the WebGL chunk loads (fast LCP), and permanently
  * when WebGL is unavailable or the visitor prefers reduced motion. The label image fills its parent
@@ -18,7 +21,7 @@ export function HeroPoster({ beam = true }: { beam?: boolean }) {
           alt={t("landing.hero.posterAlt")}
           width={1000}
           height={1400}
-          fetchPriority="high"
+          {...FETCH_PRIORITY_HIGH}
           decoding="async"
           draggable={false}
           className="size-full select-none object-fill"

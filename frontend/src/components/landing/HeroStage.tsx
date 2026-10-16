@@ -1,9 +1,10 @@
-import { motion, useInView, useTransform, type MotionValue } from "motion/react";
+import { motion, useInView, type MotionValue } from "motion/react";
 import { lazy, Suspense, useCallback, useLayoutEffect, useRef, useState } from "react";
 import { hasWebGL } from "../../lib/featureDetect";
 import { HeroChips } from "./HeroChips";
 import { HeroPoster } from "./HeroPoster";
 import { LABEL_ASPECT } from "./heroChipData";
+import { useScrollRange } from "./useScrollRange";
 
 const Hero3D = lazy(() => import("./Hero3D"));
 
@@ -26,7 +27,7 @@ export function HeroStage({ progress, motionAllowed }: { progress: MotionValue<n
   const [use3D] = useState(() => motionAllowed && hasWebGL());
   const [ready3D, setReady3D] = useState(false);
   const inView = useInView(stageRef, { margin: "120px" });
-  const veil = useTransform(progress, [0.03, 0.2], [0, 0.5]);
+  const veil = useScrollRange(progress, [0.03, 0.2], [0, 0.5]);
   const onReady = useCallback(() => setReady3D(true), []);
 
   useLayoutEffect(() => {
