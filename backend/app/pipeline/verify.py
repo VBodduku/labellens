@@ -33,7 +33,7 @@ from backend.app.pipeline.align import PanelExtraction, TokenIndex, align_panel,
 from backend.app.pipeline.images import OCR_MAX_SIDE, PreparedImage
 from backend.app.pipeline.llm_schema import LLMExtraction
 from backend.app.pipeline.merge import assign_ingredient_ids
-from backend.app.pipeline.ocr import ocr_image
+from backend.app.pipeline.ocr import ocr_image_async
 from backend.app.pipeline.structure import JPEG_QUALITY, TOKEN_CAP, build_prompt
 from shared.contract import (
     Box,
@@ -319,7 +319,7 @@ def retake_unknown(trigger: Trigger) -> UnknownItem:
 async def _reread(trigger: Trigger, extraction: LabelExtraction, image: PreparedImage, round_no: int,
                   router: LLMRouter, timeout_s: float) -> tuple[LabelExtraction | None, int]:
     crop = padded_crop(image, trigger.box)
-    crop_tokens = map_tokens(ocr_image(crop.image, image.image_id), crop, image, round_no)
+    crop_tokens = map_tokens(await ocr_image_async(crop.image, image.image_id), crop, image, round_no)
     result = await router.generate(
         lambda provider: reread_prompt(trigger, image, crop_tokens, TOKEN_CAP[provider]),
         [_jpeg(crop.image)], LLMExtraction, timeout_s=timeout_s,

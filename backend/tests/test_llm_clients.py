@@ -39,7 +39,7 @@ def gemini_with(monkeypatch: pytest.MonkeyPatch, outcome: Any) -> tuple[GeminiCl
     client = GeminiClient("test-key", "gemini-flash-latest")
     models = FakeModels(outcome)
     fake = type("FakeClient", (), {"aio": type("Aio", (), {"models": models})()})()
-    monkeypatch.setattr(client, "_client", lambda timeout_s: fake)
+    monkeypatch.setattr(client, "_client", lambda: fake)
     return client, models
 
 
@@ -56,10 +56,18 @@ def test_gemini_request_is_schema_constrained_and_deterministic(monkeypatch: pyt
     assert call["contents"][0].inline_data.data == IMAGE.data
 
 
-def test_gemini_sdk_client_has_timeout_and_no_retries() -> None:
-    options = GeminiClient("k", "m")._client(12.5)._api_client._http_options
-    assert options.timeout == 12500
+def test_gemini_sdk_client_is_reused_and_has_no_retries() -> None:
+    client = GeminiClient("k", "m")
+    assert client._client() is client._client()
+    options = client._client()._api_client._http_options
     assert options.retry_options is not None and options.retry_options.attempts == 1
+
+
+def test_gemini_request_carries_its_own_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
+    client, models = gemini_with(monkeypatch, FakeResponse('{"a": "b"}'))
+    asyncio.run(client.generate_json("p", [], SCHEMA, 12.5))
+    options = models.calls[0]["config"].http_options
+    assert options.timeout == 12500 and options.retry_options.attempts == 1
 
 
 def test_gemini_429_becomes_rate_limited_with_retry_delay(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -75,6 +83,8 @@ def test_gemini_429_becomes_rate_limited_with_retry_delay(monkeypatch: pytest.Mo
     errors.ServerError(503, {"error": {"code": 503, "status": "UNAVAILABLE", "message": "busy"}}),
     errors.ClientError(403, {"error": {"code": 403, "status": "PERMISSION_DENIED", "message": "bad key"}}),
     httpx.ReadTimeout("slow"),
+    RuntimeError("Cannot send a request, as the client has been closed."),
+    ValueError("unexpected SDK state"),
 ])
 def test_gemini_failures_become_unavailable(monkeypatch: pytest.MonkeyPatch, outcome: BaseException) -> None:
     client, _ = gemini_with(monkeypatch, outcome)

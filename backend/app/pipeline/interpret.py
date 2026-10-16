@@ -60,7 +60,8 @@ def clean(raw: LLMInterpretations, terms: list[str], vocabulary: list[str]) -> d
 
 async def interpret(
     unresolved: list[UnresolvedTerm], router: LLMRouter, timeout_s: Optional[float] = None,
-) -> dict[str, TermInterpretation]:
+) -> dict[str, TermInterpretation] | None:
+    """Interpretations by term; None when no model could be asked (so the caller may retry later)."""
     terms = unique_terms(unresolved)
     if not terms:
         return {}
@@ -72,5 +73,5 @@ async def interpret(
         result = await router.generate(lambda _: prompt, [], LLMInterpretations, timeout_s=timeout_s)
     except AllProvidersFailedError:
         logger.warning("interpretation skipped: no LLM available")
-        return {}
+        return None
     return clean(result.value, terms, vocabulary)

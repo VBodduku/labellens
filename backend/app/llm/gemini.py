@@ -4,7 +4,6 @@ from __future__ import annotations
 import re
 from typing import Any
 
-import httpx
 from google import genai
 from google.genai import errors, types
 
@@ -41,27 +40,27 @@ class GeminiClient:
         self.label = label
         self.model = model
         self._api_key = api_key
+        self._sdk: genai.Client | None = None
 
-    def _client(self, timeout_s: float) -> genai.Client:
-        return genai.Client(
-            api_key=self._api_key,
-            http_options=types.HttpOptions(
-                timeout=int(timeout_s * 1000),
-                retry_options=types.HttpRetryOptions(attempts=1),
-            ),
-        )
+    def _client(self) -> genai.Client:
+        """One SDK client for the lifetime of this object. A temporary client can be garbage-collected
+        mid-request, which closes its HTTP connection ("client has been closed")."""
+        if self._sdk is None:
+            self._sdk = genai.Client(api_key=self._api_key, http_options=_http_options(None))
+        return self._sdk
 
     async def _generate(self, contents: Any, config: types.GenerateContentConfig, timeout_s: float) -> Any:
+        config = config.model_copy(update={"http_options": _http_options(timeout_s)})
         try:
-            return await self._client(timeout_s).aio.models.generate_content(
+            return await self._client().aio.models.generate_content(
                 model=self.model, contents=contents, config=config,
             )
         except errors.APIError as exc:
             if exc.code == 429:
                 raise RateLimitedError(retry_after_from(exc.details)) from exc
             raise ProviderUnavailableError(f"gemini HTTP {exc.code} {exc.status or ''}".strip()) from exc
-        except (httpx.HTTPError, TimeoutError) as exc:
-            raise ProviderUnavailableError(f"gemini network error: {type(exc).__name__}") from exc
+        except Exception as exc:  # SDK/network failures of any kind must fall back, never 500
+            raise ProviderUnavailableError(f"gemini client error: {type(exc).__name__}") from exc
 
     async def generate_json(
         self, prompt: str, images: list[LLMImage], schema: dict[str, Any], timeout_s: float,
@@ -99,6 +98,14 @@ class GeminiClient:
         if not calls and not text:
             raise InvalidOutputError("gemini returned neither tool calls nor text")
         return ChatMessage(role="model", text=text, calls=calls, raw=raw)
+
+
+def _http_options(timeout_s: float | None) -> types.HttpOptions:
+    """No SDK-side retries (the router owns fallback); per-request timeout in milliseconds."""
+    return types.HttpOptions(
+        timeout=int(timeout_s * 1000) if timeout_s is not None else None,
+        retry_options=types.HttpRetryOptions(attempts=1),
+    )
 
 
 def to_content(message: ChatMessage) -> Any:

@@ -16,7 +16,7 @@ import uuid
 from dataclasses import dataclass
 
 from backend.app import engine_adapter, errors
-from backend.app.cache import ExtractionCache, cache_key
+from backend.app.cache import CacheExtras, ExtractionCache, cache_key, summary_key
 from backend.app.config import get_settings
 from backend.app.llm.base import PROSE_PROVIDERS
 from backend.app.llm.router import AllProvidersFailedError, LLMRouter
@@ -30,7 +30,7 @@ from backend.app.pipeline.llm_schema import LLMExtraction
 from backend.app.pipeline.merge import MergedLabel, evidence_of, merge_panels
 from backend.app.pipeline.ocr import run_ocr
 from backend.app.pipeline.quality import add_cropped_edge, assess
-from backend.app.pipeline.scan_memory import SCAN_MEMORY, ScanRecord
+from backend.app.pipeline.scan_memory import SCAN_MEMORY, ScanRecord, fingerprint
 from backend.app.pipeline.structure import PROMPT_VERSION, structure
 from backend.app.pipeline.verify import merge_unknowns, pending_unknowns, verify
 from shared.contract import (
@@ -45,7 +45,7 @@ from shared.contract import (
     Provider,
     ScanResult,
 )
-from shared.engine_interface import TermInterpretation
+from shared.engine_interface import EngineOutput, TermInterpretation
 
 SCAN_BUDGET_S = 45.0
 STRUCTURE_RESERVE_S = 12.0      # kept back from structuring for verify, interpretation and summaries
@@ -151,9 +151,13 @@ def _extraction(scan: ScanInput, qualities: list[ImageQuality], tokens: list[Ocr
     )
 
 
+def scan_cache_key(scan: ScanInput) -> str:
+    return cache_key(scan.raw, scan.hints, PROMPT_VERSION, get_settings().gemini_model)
+
+
 async def extract(scan: ScanInput, router: LLMRouter, cache: ExtractionCache, deadline: Deadline) -> LabelExtraction:
     started = time.perf_counter()
-    key = cache_key(scan.raw, scan.hints, PROMPT_VERSION, get_settings().gemini_model)
+    key = scan_cache_key(scan)
     cached = cache.get(key)
     if cached is not None:
         note("cache_hit", True)
@@ -189,29 +193,57 @@ async def extract(scan: ScanInput, router: LLMRouter, cache: ExtractionCache, de
     return extraction
 
 
+async def _interpretations(extraction: LabelExtraction, output: EngineOutput, extras: CacheExtras,
+                           router: LLMRouter, deadline: Deadline) -> dict[str, TermInterpretation]:
+    wanted = {t.term for t in output.unresolved_terms}
+    if not wanted:
+        return {}
+    if wanted <= set(extras.interpreted_terms):          # cache hit: no LLM call
+        return {t: extras.interpretations[t] for t in wanted if t in extras.interpretations}
+    budget = deadline.budget(INTERPRET_CAP_S, INTERPRET_RESERVE_S)
+    if not budget or not router.can_generate():
+        return {}
+    with stage("interpret"):
+        found = await interpret(output.unresolved_terms, router, budget)
+    if found is None:                                    # no model answered: try again next time
+        return {}
+    extras.interpretations.update(found)
+    extras.interpreted_terms = sorted(set(extras.interpreted_terms) | wanted)
+    return found
+
+
+async def _summaries(scan: ScanInput, output: EngineOutput, extras: CacheExtras, router: LLMRouter,
+                     deadline: Deadline) -> dict[str, str]:
+    keys = {r.profile_id: summary_key(scan.lang, r.profile_id, fingerprint(r)) for r in output.reports}
+    if keys and all(k in extras.summaries for k in keys.values()):     # cache hit: no LLM call
+        return {pid: extras.summaries[k] for pid, k in keys.items()}
+    budget = deadline.budget(SUMMARY_CAP_S, SUMMARY_RESERVE_S)
+    if not budget or not router.can_generate(PROSE_PROVIDERS):
+        return {}
+    with stage("summarize"):
+        found = await summarize.summarize(output.reports, scan.profiles, scan.lang, router, budget)
+    extras.summaries.update({keys[pid]: text for pid, text in found.items()})
+    return found
+
+
 async def run_scan(scan: ScanInput, router: LLMRouter, cache: ExtractionCache) -> ScanResult:
     deadline = Deadline(SCAN_BUDGET_S)
     extraction = await extract(scan, router, cache, deadline)
+    key = scan_cache_key(scan)
+    extras = cache.get_extras(key)
     with stage("engine"):
         output = engine_adapter.evaluate(extraction, scan.profiles)
 
-    interpretations: dict[str, TermInterpretation] = {}
-    interpret_budget = deadline.budget(INTERPRET_CAP_S, INTERPRET_RESERVE_S)
-    if output.unresolved_terms and interpret_budget and router.can_generate():
-        with stage("interpret"):
-            interpretations = await interpret(output.unresolved_terms, router, interpret_budget)
-        if interpretations:
-            with stage("engine"):
-                output = engine_adapter.evaluate(extraction, scan.profiles, interpretations)
+    interpretations = await _interpretations(extraction, output, extras, router, deadline)
+    if interpretations:
+        with stage("engine"):
+            output = engine_adapter.evaluate(extraction, scan.profiles, interpretations)
+    summaries = await _summaries(scan, output, extras, router, deadline)
+    if extraction.meta.provider != "ocr_only":
+        cache.put_extras(key, extras)
 
-    summaries: dict[str, str] = {}
-    summary_budget = deadline.budget(SUMMARY_CAP_S, SUMMARY_RESERVE_S)
-    if summary_budget and router.can_generate(PROSE_PROVIDERS):
-        with stage("summarize"):
-            summaries = await summarize.summarize(output.reports, scan.profiles, scan.lang, router, summary_budget)
     reports = summarize.apply(output.reports, summaries, scan.lang)
     unknowns = merge_unknowns(output.unknowns, pending_unknowns(extraction, scan.profiles))
-
     record = ScanRecord(lang=scan.lang, interpretations=interpretations)
     record.remember_summaries(reports)
     SCAN_MEMORY.put(extraction.scan_id, record)

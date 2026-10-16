@@ -35,7 +35,7 @@ class Settings:
         return int(self.max_image_mb * 1024 * 1024)
 
     @property
-    def max_body_bytes(self) -> int:
+    def max_scan_body_bytes(self) -> int:
         return self.max_images * self.max_image_bytes + 1024 * 1024
 
 

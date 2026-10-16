@@ -44,7 +44,7 @@ def test_interpretations_keep_only_vocabulary_categories_and_known_terms() -> No
 
 def test_interpretation_caps_terms_and_survives_llm_failure() -> None:
     llm = FakeLLM([ProviderUnavailableError("down")])
-    assert asyncio.run(interpret(terms(*[f"term {n}" for n in range(15)]), LLMRouter([llm], 5))) == {}
+    assert asyncio.run(interpret(terms(*[f"term {n}" for n in range(15)]), LLMRouter([llm], 5))) is None
     assert llm.prompts[0].count("- term ") == 10
     assert asyncio.run(interpret([], LLMRouter([llm], 5))) == {}
 
