@@ -8,7 +8,7 @@ from engine.kb_loader import CATALOG,TERMS,Term,validate_indexes
 
 def test_kb_count_categories_and_aliases():
     validate_indexes()
-    assert len(TERMS)>=120
+    assert len(TERMS)>=200
     assert set(ALLERGEN_CATEGORIES)<={c for t in TERMS for c in t.categories+t.possible_categories}
     assert all(set(t.categories+t.possible_categories)<=set(CATEGORIES) for t in TERMS)
     assert all(t.notes and (t.origin=='varies' or not t.possible_categories) for t in TERMS)

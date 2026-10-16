@@ -3295,5 +3295,1291 @@
     "origin": "varies",
     "notes": "A non-dairy creamer description alone does not rule out milk-derived caseinates. Read the component list.",
     "confidence": "medium"
+  },
+  {
+    "id": "condensed_milk",
+    "names": {
+      "en": [
+        "condensed milk",
+        "sweetened condensed milk"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. Names do not establish lactose concentration, sugar quantity or individual clinical risk.",
+    "confidence": "high"
+  },
+  {
+    "id": "evaporated_milk",
+    "names": {
+      "en": [
+        "evaporated milk"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. Names do not establish lactose concentration, sugar quantity or individual clinical risk.",
+    "confidence": "high"
+  },
+  {
+    "id": "milk_fat",
+    "names": {
+      "en": [
+        "milk fat",
+        "milkfat",
+        "anhydrous milk fat"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. Names do not establish lactose concentration, sugar quantity or individual clinical risk.",
+    "confidence": "high"
+  },
+  {
+    "id": "milk_permeate",
+    "names": {
+      "en": [
+        "milk permeate",
+        "milk permeate powder"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. Names do not establish lactose concentration, sugar quantity or individual clinical risk.",
+    "confidence": "high"
+  },
+  {
+    "id": "whey_permeate",
+    "names": {
+      "en": [
+        "whey permeate",
+        "whey permeate powder"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. Names do not establish lactose concentration, sugar quantity or individual clinical risk.",
+    "confidence": "high"
+  },
+  {
+    "id": "cream_powder",
+    "names": {
+      "en": [
+        "cream powder"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. Names do not establish lactose concentration, sugar quantity or individual clinical risk.",
+    "confidence": "high"
+  },
+  {
+    "id": "buttermilk_powder",
+    "names": {
+      "en": [
+        "buttermilk powder"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. Names do not establish lactose concentration, sugar quantity or individual clinical risk.",
+    "confidence": "high"
+  },
+  {
+    "id": "milk_protein_concentrate",
+    "names": {
+      "en": [
+        "milk protein concentrate",
+        "milk protein isolate"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. Names do not establish lactose concentration, sugar quantity or individual clinical risk.",
+    "confidence": "high"
+  },
+  {
+    "id": "lassi",
+    "names": {
+      "en": [
+        "lassi"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. Names do not establish lactose concentration, sugar quantity or individual clinical risk.",
+    "confidence": "high"
+  },
+  {
+    "id": "shrikhand",
+    "names": {
+      "en": [
+        "shrikhand",
+        "srikhand"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Milk-derived ingredient. Names do not establish lactose concentration, sugar quantity or individual clinical risk.",
+    "confidence": "high"
+  },
+  {
+    "id": "wheat_bran",
+    "names": {
+      "en": [
+        "wheat bran"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "wheat",
+      "gluten"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Wheat bran; declared source maps to wheat, gluten.",
+    "confidence": "high"
+  },
+  {
+    "id": "wheat_germ",
+    "names": {
+      "en": [
+        "wheat germ"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "wheat",
+      "gluten"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Wheat germ; declared source maps to wheat, gluten.",
+    "confidence": "high"
+  },
+  {
+    "id": "bulgur",
+    "names": {
+      "en": [
+        "bulgur",
+        "bulgur wheat"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "wheat",
+      "gluten"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Bulgur; declared source maps to wheat, gluten.",
+    "confidence": "high"
+  },
+  {
+    "id": "couscous",
+    "names": {
+      "en": [
+        "couscous"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "wheat",
+      "gluten"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Couscous; declared source maps to wheat, gluten.",
+    "confidence": "high"
+  },
+  {
+    "id": "seitan",
+    "names": {
+      "en": [
+        "seitan",
+        "wheat gluten"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "wheat",
+      "gluten"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Seitan; declared source maps to wheat, gluten.",
+    "confidence": "high"
+  },
+  {
+    "id": "spelt",
+    "names": {
+      "en": [
+        "spelt"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "wheat",
+      "gluten"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Spelt; declared source maps to wheat, gluten.",
+    "confidence": "high"
+  },
+  {
+    "id": "farro",
+    "names": {
+      "en": [
+        "farro"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "wheat",
+      "gluten"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Farro; declared source maps to wheat, gluten.",
+    "confidence": "high"
+  },
+  {
+    "id": "freekeh",
+    "names": {
+      "en": [
+        "freekeh"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "wheat",
+      "gluten"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Freekeh; declared source maps to wheat, gluten.",
+    "confidence": "high"
+  },
+  {
+    "id": "malted_barley_flour",
+    "names": {
+      "en": [
+        "malted barley flour"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "gluten"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Malted barley flour; declared source maps to gluten.",
+    "confidence": "high"
+  },
+  {
+    "id": "peanut_flour",
+    "names": {
+      "en": [
+        "peanut flour",
+        "groundnut flour"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "peanut"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Peanut flour; declared source maps to peanut.",
+    "confidence": "high"
+  },
+  {
+    "id": "almond_flour",
+    "names": {
+      "en": [
+        "almond flour",
+        "almond meal"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "tree_nut"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Almond flour; declared source maps to tree_nut.",
+    "confidence": "high"
+  },
+  {
+    "id": "cashew_paste",
+    "names": {
+      "en": [
+        "cashew paste"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "tree_nut"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Cashew paste; declared source maps to tree_nut.",
+    "confidence": "high"
+  },
+  {
+    "id": "hazelnut_paste",
+    "names": {
+      "en": [
+        "hazelnut paste"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "tree_nut"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Hazelnut paste; declared source maps to tree_nut.",
+    "confidence": "high"
+  },
+  {
+    "id": "sesame_flour",
+    "names": {
+      "en": [
+        "sesame flour",
+        "sesame meal"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "sesame"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Sesame flour; declared source maps to sesame.",
+    "confidence": "high"
+  },
+  {
+    "id": "mustard_flour",
+    "names": {
+      "en": [
+        "mustard flour",
+        "mustard powder"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "mustard"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Mustard flour; declared source maps to mustard.",
+    "confidence": "high"
+  },
+  {
+    "id": "soy_protein_concentrate",
+    "names": {
+      "en": [
+        "soy protein concentrate",
+        "soya protein concentrate"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "soy"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Soy protein concentrate; declared source maps to soy.",
+    "confidence": "high"
+  },
+  {
+    "id": "textured_soy_protein",
+    "names": {
+      "en": [
+        "textured soy protein",
+        "textured vegetable protein soy",
+        "soya chunks"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "soy"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Textured soy protein; declared source maps to soy.",
+    "confidence": "high"
+  },
+  {
+    "id": "soy_sauce",
+    "names": {
+      "en": [
+        "soy sauce",
+        "soya sauce"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "soy"
+    ],
+    "possible_categories": [
+      "wheat",
+      "gluten"
+    ],
+    "origin": "varies",
+    "notes": "Unqualified soy sauce declares soy. Wheat-containing and wheat-free formulations exist; wheat/gluten remain possible until the component list identifies the grain.",
+    "confidence": "medium"
+  },
+  {
+    "id": "fish_oil",
+    "names": {
+      "en": [
+        "fish oil"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "fish",
+      "fish_derived"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Fish oil; declared source maps to fish, fish_derived.",
+    "confidence": "high"
+  },
+  {
+    "id": "fish_gelatin",
+    "names": {
+      "en": [
+        "fish gelatin",
+        "fish gelatine"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "fish",
+      "fish_derived",
+      "gelatin"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Fish gelatin; declared source maps to fish, fish_derived, gelatin.",
+    "confidence": "high"
+  },
+  {
+    "id": "chicken_fat",
+    "names": {
+      "en": [
+        "chicken fat"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "poultry",
+      "animal_derived"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Chicken fat; declared source maps to poultry, animal_derived.",
+    "confidence": "high"
+  },
+  {
+    "id": "duck",
+    "names": {
+      "en": [
+        "duck",
+        "duck meat"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "poultry"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Duck; declared source maps to poultry.",
+    "confidence": "high"
+  },
+  {
+    "id": "turkey",
+    "names": {
+      "en": [
+        "turkey",
+        "turkey meat"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "poultry"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Turkey; declared source maps to poultry.",
+    "confidence": "high"
+  },
+  {
+    "id": "rice_syrup",
+    "names": {
+      "en": [
+        "rice syrup",
+        "brown rice syrup"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Concentrated sugar ingredient; the quantitative sugar threshold determines the diabetes_sugar conflict, not this alias alone.",
+    "confidence": "high"
+  },
+  {
+    "id": "maple_syrup",
+    "names": {
+      "en": [
+        "maple syrup"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Concentrated sugar ingredient; the quantitative sugar threshold determines the diabetes_sugar conflict, not this alias alone.",
+    "confidence": "high"
+  },
+  {
+    "id": "agave_syrup",
+    "names": {
+      "en": [
+        "agave syrup",
+        "agave nectar"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Concentrated sugar ingredient; the quantitative sugar threshold determines the diabetes_sugar conflict, not this alias alone.",
+    "confidence": "high"
+  },
+  {
+    "id": "molasses",
+    "names": {
+      "en": [
+        "molasses",
+        "blackstrap molasses"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Concentrated sugar ingredient; the quantitative sugar threshold determines the diabetes_sugar conflict, not this alias alone.",
+    "confidence": "high"
+  },
+  {
+    "id": "treacle",
+    "names": {
+      "en": [
+        "treacle"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Concentrated sugar ingredient; the quantitative sugar threshold determines the diabetes_sugar conflict, not this alias alone.",
+    "confidence": "high"
+  },
+  {
+    "id": "golden_syrup",
+    "names": {
+      "en": [
+        "golden syrup"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Concentrated sugar ingredient; the quantitative sugar threshold determines the diabetes_sugar conflict, not this alias alone.",
+    "confidence": "high"
+  },
+  {
+    "id": "coconut_sugar",
+    "names": {
+      "en": [
+        "coconut sugar"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Concentrated sugar ingredient; the quantitative sugar threshold determines the diabetes_sugar conflict, not this alias alone.",
+    "confidence": "high"
+  },
+  {
+    "id": "palm_sugar",
+    "names": {
+      "en": [
+        "palm sugar"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Concentrated sugar ingredient; the quantitative sugar threshold determines the diabetes_sugar conflict, not this alias alone.",
+    "confidence": "high"
+  },
+  {
+    "id": "demerara",
+    "names": {
+      "en": [
+        "demerara sugar"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Concentrated sugar ingredient; the quantitative sugar threshold determines the diabetes_sugar conflict, not this alias alone.",
+    "confidence": "high"
+  },
+  {
+    "id": "muscovado",
+    "names": {
+      "en": [
+        "muscovado sugar"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "added_sugar",
+      "sugar_alias"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Concentrated sugar ingredient; the quantitative sugar threshold determines the diabetes_sugar conflict, not this alias alone.",
+    "confidence": "high"
+  },
+  {
+    "id": "chickpea",
+    "names": {
+      "en": [
+        "chickpea",
+        "chickpeas",
+        "chickpea flour",
+        "gram flour",
+        "besan",
+        "bengal gram"
+      ],
+      "hi": [
+        "बेसन"
+      ],
+      "te": [
+        "శనగ"
+      ]
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no tracked allergen/category inferred. This does not address cross-contact or individual cross-reactivity.",
+    "confidence": "high"
+  },
+  {
+    "id": "lentil",
+    "names": {
+      "en": [
+        "lentil",
+        "lentils",
+        "masoor"
+      ],
+      "hi": [
+        "मसूर"
+      ],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no tracked allergen/category inferred. This does not address cross-contact or individual cross-reactivity.",
+    "confidence": "high"
+  },
+  {
+    "id": "green_gram",
+    "names": {
+      "en": [
+        "green gram",
+        "mung bean",
+        "mung beans",
+        "moong"
+      ],
+      "hi": [
+        "मूंग"
+      ],
+      "te": [
+        "పెసలు"
+      ]
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no tracked allergen/category inferred. This does not address cross-contact or individual cross-reactivity.",
+    "confidence": "high"
+  },
+  {
+    "id": "black_gram",
+    "names": {
+      "en": [
+        "black gram",
+        "urad"
+      ],
+      "hi": [
+        "उड़द"
+      ],
+      "te": [
+        "మినుములు"
+      ]
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no tracked allergen/category inferred. This does not address cross-contact or individual cross-reactivity.",
+    "confidence": "high"
+  },
+  {
+    "id": "pigeon_pea",
+    "names": {
+      "en": [
+        "pigeon pea",
+        "pigeon peas",
+        "toor dal",
+        "arhar"
+      ],
+      "hi": [
+        "अरहर"
+      ],
+      "te": [
+        "కందులు"
+      ]
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no tracked allergen/category inferred. This does not address cross-contact or individual cross-reactivity.",
+    "confidence": "high"
+  },
+  {
+    "id": "kidney_bean",
+    "names": {
+      "en": [
+        "kidney bean",
+        "kidney beans",
+        "rajma"
+      ],
+      "hi": [
+        "राजमा"
+      ],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no tracked allergen/category inferred. This does not address cross-contact or individual cross-reactivity.",
+    "confidence": "high"
+  },
+  {
+    "id": "sorghum",
+    "names": {
+      "en": [
+        "sorghum",
+        "jowar"
+      ],
+      "hi": [
+        "ज्वार"
+      ],
+      "te": [
+        "జొన్నలు"
+      ]
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no tracked allergen/category inferred. This does not address cross-contact or individual cross-reactivity.",
+    "confidence": "high"
+  },
+  {
+    "id": "pearl_millet",
+    "names": {
+      "en": [
+        "pearl millet",
+        "bajra"
+      ],
+      "hi": [
+        "बाजरा"
+      ],
+      "te": [
+        "సజ్జలు"
+      ]
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no tracked allergen/category inferred. This does not address cross-contact or individual cross-reactivity.",
+    "confidence": "high"
+  },
+  {
+    "id": "finger_millet",
+    "names": {
+      "en": [
+        "finger millet",
+        "ragi"
+      ],
+      "hi": [
+        "रागी"
+      ],
+      "te": [
+        "రాగులు"
+      ]
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no tracked allergen/category inferred. This does not address cross-contact or individual cross-reactivity.",
+    "confidence": "high"
+  },
+  {
+    "id": "amaranth",
+    "names": {
+      "en": [
+        "amaranth",
+        "rajgira"
+      ],
+      "hi": [
+        "राजगीरा"
+      ],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no tracked allergen/category inferred. This does not address cross-contact or individual cross-reactivity.",
+    "confidence": "high"
+  },
+  {
+    "id": "buckwheat",
+    "names": {
+      "en": [
+        "buckwheat",
+        "kuttu"
+      ],
+      "hi": [
+        "कुट्टू"
+      ],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no tracked allergen/category inferred. This does not address cross-contact or individual cross-reactivity.",
+    "confidence": "high"
+  },
+  {
+    "id": "quinoa",
+    "names": {
+      "en": [
+        "quinoa"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no tracked allergen/category inferred. This does not address cross-contact or individual cross-reactivity.",
+    "confidence": "high"
+  },
+  {
+    "id": "psyllium",
+    "names": {
+      "en": [
+        "psyllium",
+        "isabgol"
+      ],
+      "hi": [
+        "इसबगोल"
+      ],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no tracked allergen/category inferred. This does not address cross-contact or individual cross-reactivity.",
+    "confidence": "high"
+  },
+  {
+    "id": "olive_oil",
+    "names": {
+      "en": [
+        "olive oil"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Olive oil; no tracked category inferred from this ingredient name.",
+    "confidence": "high"
+  },
+  {
+    "id": "safflower_oil",
+    "names": {
+      "en": [
+        "safflower oil"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Safflower oil; no tracked category inferred from this ingredient name.",
+    "confidence": "high"
+  },
+  {
+    "id": "rice_bran_oil",
+    "names": {
+      "en": [
+        "rice bran oil"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Rice bran oil; no tracked category inferred from this ingredient name.",
+    "confidence": "high"
+  },
+  {
+    "id": "coriander",
+    "names": {
+      "en": [
+        "coriander",
+        "coriander seed",
+        "dhania"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Coriander; no tracked category inferred from this ingredient name.",
+    "confidence": "high"
+  },
+  {
+    "id": "cumin",
+    "names": {
+      "en": [
+        "cumin",
+        "jeera"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Cumin; no tracked category inferred from this ingredient name.",
+    "confidence": "high"
+  },
+  {
+    "id": "fennel",
+    "names": {
+      "en": [
+        "fennel",
+        "saunf"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Fennel; no tracked category inferred from this ingredient name.",
+    "confidence": "high"
+  },
+  {
+    "id": "black_pepper",
+    "names": {
+      "en": [
+        "black pepper",
+        "kali mirch"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Black pepper; no tracked category inferred from this ingredient name.",
+    "confidence": "high"
+  },
+  {
+    "id": "cardamom",
+    "names": {
+      "en": [
+        "cardamom",
+        "elaichi"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Cardamom; no tracked category inferred from this ingredient name.",
+    "confidence": "high"
+  },
+  {
+    "id": "clove",
+    "names": {
+      "en": [
+        "clove",
+        "cloves",
+        "laung"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Clove; no tracked category inferred from this ingredient name.",
+    "confidence": "high"
+  },
+  {
+    "id": "cinnamon",
+    "names": {
+      "en": [
+        "cinnamon",
+        "dalchini"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Cinnamon; no tracked category inferred from this ingredient name.",
+    "confidence": "high"
+  },
+  {
+    "id": "nutmeg",
+    "names": {
+      "en": [
+        "nutmeg",
+        "jaiphal"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Nutmeg; no tracked category inferred from this ingredient name.",
+    "confidence": "high"
   }
 ]
