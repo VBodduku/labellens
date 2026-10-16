@@ -21,7 +21,7 @@ export function Hero() {
   const hintOpacity = useScrollRange(scrollYProgress, [0, 0.05], [1, 0]);
 
   return (
-    <section ref={runway} aria-labelledby="hero-title" className={reduce ? "relative" : "relative h-[220vh] lg:h-[260vh]"}>
+    <section ref={runway} aria-labelledby="hero-title" className={reduce ? "relative overflow-x-clip" : "relative h-[220vh] overflow-x-clip lg:h-[260vh]"}>
       <div className="sticky top-16 h-[calc(100svh-4rem)] min-h-[34rem]">
         <div className="page-gutter mx-auto grid h-full max-w-page grid-rows-[minmax(0,1fr)_auto] gap-5 pb-6 pt-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:grid-rows-1 lg:items-center lg:gap-12 lg:py-10">
           <div className="order-2 lg:order-1">

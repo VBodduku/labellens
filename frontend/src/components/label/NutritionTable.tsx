@@ -40,7 +40,7 @@ export function NutritionTable({ result, onEdit }: { result: ScanResult; onEdit:
             role="radio"
             aria-checked={view === option}
             onClick={() => setView(option)}
-            className={`relative min-h-10 flex-1 rounded-chip px-3 text-sm font-semibold transition-colors duration-fast ${
+            className={`relative min-h-10 flex-1 rounded-chip px-3 text-sm font-semibold touch:min-h-11 transition-colors duration-fast ${
               view === option ? "text-text" : "text-text-dim hover:text-text"
             }`}
           >

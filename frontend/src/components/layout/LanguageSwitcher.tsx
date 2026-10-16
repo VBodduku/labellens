@@ -25,7 +25,7 @@ export function LanguageSwitcher() {
             aria-label={t(`lang.${option}`)}
             lang={option}
             onClick={() => setLang(option)}
-            className={`relative min-h-9 min-w-9 rounded-chip px-2 text-[0.8rem] font-bold leading-none transition-colors duration-fast ${
+            className={`relative min-h-9 min-w-9 rounded-chip px-2 text-[0.8rem] touch:min-h-11 touch:min-w-11 font-bold leading-none transition-colors duration-fast ${
               selected ? "text-text" : "text-text-dim hover:text-text"
             }`}
           >

@@ -183,7 +183,7 @@ export default function Scan() {
         {userProfiles.length === 0 && resultRetake === null && (
           <Link
             to="/profiles"
-            className="mx-auto flex min-h-10 w-fit items-center gap-2 rounded-chip bg-black/55 px-4 text-xs font-semibold text-white backdrop-blur-md"
+            className="mx-auto flex min-h-10 w-fit items-center gap-2 rounded-chip bg-black/55 touch:min-h-11 px-4 text-xs font-semibold text-white backdrop-blur-md"
           >
             <Users className="size-4" aria-hidden="true" />
             {t("scan.noProfilesChip")}

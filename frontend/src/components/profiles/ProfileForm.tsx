@@ -123,7 +123,7 @@ export function ProfileForm({ profile, catalog, onChange, nameError }: ProfileFo
                     role="radio"
                     aria-checked={restriction.severity === severity}
                     onClick={() => update(restriction.id, { severity })}
-                    className={`min-h-10 flex-1 rounded-chip px-2 text-xs font-semibold transition-colors duration-fast ${
+                    className={`min-h-10 flex-1 rounded-chip px-2 text-xs font-semibold touch:min-h-11 transition-colors duration-fast ${
                       restriction.severity === severity ? "bg-surface text-text shadow-[inset_0_0_0_1px_var(--line)]" : "text-text-dim"
                     }`}
                   >
@@ -154,7 +154,7 @@ export function ProfileForm({ profile, catalog, onChange, nameError }: ProfileFo
                     aria-pressed={selected}
                     title={item.description_en}
                     onClick={() => toggle(item)}
-                    className={`inline-flex min-h-10 items-center gap-1.5 rounded-chip px-3 text-sm transition-colors duration-fast ${
+                    className={`inline-flex min-h-10 items-center gap-1.5 rounded-chip px-3 text-sm touch:min-h-11 transition-colors duration-fast ${
                       selected ? "bg-beam/15 font-semibold text-text shadow-[inset_0_0_0_1.5px_var(--beam)]" : "bg-surface-2 text-text-dim hover:text-text"
                     }`}
                   >

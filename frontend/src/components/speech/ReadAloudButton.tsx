@@ -58,7 +58,7 @@ export function ReadAloudButton({ getText, modes = true }: ReadAloudButtonProps)
   }
 
   const nextRate = RATES[(RATES.indexOf(voiceRate as (typeof RATES)[number]) + 1) % RATES.length] ?? 1;
-  const chip = "inline-flex min-h-10 items-center gap-1.5 rounded-chip px-3 text-xs font-semibold transition-colors duration-fast";
+  const chip = "inline-flex min-h-10 touch:min-h-11 items-center gap-1.5 rounded-chip px-3 text-xs font-semibold transition-colors duration-fast";
 
   return (
     <div className="flex flex-wrap items-center gap-1.5">

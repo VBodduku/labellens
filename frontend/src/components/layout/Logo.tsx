@@ -24,9 +24,10 @@ export function LogoMark({ className = "size-8" }: { className?: string }) {
   );
 }
 
-export function Wordmark() {
+/** `compact` hides the wordmark on the narrowest phones, where the header needs the room (the mark remains). */
+export function Wordmark({ compact = false }: { compact?: boolean }) {
   return (
-    <span className="font-display text-[1.05rem] font-bold tracking-tight sm:text-[1.15rem]">
+    <span className={`font-display text-[1.05rem] font-bold tracking-tight sm:text-[1.15rem] ${compact ? "max-[419px]:sr-only" : ""}`}>
       Label<span className="text-beam-gradient">Lens</span>
     </span>
   );

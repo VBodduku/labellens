@@ -48,7 +48,7 @@ function IngredientRow({ ingredient, path, annotations, editedPaths, onEdit, onE
               lang=""
               onClick={() => onExplain(ingredient.name)}
               aria-label={t("explain.open", { name: ingredient.name })}
-              className="min-h-8 text-left font-semibold underline decoration-line decoration-dotted underline-offset-4 hover:decoration-text"
+              className="min-h-8 text-left font-semibold underline touch:min-h-11 decoration-line decoration-dotted underline-offset-4 hover:decoration-text"
             >
               {ingredient.name}
             </button>

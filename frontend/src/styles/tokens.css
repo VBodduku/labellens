@@ -47,12 +47,12 @@
     --line: #dcd6ca;
     --text: #15181f;
     --text-dim: #5a6271;
-    --beam: #0a8fa0;
+    --beam: #07707e;
     --beam-2: #6a4fd8;
     --on-beam: #ffffff;
     --conflict: #c8382d;
     --possible: #a35f00;
-    --not-listed: #17855a;
+    --not-listed: #11734d;
     --unknown: #4d56c9;
     --on-verdict: #ffffff;
   }
@@ -66,12 +66,12 @@
   --line: #dcd6ca;
   --text: #15181f;
   --text-dim: #5a6271;
-  --beam: #0a8fa0;
+  --beam: #07707e;
   --beam-2: #6a4fd8;
   --on-beam: #ffffff;
   --conflict: #c8382d;
   --possible: #a35f00;
-  --not-listed: #17855a;
+  --not-listed: #11734d;
   --unknown: #4d56c9;
   --on-verdict: #ffffff;
 }

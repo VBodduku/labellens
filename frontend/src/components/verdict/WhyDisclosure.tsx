@@ -16,7 +16,7 @@ export function WhyDisclosure({ matches }: { matches: Match[] }) {
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((value) => !value)}
-        className="-ml-2 inline-flex min-h-9 items-center gap-1 rounded-chip px-2 text-xs font-semibold text-text-dim hover:text-text"
+        className="-ml-2 inline-flex min-h-9 items-center gap-1 touch:min-h-11 rounded-chip px-2 text-xs font-semibold text-text-dim hover:text-text"
       >
         {t("result.why")}
         <ChevronDown className={`size-3.5 transition-transform duration-fast ${open ? "rotate-180" : ""}`} aria-hidden="true" />

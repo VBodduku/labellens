@@ -39,8 +39,13 @@ export default defineConfig(({ mode }) => {
         theme_color: "#0B0D12",
         background_color: "#0B0D12",
         display: "standalone",
+        orientation: "portrait",
         start_url: "/",
         scope: "/",
+        id: "/",
+        lang: "en",
+        dir: "ltr",
+        categories: ["food", "health", "utilities"],
         icons: [
           { src: "pwa-64x64.png", sizes: "64x64", type: "image/png" },
           { src: "pwa-192x192.png", sizes: "192x192", type: "image/png" },

@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import plugin from "tailwindcss/plugin";
 
 const token = (name: string) => `var(--${name})`;
 
@@ -47,5 +48,8 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    // `touch:` = coarse pointer (phones/tablets): grow controls to 44 px targets without bloating desktop.
+    plugin(({ addVariant }) => addVariant("touch", "@media (pointer: coarse)")),
+  ],
 } satisfies Config;
