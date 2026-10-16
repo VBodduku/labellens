@@ -46,10 +46,18 @@
     "Synthetic fixtures test software behavior only; they do not measure real-packet accuracy.",
     "Nutrient tolerance is max(2% of truth, annotated absolute printed rounding); no unannotated rounding allowance.",
     "Statements use exact normalized item sets; ingredients use top-level items with one-to-one fuzzy matching >=85.",
-    "Missing expected profiles count as unknown and are listed; missing responses abort the run.",
+    "Missing expected profiles appear as unknown in the confusion matrix, always fail verdict accuracy, and are listed; missing responses abort the run.",
     "Evidence rate counts unique extraction evidence records, including nested ingredients, claims and veg marks.",
     "Unknown rate uses restriction results in supplied reports. Verdict accuracy uses expected profile overalls.",
     "Latency uses positive saved extraction durations for real packets only; synthetic latency is unmeasured.",
-    "Saved responses are scored as supplied; the runner does not re-evaluate them."
-  ]
+    "Saved extractions were re-evaluated with the current local engine and exact profiles; saved input responses remain unchanged.",
+    "Replay is not a new extraction run and has no measured scan latency. Missing original LLM inputs block replay rather than silently dropping model signals.",
+    "Error causes are unreviewed until explicitly classified with an explanation; engine-owned classifications require a regression-test reference.",
+    "The local engine fingerprint identifies this checkout, not the code loaded by a separate backend process. Restart the backend after engine changes; health only confirms ENGINE_MODE=real."
+  ],
+  "error_count": 3,
+  "unreviewed_error_count": 0,
+  "unreviewed_dangerous_misses": 0,
+  "engine_dangerous_misses": 0,
+  "extraction_dangerous_misses": 0
 }

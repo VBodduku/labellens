@@ -86,11 +86,10 @@ marks count as word content, preventing aliases from matching inside Indic words
 These fixes were found independently; no real packet corpus was available.
 
 Add entries to `kb/terms.json` using the existing Pydantic schema. Give each entry a
-unique id, aliases, origin, notes, and only contract categories. Entries with
-`review_reason` (optional) record a concrete human review question; explanations
+unique id, aliases, origin, notes, and only contract categories. The optional
+`review_reason` field records a concrete human review question; explanations
 surface it as a caution even when the ingredient identity is high confidence.
-Entries with
-possible_categories require origin varies; contested entries need medium confidence
+Entries with possible_categories require origin varies; contested entries need medium confidence
 and explicit notes. Add verified codes only; suffixes are significant. Add a
 qualifier with a narrow term_ids scope when a printed source genuinely resolves an
 ambiguity. Never add vague translations without review. Run the full tests.
@@ -121,7 +120,12 @@ Two fixture-derived cases and their reports are checked in under `eval/synthetic
 
 ```
 python -m engine.eval.build_synthetic
-python -m engine.eval.run_eval --dataset engine/eval/synthetic/dataset --responses engine/eval/synthetic/responses
+python -m engine.eval.run_eval --dataset engine/eval/synthetic/dataset --responses engine/eval/synthetic/responses --classifications engine/eval/synthetic/classifications.json --reports engine/eval/reports/synthetic_before
+python -m engine.eval.run_eval --dataset engine/eval/synthetic/dataset --responses engine/eval/synthetic/responses --classifications engine/eval/synthetic/classifications.json --reevaluate --baseline engine/eval/reports/synthetic_before/report.json
 ```
 
 The report is labelled synthetic, has zero real packets, and includes a deliberate carbohydrate misread. Real collection uses `engine/eval/dataset/<case_id>/truth.json` with `img_0.jpg` (up to three panels), plus `engine/eval/responses/<case_id>.json`; see the dataset guide for the complete format and clean/imperfect pairing.
+
+See [Phase 3 measurement status](eval/PHASE3_STATUS.md) for the unresolved data/backend
+blockers and actual measurement scope. Real accuracy and engine-caused dangerous
+misses remain unmeasured until the humans provide the integrated server and packet cases.

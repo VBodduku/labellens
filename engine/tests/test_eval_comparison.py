@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 import pytest
-from shared.contract import IngredientAnnotation, ScanResult
+from shared.contract import IngredientAnnotation, ScanResult, Match
 from engine.eval.build_synthetic import build
 from engine.eval.errors import ErrorReview
 from engine.eval.replay import load_profiles, replay
@@ -188,3 +188,75 @@ def test_replay_accepts_original_interpretation_sidecar(tmp_path):
     assert any(
         annotation.source == "llm_interpretation" for annotation in result.annotations
     )
+
+
+def test_partial_kb_annotation_does_not_hide_original_llm_signal(tmp_path):
+    scan = ScanResult.model_validate_json(
+        Path("shared/fixtures/scan_result.json").read_text()
+    )
+    ingredient = scan.extraction.ingredients[0]
+    ingredient.name = "wheat flour xyzzy"
+    scan.annotations = [
+        IngredientAnnotation(
+            ingredient_id=ingredient.id,
+            canonical_ids=["wheat_flour"],
+            categories=["wheat", "gluten"],
+            origin="plant",
+            source="kb",
+        )
+    ]
+    scan.reports[0].results[0].matches.append(
+        Match(
+            ingredient_id=ingredient.id,
+            term=ingredient.name,
+            category="milk",
+            source="llm_interpretation",
+        )
+    )
+    with pytest.raises(ValueError, match="Original LLM inputs are missing"):
+        replay(scan, profiles(), tmp_path / "missing.interpretations.json")
+
+
+def test_changed_photo_prevents_baseline_comparison(tmp_path):
+    dataset, responses = build(tmp_path / "synthetic")
+    photo = dataset / "synthetic_clean/img_0.jpg"
+    photo.write_bytes(b"original transport test photo")
+    run(dataset, responses, tmp_path / "before", profiles=profiles())
+    photo.write_bytes(b"different transport test photo")
+    with pytest.raises(ValueError, match="Baseline comparison"):
+        run(
+            dataset,
+            responses,
+            tmp_path / "after",
+            profiles=profiles(),
+            baseline=tmp_path / "before/report.json",
+        )
+
+
+def test_capture_profiles_cannot_be_relabelled_after_scan(tmp_path):
+    dataset, responses = build(tmp_path / "synthetic")
+    captured = profiles()
+    (responses / "capture_manifest.json").write_text(
+        json.dumps(
+            dict(failed=[], profiles=[p.model_dump(mode="json") for p in captured])
+        )
+    )
+    changed = profiles()
+    changed[0].name = "Different profile"
+    with pytest.raises(ValueError, match="differ from those submitted"):
+        run(dataset, responses, tmp_path / "reports", profiles=changed)
+
+
+def test_checked_in_synthetic_error_reviews_cover_controlled_corruptions(tmp_path):
+    dataset, responses = build(tmp_path / "synthetic")
+    metrics = run(
+        dataset,
+        responses,
+        tmp_path / "reports",
+        profiles=profiles(),
+        reviews_path=Path("engine/eval/synthetic/classifications.json"),
+    )
+    assert metrics["error_count"] == 3
+    assert metrics["unreviewed_error_count"] == 0
+    report = json.loads((tmp_path / "reports/report.json").read_text())
+    assert all(error["category"] == "extraction" for error in report["errors"])

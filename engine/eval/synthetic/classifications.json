@@ -1,0 +1,14 @@
+{
+  "synthetic_imperfect:ingredient_missing:1": {
+    "category": "extraction",
+    "explanation": "Controlled synthetic corruption, not a real observation: build_synthetic.py marks the fixture's peanut item unreadable. The scorer excludes unreadable ingredients; the engine correctly returns unknown for the incomplete peanut evidence."
+  },
+  "synthetic_imperfect:nutrient:carbohydrate_g": {
+    "category": "extraction",
+    "explanation": "Controlled synthetic corruption, not a real observation: build_synthetic.py replaces 58 g carbohydrate with 5.8 g. The engine flags the inconsistent nutrition and preserves the extracted value rather than inventing a correction."
+  },
+  "synthetic_imperfect:verdict:diabetes_sugar": {
+    "category": "extraction",
+    "explanation": "The deliberately corrupted carbohydrate value makes the 38 g sugar reading exceed 5.8 g carbohydrate. Both part/whole readings become suspect; threshold conflict is withheld and the deterministic sugar alias leaves possible. This is the required conservative response to the synthetic extraction fault, not a rule bug."
+  }
+}

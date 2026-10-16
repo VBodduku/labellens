@@ -175,6 +175,7 @@ def capture(
             dict(
                 backend=backend,
                 engine_mode=health.engine_mode,
+                profiles=[profile.model_dump(mode="json") for profile in profiles],
                 cases=results,
                 failed=failures,
             ),

@@ -42,6 +42,15 @@ def replay(scan: ScanResult, profiles: list[Profile], sidecar: Path) -> ScanResu
         for item in scan.annotations
         if item.source == "llm_interpretation"
     }
+    # A partially KB-resolved ingredient keeps source=kb on its annotation even
+    # when an unresolved fragment contributes an LLM signal to a report.
+    llm_ids.update(
+        match.ingredient_id
+        for report in scan.reports
+        for result in report.results
+        for match in result.matches
+        if match.source == "llm_interpretation" and match.ingredient_id
+    )
     unresolved_ids = {item.ingredient_id for item in output.unresolved_terms}
     if llm_ids & unresolved_ids:
         raise ValueError(

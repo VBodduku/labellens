@@ -237,12 +237,22 @@ def run(
             "Offline re-evaluation requires the exact original evaluation profiles"
         )
     manifest = responses / "capture_manifest.json"
-    if manifest.exists() and json.loads(manifest.read_text(encoding="utf-8")).get(
-        "failed"
-    ):
-        raise ValueError(
-            "Saved capture manifest has failed cases; do not score a mixture of stale and fresh responses"
-        )
+    if manifest.exists():
+        capture_metadata = json.loads(manifest.read_text(encoding="utf-8"))
+        if capture_metadata.get("failed"):
+            raise ValueError(
+                "Saved capture manifest has failed cases; do not score a mixture of stale and fresh responses"
+            )
+        captured_profiles = capture_metadata.get("profiles")
+        if (
+            profiles
+            and captured_profiles is not None
+            and captured_profiles
+            != [profile.model_dump(mode="json") for profile in profiles]
+        ):
+            raise ValueError(
+                "Evaluation profiles differ from those submitted in the saved capture manifest"
+            )
     reviews = (
         TypeAdapter(dict[str, ErrorReview]).validate_json(
             reviews_path.read_text(encoding="utf-8")

@@ -47,12 +47,20 @@
       "Synthetic fixtures test software behavior only; they do not measure real-packet accuracy.",
       "Nutrient tolerance is max(2% of truth, annotated absolute printed rounding); no unannotated rounding allowance.",
       "Statements use exact normalized item sets; ingredients use top-level items with one-to-one fuzzy matching >=85.",
-      "Missing expected profiles count as unknown and are listed; missing responses abort the run.",
+      "Missing expected profiles appear as unknown in the confusion matrix, always fail verdict accuracy, and are listed; missing responses abort the run.",
       "Evidence rate counts unique extraction evidence records, including nested ingredients, claims and veg marks.",
       "Unknown rate uses restriction results in supplied reports. Verdict accuracy uses expected profile overalls.",
       "Latency uses positive saved extraction durations for real packets only; synthetic latency is unmeasured.",
-      "Saved responses are scored as supplied; the runner does not re-evaluate them."
-    ]
+      "Saved extractions were re-evaluated with the current local engine and exact profiles; saved input responses remain unchanged.",
+      "Replay is not a new extraction run and has no measured scan latency. Missing original LLM inputs block replay rather than silently dropping model signals.",
+      "Error causes are unreviewed until explicitly classified with an explanation; engine-owned classifications require a regression-test reference.",
+      "The local engine fingerprint identifies this checkout, not the code loaded by a separate backend process. Restart the backend after engine changes; health only confirms ENGINE_MODE=real."
+    ],
+    "error_count": 3,
+    "unreviewed_error_count": 0,
+    "unreviewed_dangerous_misses": 0,
+    "engine_dangerous_misses": 0,
+    "extraction_dangerous_misses": 0
   },
   "packets": [
     {
@@ -98,6 +106,7 @@
           "unknown"
         ]
       ],
+      "verdict_correct": 8,
       "missing_profiles": [],
       "evidence_verified": 35,
       "evidence_total": 36,
@@ -148,6 +157,7 @@
           "unknown"
         ]
       ],
+      "verdict_correct": 7,
       "missing_profiles": [],
       "evidence_verified": 32,
       "evidence_total": 34,
@@ -155,5 +165,107 @@
       "total_results": 8,
       "latency_ms": null
     }
-  ]
+  ],
+  "evaluation": {
+    "dataset_digest": "6c18435c632ae042cc9e7c46c9603b23eea099488cdeb692e733f15c802df906",
+    "profiles_digest": "cf3f8a7b6df71d2bcb965b447a5cebd098e311493ed5588dda4791727063653e",
+    "case_ids": [
+      "synthetic_clean",
+      "synthetic_imperfect"
+    ],
+    "source_mode": "reevaluated",
+    "local_engine_digest": "a0456448ccd6bc672c869c7945da6007e760900f99685249cdc8a85ab3f3d922"
+  },
+  "errors": [
+    {
+      "error_id": "synthetic_imperfect:ingredient_missing:1",
+      "packet_id": "synthetic_imperfect",
+      "check": "ingredient_missing",
+      "expected": "Peanuts (22%)",
+      "predicted": null,
+      "dangerous_miss": false,
+      "category": "extraction",
+      "explanation": "Controlled synthetic corruption, not a real observation: build_synthetic.py marks the fixture's peanut item unreadable. The scorer excludes unreadable ingredients; the engine correctly returns unknown for the incomplete peanut evidence.",
+      "regression_test": null
+    },
+    {
+      "error_id": "synthetic_imperfect:nutrient:carbohydrate_g",
+      "packet_id": "synthetic_imperfect",
+      "check": "carbohydrate_g",
+      "expected": 58.0,
+      "predicted": 5.8,
+      "dangerous_miss": false,
+      "category": "extraction",
+      "explanation": "Controlled synthetic corruption, not a real observation: build_synthetic.py replaces 58 g carbohydrate with 5.8 g. The engine flags the inconsistent nutrition and preserves the extracted value rather than inventing a correction.",
+      "regression_test": null
+    },
+    {
+      "error_id": "synthetic_imperfect:verdict:diabetes_sugar",
+      "packet_id": "synthetic_imperfect",
+      "check": "verdict:diabetes_sugar",
+      "expected": "conflict",
+      "predicted": "possible",
+      "dangerous_miss": false,
+      "category": "extraction",
+      "explanation": "The deliberately corrupted carbohydrate value makes the 38 g sugar reading exceed 5.8 g carbohydrate. Both part/whole readings become suspect; threshold conflict is withheld and the deterministic sugar alias leaves possible. This is the required conservative response to the synthetic extraction fault, not a rule bug.",
+      "regression_test": null
+    }
+  ],
+  "comparison": {
+    "ingredient_precision": {
+      "before": 1.0,
+      "after": 1.0,
+      "change": 0.0
+    },
+    "ingredient_recall": {
+      "before": 0.9545454545454546,
+      "after": 0.9545454545454546,
+      "change": 0.0
+    },
+    "nutrient_accuracy": {
+      "before": 0.9375,
+      "after": 0.9375,
+      "change": 0.0
+    },
+    "statement_accuracy": {
+      "before": 1.0,
+      "after": 1.0,
+      "change": 0.0
+    },
+    "veg_mark_accuracy": {
+      "before": 1.0,
+      "after": 1.0,
+      "change": 0.0
+    },
+    "verdict_accuracy": {
+      "before": 0.9375,
+      "after": 0.9375,
+      "change": 0.0
+    },
+    "dangerous_misses": {
+      "before": 0,
+      "after": 0,
+      "change": 0.0
+    },
+    "dangerous_miss_rate": {
+      "before": 0.0,
+      "after": 0.0,
+      "change": 0.0
+    },
+    "evidence_verified_rate": {
+      "before": 0.9571428571428572,
+      "after": 0.9571428571428572,
+      "change": 0.0
+    },
+    "unknown_rate": {
+      "before": 0.1875,
+      "after": 0.1875,
+      "change": 0.0
+    },
+    "average_latency_ms": {
+      "before": null,
+      "after": null,
+      "change": null
+    }
+  }
 }

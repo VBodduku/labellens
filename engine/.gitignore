@@ -10,6 +10,7 @@ eval/reports/*
 !eval/reports/report.md
 !eval/reports/metrics.json
 eval/responses/
+eval/synthetic/responses/reevaluated/
 eval/dataset/**/*.jpg
 eval/dataset/**/*.jpeg
 eval/dataset/**/*.png

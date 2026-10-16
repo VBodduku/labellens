@@ -70,6 +70,9 @@ def test_live_capture_saves_full_response_manifest_and_multipart(tmp_path, monke
     assert saved.extraction.meta.provider == "gemini"
     manifest = json.loads((output / "capture_manifest.json").read_text())
     assert manifest["failed"] == [] and manifest["engine_mode"] == "real"
+    assert manifest["profiles"] == [
+        profile.model_dump(mode="json") for profile in profiles()
+    ]
 
 
 def test_stub_backend_is_rejected_before_scan(tmp_path, monkeypatch):
