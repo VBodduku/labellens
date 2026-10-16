@@ -1,0 +1,377 @@
+{
+  "provider": "gemini",
+  "model": "gemini-flash-lite-latest",
+  "seconds": 16.5,
+  "retries": [
+    {
+      "reason": "ingredients_truncated",
+      "action": "ask_user_retake",
+      "outcome": "unresolved"
+    },
+    {
+      "reason": "nutrition_value_unreadable:sodium_mg",
+      "action": "reread_region:img_0",
+      "outcome": "unchanged"
+    }
+  ],
+  "ingredients": [
+    {
+      "text": "INGREDIENTS:DEGERMED CORN",
+      "readability": "clear"
+    },
+    {
+      "text": "GRITS,*EDIBLEVEGETABLE OIL",
+      "readability": "clear"
+    },
+    {
+      "text": "Sugars(g)",
+      "readability": "clear"
+    },
+    {
+      "text": "SUGAR,IODIZED SALT",
+      "readability": "clear"
+    },
+    {
+      "text": "MALTODEXTRIN",
+      "readability": "clear"
+    },
+    {
+      "text": "MILK SOLIDS，",
+      "readability": "clear"
+    },
+    {
+      "text": "CHEESE POWDER (O.5%)",
+      "readability": "clear"
+    },
+    {
+      "text": "ONION POWDER",
+      "readability": "clear"
+    },
+    {
+      "text": "HYDROLYZED",
+      "readability": "clear"
+    },
+    {
+      "text": "GARLIC POWDER",
+      "readability": "clear"
+    },
+    {
+      "text": "#SPICES AND CONDIMENTS",
+      "readability": "clear"
+    },
+    {
+      "text": "CONDIMENTS,NATUREIDENTICALFLAVOURINGSUBSTANCES",
+      "readability": "clear"
+    },
+    {
+      "text": "FLAVOUR ENHANCERS（508,635),NATURAL",
+      "readability": "clear"
+    },
+    {
+      "text": "ENHANCERS（508,635),NATURAL FLAVOURS AND NATURAL FLAVOURING SUBSTANCES",
+      "readability": "clear"
+    },
+    {
+      "text": "TOMATO POWDER",
+      "readability": "clear"
+    },
+    {
+      "text": "YEAST EXTRACTANDACIDITY",
+      "readability": "clear"
+    },
+    {
+      "text": "EXTRACTANDACIDITY REGULATOR (CITRICACID).",
+      "readability": "clear"
+    }
+  ],
+  "ingredients_section": {
+    "presence": "found",
+    "complete": false,
+    "issues": [
+      "truncated_at_image_edge"
+    ]
+  },
+  "allergen_statements": [
+    {
+      "type": "contains",
+      "text": "CONTAINSMILK,SOY.MAYCONTAIN"
+    },
+    {
+      "type": "may_contain",
+      "text": "CONTAINSMILK,SOY.MAYCONTAIN WHEAT,BAR Y."
+    }
+  ],
+  "nutrition": [
+    {
+      "row": "Energy (kcal)",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 501.0,
+          "printed": "501",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 100.0,
+          "printed": "100",
+          "readability": "clear"
+        }
+      ]
+    },
+    {
+      "row": "Protein (g)",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 6.9,
+          "printed": "6.9",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 1.4,
+          "printed": "1.4",
+          "readability": "clear"
+        }
+      ]
+    },
+    {
+      "row": "Carbohydrate (g)",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 65.3,
+          "printed": "65.3",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 13.1,
+          "printed": "13.1",
+          "readability": "clear"
+        }
+      ]
+    },
+    {
+      "row": "- Total Sugars (g)",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 3.1,
+          "printed": "3.1",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 0.6,
+          "printed": "0.6",
+          "readability": "clear"
+        }
+      ]
+    },
+    {
+      "row": "- Added Sugars (g)",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 2.1,
+          "printed": "2.1",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 0.4,
+          "printed": "0.4",
+          "readability": "clear"
+        }
+      ]
+    },
+    {
+      "row": "Total Fat (g)",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 24.1,
+          "printed": "24.1",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 4.8,
+          "printed": "4.8",
+          "readability": "clear"
+        }
+      ]
+    }
+  ],
+  "verdicts": [
+    {
+      "profile": "p_asha",
+      "restriction": "Milk allergy",
+      "restriction_id": "r_asha_milk",
+      "state": "conflict",
+      "unknown_kind": null,
+      "reason": "CONFLICT_INGREDIENT",
+      "explanation": "Lists MILK SOLIDS， — this counts as milk.",
+      "evidence": [
+        {
+          "text": "MILK SOLIDS，",
+          "status": "verified",
+          "located": true
+        },
+        {
+          "text": "CHEESE POWDER (O.5%),",
+          "status": "verified",
+          "located": true
+        },
+        {
+          "text": "CONTAINSMILK,SOY.MAYCONTAIN",
+          "status": "verified",
+          "located": true
+        }
+      ]
+    },
+    {
+      "profile": "p_asha",
+      "restriction": "Peanut allergy",
+      "restriction_id": "r_asha_peanut",
+      "state": "unknown",
+      "unknown_kind": "not_detected",
+      "reason": "UNKNOWN_TRUNCATED",
+      "explanation": "Part of the ingredient list is cut off. No peanut found in the readable part.",
+      "evidence": []
+    },
+    {
+      "profile": "p_ravi",
+      "restriction": "Jain",
+      "restriction_id": "r_ravi_jain",
+      "state": "conflict",
+      "unknown_kind": null,
+      "reason": "CONFLICT_INGREDIENT",
+      "explanation": "Lists ONION POWDER — this counts as onion.",
+      "evidence": [
+        {
+          "text": "ONION POWDER,",
+          "status": "verified",
+          "located": true
+        },
+        {
+          "text": "GARLIC POWDER",
+          "status": "unverified",
+          "located": false
+        },
+        {
+          "text": "#SPICES AND CONDIMENTS",
+          "status": "unverified",
+          "located": false
+        },
+        {
+          "text": "CONDIMENTS,NATUREIDENTICALFLAVOURINGSUBSTANCES",
+          "status": "verified",
+          "located": true
+        },
+        {
+          "text": "FLAVOUR ENHANCERS（508,635),NATURAL",
+          "status": "verified",
+          "located": true
+        },
+        {
+          "text": "ENHANCERS（508,635),NATURAL FLAVOURS AND",
+          "status": "verified",
+          "located": true
+        },
+        {
+          "text": "NATURAL FLAVOURING SUBSTANCES,",
+          "status": "verified",
+          "located": true
+        }
+      ]
+    },
+    {
+      "profile": "p_ravi",
+      "restriction": "Vegetarian",
+      "restriction_id": "r_ravi_veg",
+      "state": "possible",
+      "unknown_kind": null,
+      "reason": "POSSIBLE_AMBIGUOUS_SOURCE",
+      "explanation": "CONDIMENTS,NATUREIDENTICALFLAVOURINGSUBSTANCES can come from animal-derived sources; the label does not say which.",
+      "evidence": [
+        {
+          "text": "CONDIMENTS,NATUREIDENTICALFLAVOURINGSUBSTANCES",
+          "status": "verified",
+          "located": true
+        },
+        {
+          "text": "FLAVOUR ENHANCERS（508,635),NATURAL",
+          "status": "verified",
+          "located": true
+        },
+        {
+          "text": "ENHANCERS（508,635),NATURAL FLAVOURS AND",
+          "status": "verified",
+          "located": true
+        },
+        {
+          "text": "NATURAL FLAVOURING SUBSTANCES,",
+          "status": "verified",
+          "located": true
+        }
+      ]
+    },
+    {
+      "profile": "p_dadi",
+      "restriction": "Diabetic: limit sugar",
+      "restriction_id": "r_dadi_sugar",
+      "state": "possible",
+      "unknown_kind": null,
+      "reason": "POSSIBLE_SUGAR_ALIAS",
+      "explanation": "Sugars(g) is a form of sugar.",
+      "evidence": [
+        {
+          "text": "Sugars(g)",
+          "status": "verified",
+          "located": true
+        },
+        {
+          "text": "MALTODEXTRIN,",
+          "status": "verified",
+          "located": true
+        },
+        {
+          "text": "3.1",
+          "status": "verified",
+          "located": true
+        }
+      ]
+    },
+    {
+      "profile": "p_dadi",
+      "restriction": "Low sodium",
+      "restriction_id": "r_dadi_sodium",
+      "state": "unknown",
+      "unknown_kind": "undeterminable",
+      "reason": "UNKNOWN_NUTRIENT_MISSING",
+      "explanation": "Sodium is not readable on this label.",
+      "evidence": []
+    }
+  ],
+  "couldnt_read": [
+    {
+      "message_key": "quality.glare",
+      "detail": null,
+      "retake_region": true
+    },
+    {
+      "message_key": "unknown.ingredients_truncated",
+      "detail": null,
+      "retake_region": true
+    },
+    {
+      "message_key": "unknown.retake_region",
+      "detail": null,
+      "retake_region": true
+    }
+  ],
+  "contradictions": []
+}

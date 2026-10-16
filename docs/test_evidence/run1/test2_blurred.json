@@ -1,0 +1,298 @@
+{
+  "provider": "gemini",
+  "model": "gemini-flash-lite-latest",
+  "seconds": 14.1,
+  "retries": [
+    {
+      "reason": "nutrition_value_unreadable:sodium_mg",
+      "action": "reread_region:img_0",
+      "outcome": "unchanged"
+    }
+  ],
+  "ingredients": [],
+  "ingredients_section": {
+    "presence": "not_found",
+    "complete": false,
+    "issues": []
+  },
+  "allergen_statements": [
+    {
+      "type": "contains",
+      "text": "CONTAINSMILK"
+    },
+    {
+      "type": "may_contain",
+      "text": "MAY CONTAIN WHEAT, BARLEY."
+    }
+  ],
+  "nutrition": [
+    {
+      "row": "Energy (kcal)",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 501.0,
+          "printed": "501",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 100.0,
+          "printed": "100",
+          "readability": "clear"
+        }
+      ]
+    },
+    {
+      "row": "Protein (g)",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 6.9,
+          "printed": "6.9",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 1.4,
+          "printed": "1.4",
+          "readability": "clear"
+        }
+      ]
+    },
+    {
+      "row": "Carbohydrate (g)",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 65.3,
+          "printed": "65.3",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 13.1,
+          "printed": "13.1",
+          "readability": "clear"
+        }
+      ]
+    },
+    {
+      "row": "- Total Sugars (g)",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 3.1,
+          "printed": "3.1",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 0.6,
+          "printed": "0.6",
+          "readability": "clear"
+        }
+      ]
+    },
+    {
+      "row": "- Added Sugars (g)",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 2.1,
+          "printed": "2.1",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 0.4,
+          "printed": "0.4",
+          "readability": "clear"
+        }
+      ]
+    },
+    {
+      "row": "Total Fat (g)",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 24.1,
+          "printed": "24.1",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 4.8,
+          "printed": "4.8",
+          "readability": "clear"
+        }
+      ]
+    },
+    {
+      "row": "- Saturated fat (g)^^^",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 5.6,
+          "printed": "5.6",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 1.1,
+          "printed": "1.1",
+          "readability": "clear"
+        }
+      ]
+    },
+    {
+      "row": "- Trans fat+ (g)^^^",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 0.1,
+          "printed": "0.1",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 0.02,
+          "printed": "0.02",
+          "readability": "clear"
+        }
+      ]
+    },
+    {
+      "row": "- Cholesterol (mg)",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 0.1,
+          "printed": "0.1",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 0.02,
+          "printed": "0.02",
+          "readability": "clear"
+        }
+      ]
+    },
+    {
+      "row": "Sodium (mg)",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": null,
+          "printed": "",
+          "readability": "unreadable"
+        },
+        {
+          "basis": "per_serving",
+          "amount": null,
+          "printed": "",
+          "readability": "unreadable"
+        }
+      ]
+    }
+  ],
+  "verdicts": [
+    {
+      "profile": "p_asha",
+      "restriction": "Milk allergy",
+      "restriction_id": "r_asha_milk",
+      "state": "conflict",
+      "unknown_kind": null,
+      "reason": "CONFLICT_STATEMENT",
+      "explanation": "The label states it contains MILK.",
+      "evidence": [
+        {
+          "text": "CONTAINSMILK,",
+          "status": "verified",
+          "located": true
+        }
+      ]
+    },
+    {
+      "profile": "p_asha",
+      "restriction": "Peanut allergy",
+      "restriction_id": "r_asha_peanut",
+      "state": "unknown",
+      "unknown_kind": "undeterminable",
+      "reason": "UNKNOWN_SECTION_MISSING",
+      "explanation": "No ingredient list was found in these photos.",
+      "evidence": []
+    },
+    {
+      "profile": "p_ravi",
+      "restriction": "Jain",
+      "restriction_id": "r_ravi_jain",
+      "state": "unknown",
+      "unknown_kind": "undeterminable",
+      "reason": "UNKNOWN_SECTION_MISSING",
+      "explanation": "No ingredient list was found in these photos.",
+      "evidence": []
+    },
+    {
+      "profile": "p_ravi",
+      "restriction": "Vegetarian",
+      "restriction_id": "r_ravi_veg",
+      "state": "unknown",
+      "unknown_kind": "undeterminable",
+      "reason": "UNKNOWN_SECTION_MISSING",
+      "explanation": "No ingredient list was found in these photos.",
+      "evidence": []
+    },
+    {
+      "profile": "p_dadi",
+      "restriction": "Diabetic: limit sugar",
+      "restriction_id": "r_dadi_sugar",
+      "state": "not_listed",
+      "unknown_kind": null,
+      "reason": "NOT_LISTED_WITHIN_LIMIT",
+      "explanation": "Total sugars is 3.1 g per 100 g, within your limit of 22.5 g.",
+      "evidence": [
+        {
+          "text": "3.1",
+          "status": "verified",
+          "located": true
+        }
+      ]
+    },
+    {
+      "profile": "p_dadi",
+      "restriction": "Low sodium",
+      "restriction_id": "r_dadi_sodium",
+      "state": "unknown",
+      "unknown_kind": "undeterminable",
+      "reason": "UNKNOWN_NUTRIENT_MISSING",
+      "explanation": "Sodium is not readable on this label.",
+      "evidence": [
+        {
+          "text": "",
+          "status": "approximate",
+          "located": true
+        }
+      ]
+    }
+  ],
+  "couldnt_read": [
+    {
+      "message_key": "quality.glare",
+      "detail": null,
+      "retake_region": true
+    },
+    {
+      "message_key": "unknown.retake_region",
+      "detail": "Sodium (mg)",
+      "retake_region": true
+    },
+    {
+      "message_key": "unknown.unreadable_span",
+      "detail": "Sodium (mg)",
+      "retake_region": true
+    }
+  ],
+  "contradictions": []
+}

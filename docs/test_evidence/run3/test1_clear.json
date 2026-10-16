@@ -1,0 +1,420 @@
+{
+  "provider": "gemini",
+  "model": "gemini-flash-lite-latest",
+  "seconds": 21.1,
+  "retries": [],
+  "ingredients": [
+    {
+      "text": "DEGERMED CORN GRITS",
+      "readability": "clear"
+    },
+    {
+      "text": "*EDIBLE VEGETABLE OIL",
+      "readability": "clear"
+    },
+    {
+      "text": "Sugars",
+      "readability": "clear"
+    },
+    {
+      "text": "SUGAR,IODIZED SALT",
+      "readability": "clear"
+    },
+    {
+      "text": "MALTODEXTRIN",
+      "readability": "clear"
+    },
+    {
+      "text": "MILK SOLIDS",
+      "readability": "clear"
+    },
+    {
+      "text": "CHEESE POWDER (O.5%)",
+      "readability": "clear"
+    },
+    {
+      "text": "ONION POWDER",
+      "readability": "clear"
+    },
+    {
+      "text": "HYDROLYZED",
+      "readability": "clear"
+    },
+    {
+      "text": "GARLIC POWDER",
+      "readability": "clear"
+    },
+    {
+      "text": "#SPICES AND CONDIMENTS",
+      "readability": "clear"
+    },
+    {
+      "text": "CONDIMENTS,NATUREIDENTICALFLAVOURINGSUBSTANCES",
+      "readability": "clear"
+    },
+    {
+      "text": "FLAVOUR ENHANCERS(508,635),NATURAL",
+      "readability": "clear"
+    },
+    {
+      "text": "ENHANCERS(508,635),NATURAL FLAVOURS AND NATURAL FLAVOURING SUBSTANCES",
+      "readability": "clear"
+    },
+    {
+      "text": "TOMATO POWDER",
+      "readability": "clear"
+    },
+    {
+      "text": "1.4 YEAST EXTRACTANDACIDITY REGULATOR(CITRICACID).",
+      "readability": "clear"
+    }
+  ],
+  "ingredients_section": {
+    "presence": "found",
+    "complete": true,
+    "issues": [
+      "llm_ocr_number_mismatch"
+    ]
+  },
+  "allergen_statements": [
+    {
+      "type": "contains",
+      "text": "CONTAINS MILK,SOY.MAYCONTAIN"
+    },
+    {
+      "type": "may_contain",
+      "text": "MILK,SOY.MAYCONTAIN WHEAT, ARL Y."
+    }
+  ],
+  "nutrition": [
+    {
+      "row": "Energy (kcal)",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 501.0,
+          "printed": "501",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 100.0,
+          "printed": "100",
+          "readability": "clear"
+        }
+      ]
+    },
+    {
+      "row": "Protein (g)",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 6.9,
+          "printed": "6.9",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 1.4,
+          "printed": "1.4",
+          "readability": "clear"
+        }
+      ]
+    },
+    {
+      "row": "Carbohydrate (g)",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 65.3,
+          "printed": "65.3",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 13.1,
+          "printed": "13.1",
+          "readability": "clear"
+        }
+      ]
+    },
+    {
+      "row": "- Total Sugars (g)",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 3.1,
+          "printed": "3.1",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 0.6,
+          "printed": "0.6",
+          "readability": "clear"
+        }
+      ]
+    },
+    {
+      "row": "- Added Sugars (g)",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 2.1,
+          "printed": "2.1",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 0.4,
+          "printed": "0.4",
+          "readability": "clear"
+        }
+      ]
+    },
+    {
+      "row": "Total Fat (g)",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 24.1,
+          "printed": "24.1",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 4.8,
+          "printed": "4.8",
+          "readability": "clear"
+        }
+      ]
+    },
+    {
+      "row": "- Saturated fat (g)^^^",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 5.6,
+          "printed": "5.6",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 1.1,
+          "printed": "1.1",
+          "readability": "clear"
+        }
+      ]
+    },
+    {
+      "row": "- Trans fat+ (g)^^^",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 0.1,
+          "printed": "0.1",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 0.02,
+          "printed": "0.02",
+          "readability": "clear"
+        }
+      ]
+    },
+    {
+      "row": "- Cholesterol (mg)",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 0.1,
+          "printed": "0.1",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 0.02,
+          "printed": "0.02",
+          "readability": "clear"
+        }
+      ]
+    },
+    {
+      "row": "Sodium (mg)",
+      "values": [
+        {
+          "basis": "per_100g",
+          "amount": 701.1,
+          "printed": "701.1",
+          "readability": "clear"
+        },
+        {
+          "basis": "per_serving",
+          "amount": 140.2,
+          "printed": "140.2",
+          "readability": "clear"
+        }
+      ]
+    }
+  ],
+  "verdicts": [
+    {
+      "profile": "p_asha",
+      "restriction": "Milk allergy",
+      "restriction_id": "r_asha_milk",
+      "state": "conflict",
+      "unknown_kind": null,
+      "reason": "CONFLICT_INGREDIENT",
+      "explanation": "Lists MILK SOLIDS — this counts as milk.",
+      "evidence": [
+        {
+          "text": "MILK SOLIDS",
+          "status": "verified",
+          "located": true
+        },
+        {
+          "text": "CHEESE POWDER (O.5%),",
+          "status": "verified",
+          "located": true
+        },
+        {
+          "text": "CONTAINS MILK,SOY.MAYCONTAIN",
+          "status": "verified",
+          "located": true
+        }
+      ]
+    },
+    {
+      "profile": "p_asha",
+      "restriction": "Peanut allergy",
+      "restriction_id": "r_asha_peanut",
+      "state": "not_listed",
+      "unknown_kind": null,
+      "reason": "NOT_LISTED_COMPLETE",
+      "explanation": "Not listed anywhere in the full ingredient list.",
+      "evidence": []
+    },
+    {
+      "profile": "p_ravi",
+      "restriction": "Jain",
+      "restriction_id": "r_ravi_jain",
+      "state": "conflict",
+      "unknown_kind": null,
+      "reason": "CONFLICT_INGREDIENT",
+      "explanation": "Lists ONION POWDER — this counts as onion.",
+      "evidence": [
+        {
+          "text": "ONION POWDER,",
+          "status": "verified",
+          "located": true
+        },
+        {
+          "text": "GARLIC POWDER",
+          "status": "approximate",
+          "located": true
+        },
+        {
+          "text": "#SPICES AND CONDIMENTS",
+          "status": "unverified",
+          "located": false
+        },
+        {
+          "text": "CONDIMENTS,NATUREIDENTICALFLAVOURINGSUBSTANCES",
+          "status": "verified",
+          "located": true
+        },
+        {
+          "text": "FLAVOUR ENHANCERS(508,635),NATURAL",
+          "status": "verified",
+          "located": true
+        },
+        {
+          "text": "ENHANCERS(508,635),NATURAL FLAVOURS AND",
+          "status": "verified",
+          "located": true
+        },
+        {
+          "text": "NATURAL FLAVOURING SUBSTANCES,",
+          "status": "verified",
+          "located": true
+        }
+      ]
+    },
+    {
+      "profile": "p_ravi",
+      "restriction": "Vegetarian",
+      "restriction_id": "r_ravi_veg",
+      "state": "possible",
+      "unknown_kind": null,
+      "reason": "POSSIBLE_AMBIGUOUS_SOURCE",
+      "explanation": "CONDIMENTS,NATUREIDENTICALFLAVOURINGSUBSTANCES can come from animal-derived sources; the label does not say which.",
+      "evidence": [
+        {
+          "text": "CONDIMENTS,NATUREIDENTICALFLAVOURINGSUBSTANCES",
+          "status": "verified",
+          "located": true
+        },
+        {
+          "text": "FLAVOUR ENHANCERS(508,635),NATURAL",
+          "status": "verified",
+          "located": true
+        },
+        {
+          "text": "ENHANCERS(508,635),NATURAL FLAVOURS AND",
+          "status": "verified",
+          "located": true
+        },
+        {
+          "text": "NATURAL FLAVOURING SUBSTANCES,",
+          "status": "verified",
+          "located": true
+        }
+      ]
+    },
+    {
+      "profile": "p_dadi",
+      "restriction": "Diabetic: limit sugar",
+      "restriction_id": "r_dadi_sugar",
+      "state": "possible",
+      "unknown_kind": null,
+      "reason": "POSSIBLE_SUGAR_ALIAS",
+      "explanation": "Sugars is a form of sugar.",
+      "evidence": [
+        {
+          "text": "Sugars",
+          "status": "verified",
+          "located": true
+        },
+        {
+          "text": "MALTODEXTRIN,",
+          "status": "verified",
+          "located": true
+        },
+        {
+          "text": "3.1",
+          "status": "verified",
+          "located": true
+        }
+      ]
+    },
+    {
+      "profile": "p_dadi",
+      "restriction": "Low sodium",
+      "restriction_id": "r_dadi_sodium",
+      "state": "conflict",
+      "unknown_kind": null,
+      "reason": "CONFLICT_THRESHOLD",
+      "explanation": "Sodium is 701.1 mg per 100 g, above your limit of 600.0 mg.",
+      "evidence": [
+        {
+          "text": "701.1",
+          "status": "verified",
+          "located": true
+        }
+      ]
+    }
+  ],
+  "couldnt_read": [],
+  "contradictions": []
+}
