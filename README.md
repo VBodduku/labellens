@@ -94,7 +94,7 @@ cd frontend && npm run build && npm run lint && npm run test
 
 ## Accuracy numbers
 
-`engine/eval/` scores real photographed packets (`engine/eval/dataset/README.md`). Copy `engine/eval/reports/metrics.json` to `frontend/public/metrics.json`; the About page shows numbers only for real packets.
+Test coverage, the synthetic check, limitations and evidence-traceability work are in `docs/EVALUATION.md`; real-packet numbers are still pending. `engine/eval/` scores real photographed packets (`engine/eval/dataset/README.md`). Copy `engine/eval/reports/metrics.json` to `frontend/public/metrics.json`; the About page shows numbers only for real packets.
 
 ## Open items
 
