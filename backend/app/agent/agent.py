@@ -131,16 +131,22 @@ async def ask(request: AskRequest, router: LLMRouter, budget_s: float = BUDGET_S
     ctx = AgentContext(scan=request.scan, profiles=request.profiles, lang=request.lang)
     if guard.is_medical(request.question):
         return guard.refusal(request.lang)
-    client = router.tool_client()
-    if client is None:
-        return fallback.answer(ctx, request.question)
-    try:
-        return await _with_tools(client, ctx, request.question, budget_s)
-    except RateLimitedError as exc:
-        router.report_rate_limit(client.label, exc.retry_after_s)
-        reason = "rate limited"
-    except (LLMError, TimeoutError, AgentGaveUp) as exc:
-        reason = str(exc) or type(exc).__name__
+    deadline = time.monotonic() + budget_s
+    reason = "no tool-calling model available"
+    for client in router.tool_clients():            # main model, fallback model, backup key ...
+        remaining = deadline - time.monotonic()
+        if remaining <= 1:
+            break
+        try:
+            return await _with_tools(client, AgentContext(scan=request.scan, profiles=request.profiles,
+                                                          lang=request.lang), request.question, remaining)
+        except RateLimitedError as exc:
+            router.report_rate_limit(client.label, exc.retry_after_s)
+            reason = "rate limited"
+        except (LLMError, TimeoutError) as exc:
+            reason = str(exc) or type(exc).__name__
+        except AgentGaveUp as exc:                  # the model answered badly: another model won't be safer
+            reason = str(exc)
+            break
     logger.warning("agent fell back to keyword router", extra={"fields": {"reason": reason}})
-    return fallback.answer(AgentContext(scan=request.scan, profiles=request.profiles, lang=request.lang),
-                           request.question)
+    return fallback.answer(ctx, request.question)

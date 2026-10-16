@@ -66,13 +66,15 @@ class LLMRouter:
             status[state.client.name] = status[state.client.name] or state.cooldown_until <= now
         return status
 
-    def tool_client(self) -> ToolChatClient | None:
-        """First client that can call tools (Gemini) and is not cooling down."""
+    def tool_clients(self) -> list[ToolChatClient]:
+        """Clients that can call tools (Gemini) and are not cooling down, in fallback order."""
         now = self._clock()
-        for state in self._states:
-            if state.cooldown_until <= now and hasattr(state.client, "chat_with_tools"):
-                return state.client  # type: ignore[return-value]
-        return None
+        return [s.client for s in self._states  # type: ignore[misc]
+                if s.cooldown_until <= now and hasattr(s.client, "chat_with_tools")]
+
+    def tool_client(self) -> ToolChatClient | None:
+        clients = self.tool_clients()
+        return clients[0] if clients else None
 
     def report_rate_limit(self, client_label: str, retry_after_s: int) -> None:
         """Let callers that talk to a client directly (the agent) share the cooldown bookkeeping."""
@@ -143,11 +145,14 @@ def _short_errors(exc: ValidationError) -> str:
 
 @lru_cache(maxsize=1)
 def get_router() -> LLMRouter:
+    return LLMRouter(gemini_clients() + [OllamaClient(get_settings().ollama_base_url, get_settings().ollama_model)],
+                     get_settings().llm_timeout_s)
+
+
+def gemini_clients() -> list[LLMClient]:
+    """Each key with the main model, then the fallback model: Google's overload (503) and free quota
+    (429) apply per model, so a second model on the same key often still answers."""
     settings = get_settings()
-    clients: list[LLMClient] = []
-    if settings.gemini_api_key:
-        clients.append(GeminiClient(settings.gemini_api_key, settings.gemini_model, "gemini:primary"))
-    if settings.gemini_api_key_backup:
-        clients.append(GeminiClient(settings.gemini_api_key_backup, settings.gemini_model, "gemini:backup"))
-    clients.append(OllamaClient(settings.ollama_base_url, settings.ollama_model))
-    return LLMRouter(clients, settings.llm_timeout_s)
+    models = list(dict.fromkeys(m for m in (settings.gemini_model, settings.gemini_fallback_model) if m))
+    keys = [("primary", settings.gemini_api_key), ("backup", settings.gemini_api_key_backup)]
+    return [GeminiClient(key, model, f"gemini:{name}:{model}") for name, key in keys if key for model in models]

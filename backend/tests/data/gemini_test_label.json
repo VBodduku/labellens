@@ -1,0 +1,493 @@
+{
+  "product_name": "NUVO CHOCO NUT CRUNCH BAR",
+  "languages": [
+    "en"
+  ],
+  "panels": [
+    {
+      "image_id": "img_0",
+      "panel": "back",
+      "ingredients": [
+        {
+          "text": "Sugar",
+          "token_ids": [
+            "img_0:t12"
+          ],
+          "percentage": null,
+          "parent_index": null,
+          "readability": "clear",
+          "box_2d": null
+        },
+        {
+          "text": "Peanuts (22%)",
+          "token_ids": [
+            "img_0:t13",
+            "img_0:t14"
+          ],
+          "percentage": 22.0,
+          "parent_index": null,
+          "readability": "clear",
+          "box_2d": null
+        },
+        {
+          "text": "Milk Solids (12%)",
+          "token_ids": [
+            "img_0:t15",
+            "img_0:t16",
+            "img_0:t17"
+          ],
+          "percentage": 12.0,
+          "parent_index": null,
+          "readability": "clear",
+          "box_2d": null
+        },
+        {
+          "text": "Refined Wheat Flour (Maida)",
+          "token_ids": [
+            "img_0:t18",
+            "img_0:t19",
+            "img_0:t20",
+            "img_0:t21"
+          ],
+          "percentage": null,
+          "parent_index": null,
+          "readability": "clear",
+          "box_2d": null
+        },
+        {
+          "text": "Cocoa Butter",
+          "token_ids": [
+            "img_0:t22",
+            "img_0:t23"
+          ],
+          "percentage": null,
+          "parent_index": null,
+          "readability": "clear",
+          "box_2d": null
+        },
+        {
+          "text": "Edible Vegetable Oil (Palm)",
+          "token_ids": [
+            "img_0:t24",
+            "img_0:t25",
+            "img_0:t26",
+            "img_0:t27"
+          ],
+          "percentage": null,
+          "parent_index": null,
+          "readability": "clear",
+          "box_2d": null
+        },
+        {
+          "text": "Invert Sugar Syrup",
+          "token_ids": [
+            "img_0:t28",
+            "img_0:t29",
+            "img_0:t30"
+          ],
+          "percentage": null,
+          "parent_index": null,
+          "readability": "clear",
+          "box_2d": null
+        },
+        {
+          "text": "Emulsifier (INS 322 [Soy])",
+          "token_ids": [
+            "img_0:t31",
+            "img_0:t32",
+            "img_0:t33",
+            "img_0:t34"
+          ],
+          "percentage": null,
+          "parent_index": null,
+          "readability": "clear",
+          "box_2d": null
+        },
+        {
+          "text": "Iodised Salt",
+          "token_ids": [
+            "img_0:t35",
+            "img_0:t36"
+          ],
+          "percentage": null,
+          "parent_index": null,
+          "readability": "clear",
+          "box_2d": null
+        },
+        {
+          "text": "Raising Agent (INS 500(ii))",
+          "token_ids": [
+            "img_0:t37",
+            "img_0:t38",
+            "img_0:t39",
+            "img_0:t40"
+          ],
+          "percentage": null,
+          "parent_index": null,
+          "readability": "clear",
+          "box_2d": null
+        },
+        {
+          "text": "Natural Flavours.",
+          "token_ids": [
+            "img_0:t41",
+            "img_0:t42"
+          ],
+          "percentage": null,
+          "parent_index": null,
+          "readability": "clear",
+          "box_2d": null
+        }
+      ],
+      "ingredients_section": {
+        "presence": "found",
+        "complete": true,
+        "issues": [],
+        "unreadable_token_ids": [],
+        "unreadable_boxes": []
+      },
+      "allergen_statements": [
+        {
+          "type": "contains",
+          "text": "CONTAINS: PEANUT, MILK, WHEAT, SOY.",
+          "items": [
+            "PEANUT",
+            "MILK",
+            "WHEAT",
+            "SOY"
+          ],
+          "token_ids": [
+            "img_0:t43",
+            "img_0:t44",
+            "img_0:t45",
+            "img_0:t46",
+            "img_0:t47"
+          ],
+          "box_2d": null
+        },
+        {
+          "type": "may_contain",
+          "text": "MAY CONTAIN TRACES OF TREE NUTS.",
+          "items": [
+            "TREE NUTS"
+          ],
+          "token_ids": [
+            "img_0:t48",
+            "img_0:t49",
+            "img_0:t50",
+            "img_0:t51",
+            "img_0:t52",
+            "img_0:t53"
+          ],
+          "box_2d": null
+        }
+      ],
+      "allergen_section": {
+        "presence": "found",
+        "complete": true,
+        "issues": [],
+        "unreadable_token_ids": [],
+        "unreadable_boxes": []
+      },
+      "nutrition": {
+        "serving_size": 40.0,
+        "serving_unit": "g",
+        "servings_per_pack": 3.0,
+        "pack_size": 120.0,
+        "pack_unit": "g",
+        "rows": [
+          {
+            "key": "energy_kcal",
+            "label": "Energy",
+            "values": [
+              {
+                "basis": "per_100g",
+                "amount": 520.0,
+                "unit": "kcal",
+                "text": "520 kcal",
+                "token_ids": [
+                  "img_0:t72",
+                  "img_0:t73"
+                ],
+                "readability": "clear",
+                "box_2d": null
+              },
+              {
+                "basis": "per_serving",
+                "amount": 208.0,
+                "unit": "kcal",
+                "text": "208 kcal",
+                "token_ids": [
+                  "img_0:t74",
+                  "img_0:t75"
+                ],
+                "readability": "clear",
+                "box_2d": null
+              }
+            ]
+          },
+          {
+            "key": "protein_g",
+            "label": "Protein",
+            "values": [
+              {
+                "basis": "per_100g",
+                "amount": 9.5,
+                "unit": "g",
+                "text": "9.5 g",
+                "token_ids": [
+                  "img_0:t77",
+                  "img_0:t78"
+                ],
+                "readability": "clear",
+                "box_2d": null
+              },
+              {
+                "basis": "per_serving",
+                "amount": 3.8,
+                "unit": "g",
+                "text": "3.8 g",
+                "token_ids": [
+                  "img_0:t79",
+                  "img_0:t80"
+                ],
+                "readability": "clear",
+                "box_2d": null
+              }
+            ]
+          },
+          {
+            "key": "carbohydrate_g",
+            "label": "Carbohydrate",
+            "values": [
+              {
+                "basis": "per_100g",
+                "amount": 58.0,
+                "unit": "g",
+                "text": "58.0 g",
+                "token_ids": [
+                  "img_0:t82",
+                  "img_0:t83"
+                ],
+                "readability": "clear",
+                "box_2d": null
+              },
+              {
+                "basis": "per_serving",
+                "amount": 23.2,
+                "unit": "g",
+                "text": "23.2 g",
+                "token_ids": [
+                  "img_0:t84",
+                  "img_0:t85"
+                ],
+                "readability": "clear",
+                "box_2d": null
+              }
+            ]
+          },
+          {
+            "key": "total_sugars_g",
+            "label": "Total Sugars",
+            "values": [
+              {
+                "basis": "per_100g",
+                "amount": 38.0,
+                "unit": "g",
+                "text": "38.0 g",
+                "token_ids": [
+                  "img_0:t88",
+                  "img_0:t89"
+                ],
+                "readability": "clear",
+                "box_2d": null
+              },
+              {
+                "basis": "per_serving",
+                "amount": 15.2,
+                "unit": "g",
+                "text": "15.2 g",
+                "token_ids": [
+                  "img_0:t90",
+                  "img_0:t91"
+                ],
+                "readability": "clear",
+                "box_2d": null
+              }
+            ]
+          },
+          {
+            "key": "added_sugars_g",
+            "label": "Added Sugars",
+            "values": [
+              {
+                "basis": "per_100g",
+                "amount": 30.0,
+                "unit": "g",
+                "text": "30.0 g",
+                "token_ids": [
+                  "img_0:t94",
+                  "img_0:t95"
+                ],
+                "readability": "clear",
+                "box_2d": null
+              },
+              {
+                "basis": "per_serving",
+                "amount": 12.0,
+                "unit": "g",
+                "text": "12.0 g",
+                "token_ids": [
+                  "img_0:t96",
+                  "img_0:t97"
+                ],
+                "readability": "clear",
+                "box_2d": null
+              }
+            ]
+          },
+          {
+            "key": "total_fat_g",
+            "label": "Total Fat",
+            "values": [
+              {
+                "basis": "per_100g",
+                "amount": 28.0,
+                "unit": "g",
+                "text": "28.0 g",
+                "token_ids": [
+                  "img_0:t100",
+                  "img_0:t101"
+                ],
+                "readability": "clear",
+                "box_2d": null
+              },
+              {
+                "basis": "per_serving",
+                "amount": 11.2,
+                "unit": "g",
+                "text": "11.2 g",
+                "token_ids": [
+                  "img_0:t102",
+                  "img_0:t103"
+                ],
+                "readability": "clear",
+                "box_2d": null
+              }
+            ]
+          },
+          {
+            "key": "saturated_fat_g",
+            "label": "Saturated Fat",
+            "values": [
+              {
+                "basis": "per_100g",
+                "amount": 14.0,
+                "unit": "g",
+                "text": "14.0 g",
+                "token_ids": [
+                  "img_0:t106",
+                  "img_0:t107"
+                ],
+                "readability": "clear",
+                "box_2d": null
+              },
+              {
+                "basis": "per_serving",
+                "amount": 5.6,
+                "unit": "g",
+                "text": "5.6 g",
+                "token_ids": [
+                  "img_0:t108",
+                  "img_0:t109"
+                ],
+                "readability": "clear",
+                "box_2d": null
+              }
+            ]
+          },
+          {
+            "key": "trans_fat_g",
+            "label": "Trans Fat",
+            "values": [
+              {
+                "basis": "per_100g",
+                "amount": 0.1,
+                "unit": "g",
+                "text": "0.1 g",
+                "token_ids": [
+                  "img_0:t112"
+                ],
+                "readability": "clear",
+                "box_2d": null
+              },
+              {
+                "basis": "per_serving",
+                "amount": 0.0,
+                "unit": "g",
+                "text": "0.0 g",
+                "token_ids": [
+                  "img_0:t113"
+                ],
+                "readability": "clear",
+                "box_2d": null
+              }
+            ]
+          },
+          {
+            "key": "sodium_mg",
+            "label": "Sodium",
+            "values": [
+              {
+                "basis": "per_100g",
+                "amount": null,
+                "unit": "",
+                "text": "1?5",
+                "token_ids": [
+                  "img_0:t115"
+                ],
+                "readability": "unreadable",
+                "box_2d": null
+              },
+              {
+                "basis": "per_serving",
+                "amount": null,
+                "unit": "",
+                "text": "??",
+                "token_ids": [
+                  "img_0:t116"
+                ],
+                "readability": "unreadable",
+                "box_2d": null
+              }
+            ]
+          }
+        ]
+      },
+      "nutrition_section": {
+        "presence": "found",
+        "complete": true,
+        "issues": [],
+        "unreadable_token_ids": [
+          "img_0:t115",
+          "img_0:t116"
+        ],
+        "unreadable_boxes": []
+      },
+      "veg_mark": {
+        "value": "not_found",
+        "box_2d": null
+      },
+      "claims": [
+        {
+          "text": "HIGH PROTEIN",
+          "token_ids": [
+            "img_0:t5",
+            "img_0:t6"
+          ],
+          "box_2d": null
+        }
+      ]
+    }
+  ]
+}

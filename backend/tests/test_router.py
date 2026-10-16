@@ -103,3 +103,20 @@ def test_short_caller_budget_timeout_does_not_cool_down() -> None:
     with pytest.raises(AllProvidersFailedError):
         asyncio.run(router.generate(lambda p: "x", [], LLMExtraction, timeout_s=0.05))
     assert router.provider_status()["ollama"] is True
+
+
+def test_each_key_gets_main_then_fallback_model(monkeypatch: pytest.MonkeyPatch) -> None:
+    from backend.app.config import get_settings
+    from backend.app.llm.router import gemini_clients
+
+    monkeypatch.setenv("GEMINI_API_KEY", "k1")
+    monkeypatch.setenv("GEMINI_API_KEY_BACKUP", "k2")
+    monkeypatch.setenv("GEMINI_MODEL", "main-model")
+    monkeypatch.setenv("GEMINI_FALLBACK_MODEL", "lite-model")
+    get_settings.cache_clear()
+    assert [(c.label, c.model) for c in gemini_clients()] == [
+        ("gemini:primary:main-model", "main-model"), ("gemini:primary:lite-model", "lite-model"),
+        ("gemini:backup:main-model", "main-model"), ("gemini:backup:lite-model", "lite-model")]
+    monkeypatch.setenv("GEMINI_FALLBACK_MODEL", "main-model")
+    get_settings.cache_clear()
+    assert len(gemini_clients()) == 2

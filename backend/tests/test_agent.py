@@ -178,3 +178,13 @@ def test_contains_with_incomplete_list_cannot_confirm_absence() -> None:
     extraction = c.scan.extraction.model_copy(update={"ingredients_section": section})
     c = AgentContext(scan=c.scan.model_copy(update={"extraction": extraction}), profiles=PROFILES, lang="en")
     assert "can't confirm it is absent" in fallback.answer(c, "Does it contain sesame?").answer
+
+
+def test_overloaded_model_falls_through_to_the_next_gemini_client() -> None:
+    from backend.app.llm.base import ProviderUnavailableError
+
+    busy = FakeToolClient([ProviderUnavailableError("gemini HTTP 503 UNAVAILABLE")], label="gemini:primary:main")
+    lite = FakeToolClient([final(answer="For Aarav: Conflict. \u201cPeanuts (22%)\u201d is listed.", stance="conflict",
+                                 intent="suitability", profile_ids=["p_aarav"])], label="gemini:primary:lite")
+    response = asyncio.run(agent.ask(request("Is this okay for Aarav?"), LLMRouter([busy, lite], 5)))
+    assert response.answer.startswith("For Aarav: Conflict. \u201cPeanuts") and len(lite.seen) == 1

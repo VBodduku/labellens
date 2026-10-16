@@ -123,3 +123,23 @@ def test_unresolved_terms_are_interpreted_and_evaluated_again(
     scan(label_png, llm, cache)
     assert calls[0] is None
     assert list(calls[1]) == ["Zorbex"] and calls[1]["Zorbex"].categories == ["milk"]  # type: ignore[index]
+
+
+def test_recorded_gemini_reading_is_fully_grounded_and_gives_all_four_states(
+    label_png: bytes, cache: ExtractionCache,
+) -> None:
+    """A real Gemini response for the test label, through the real pipeline and engine."""
+    llm = scan_llm(recorded("gemini_test_label.json"), name="gemini", model="gemini-flash-lite-latest")
+    result = scan(label_png, llm, cache)
+    e = result.extraction
+    assert len(e.ingredients) == 11
+    assert all(i.evidence[0].status == "verified" for i in e.ingredients)
+    assert e.ingredients_section.complete is True
+    sodium = next(r for r in e.nutrition.rows if r.key == "sodium_mg")  # type: ignore[union-attr]
+    assert all(v.amount is None for v in sodium.values)
+    assert e.nutrition_section.complete is False                          # model said complete; guard says no
+    states = {r.state for report in result.reports for r in report.results}
+    assert states == {"conflict", "possible", "not_listed", "unknown"}
+    overall = {r.profile_id: r.overall for r in result.reports}
+    assert overall["p_aarav"] == "conflict" and overall["p_thatha"] == "conflict"
+    assert any(u.message_key == "unknown.retake_region" and u.region is not None for u in result.unknowns)

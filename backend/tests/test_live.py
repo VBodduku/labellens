@@ -24,18 +24,21 @@ pytestmark = pytest.mark.live
 LIVE_TIMEOUT_S = 60
 
 
-def gemini() -> GeminiClient:
+def gemini() -> list[GeminiClient]:
+    """The real key with the configured model, then the fallback model (as the app does)."""
     env = dotenv_values(REPO_ROOT / ".env")
     key = env.get("GEMINI_API_KEY")
     if not key:
         pytest.skip("GEMINI_API_KEY not set in .env")
-    return GeminiClient(key, os.environ.get("LIVE_GEMINI_MODEL") or env.get("GEMINI_MODEL") or "gemini-flash-latest", "gemini:primary")
+    models = dict.fromkeys(m for m in (os.environ.get("LIVE_GEMINI_MODEL"), env.get("GEMINI_MODEL") or "gemini-flash-latest",
+                                       env.get("GEMINI_FALLBACK_MODEL") or "gemini-flash-lite-latest") if m)
+    return [GeminiClient(key, m, f"gemini:{m}") for m in models]
 
 
 def test_gemini_reads_and_grounds_the_fixture_label(label_image: Image.Image, label_tokens: list[OcrToken]) -> None:
-    client = gemini()
+    clients = gemini()
     image = PreparedImage("img_0", label_image.width, label_image.height, label_image)
-    result = asyncio.run(structure([image], ["back"], label_tokens, LLMRouter([client], LIVE_TIMEOUT_S)))
+    result = asyncio.run(structure([image], ["back"], label_tokens, LLMRouter(clients, LIVE_TIMEOUT_S)))
 
     panel = align_panel(result.value.panels[0], "img_0", TokenIndex(label_tokens))
     names = " ".join(i.name.lower() for i in panel.ingredients)
@@ -51,7 +54,7 @@ def test_gemini_agent_answers_telugu_question_with_engine_verdict() -> None:
     extraction = fixture_data.scan_result().extraction
     scan = build_scan_result(extraction, engine_adapter.evaluate(extraction, profiles), "te")
     request = AskRequest(question="Thatha కి ఇది సరిపోతుందా?", lang="te", scan=scan, profiles=profiles)
-    answer = asyncio.run(agent.ask(request, LLMRouter([gemini()], LIVE_TIMEOUT_S)))
+    answer = asyncio.run(agent.ask(request, LLMRouter(gemini(), LIVE_TIMEOUT_S)))
     assert answer.grounded and answer.lang == "te"
     assert any(t.tool == "get_verdict" for t in answer.tool_calls)
     assert [r.profile_id for r in answer.verdict_refs] == ["p_thatha"]
