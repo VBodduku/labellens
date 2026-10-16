@@ -6,36 +6,19 @@ dropped; the frontend then shows its own template.
 from __future__ import annotations
 
 import logging
-import re
 from pathlib import Path
 from typing import Optional
 
 from pydantic import BaseModel
 
 from backend.app.llm.router import AllProvidersFailedError, LLMRouter
+from backend.app.wording import ALL_BANNED, LANGUAGE_NAMES, STATE_WORDS, has_banned_word
 from shared.contract import Lang, Profile, ProfileReport, Restriction
 
 logger = logging.getLogger("labellens.summarize")
 
 MAX_WORDS = 25
 PROMPT = Path(__file__).resolve().parents[1] / "llm" / "prompts" / "summarize.md"
-LANGUAGE_NAMES: dict[Lang, str] = {"en": "English", "hi": "Hindi", "te": "Telugu"}
-# Approved wording for the four states (same terms as the UI); hi/te reviewed by humans.
-STATE_WORDS: dict[Lang, dict[str, str]] = {
-    "en": {"conflict": "Conflict", "possible": "Check this", "not_listed": "Not listed", "unknown": "Can't determine"},
-    "hi": {"conflict": "टकराव", "possible": "इसे जाँचें", "not_listed": "सूची में नहीं", "unknown": "तय नहीं हो सका"},
-    "te": {"conflict": "విరుద్ధం", "possible": "దీన్ని తనిఖీ చేయండి", "not_listed": "జాబితాలో లేదు",
-           "unknown": "నిర్ణయించలేము"},
-}
-BANNED: dict[Lang, list[str]] = {
-    "en": ["safe", "safely", "healthy", "guaranteed", "guarantee", "risk-free", "no risk", "probably fine",
-           "harmless"],
-    "hi": ["सुरक्षित", "स्वस्थ", "सेहतमंद", "गारंटी", "कोई खतरा नहीं", "हानिरहित"],
-    "te": ["సురక్షితం", "సురక్షితమైన", "ఆరోగ్యకరం", "ఆరోగ్యకరమైన", "హామీ", "ప్రమాదం లేదు"],
-}
-_ALL_BANNED = [w for words in BANNED.values() for w in words]
-
-
 class LLMSummary(BaseModel):
     profile_id: str
     summary: str
@@ -43,17 +26,6 @@ class LLMSummary(BaseModel):
 
 class LLMSummaries(BaseModel):
     summaries: list[LLMSummary]
-
-
-def has_banned_word(text: str) -> bool:
-    lowered = text.casefold()
-    for word in _ALL_BANNED:
-        if word.isascii():
-            if re.search(rf"\b{re.escape(word)}\b", lowered):
-                return True
-        elif word in text:
-            return True
-    return False
 
 
 def valid_summary(text: str) -> bool:
@@ -85,7 +57,7 @@ def build_prompt(reports: list[ProfileReport], profiles: list[Profile], lang: La
             .replace("{language}", LANGUAGE_NAMES[lang])
             .replace("{word_conflict}", words["conflict"]).replace("{word_possible}", words["possible"])
             .replace("{word_not_listed}", words["not_listed"]).replace("{word_unknown}", words["unknown"])
-            .replace("{banned}", ", ".join(_ALL_BANNED))
+            .replace("{banned}", ", ".join(ALL_BANNED))
             .replace("{results}", describe(reports, profiles)))
 
 

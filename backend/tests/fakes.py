@@ -6,7 +6,7 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
-from backend.app.llm.base import InvalidOutputError, LLMImage, ProviderName, ProviderUnavailableError
+from backend.app.llm.base import ChatMessage, InvalidOutputError, LLMImage, ProviderName, ProviderUnavailableError
 from backend.app.llm.router import LLMRouter
 from shared.contract import Box, OcrToken
 
@@ -106,3 +106,22 @@ def line_tokens(words: Sequence[str], y: float, start: int = 0, x0: float = 0.05
         tokens.append(token(start + n, word, x, y, w=width, image_id=image_id))
         x += width + 0.01
     return tokens
+
+
+class FakeToolClient(FakeLLM):
+    """A Gemini-like client whose chat turns are scripted (ChatMessage or exception per turn)."""
+
+    def __init__(self, turns: Sequence["ChatMessage | BaseException"], label: str = "gemini:primary") -> None:
+        super().__init__([ProviderUnavailableError("not scripted")], name="gemini", label=label)
+        self.turns = list(turns)
+        self.seen: list[list["ChatMessage"]] = []
+        self.systems: list[str] = []
+
+    async def chat_with_tools(self, messages: list["ChatMessage"], tools: list[Any], system: str,
+                              timeout_s: float) -> "ChatMessage":
+        self.seen.append(list(messages))
+        self.systems.append(system)
+        turn = self.turns[min(len(self.seen) - 1, len(self.turns) - 1)]
+        if isinstance(turn, BaseException):
+            raise turn
+        return turn

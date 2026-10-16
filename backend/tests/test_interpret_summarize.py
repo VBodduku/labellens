@@ -10,7 +10,8 @@ from backend.app.llm.base import ProviderUnavailableError
 from backend.app.llm.router import LLMRouter
 from backend.app.pipeline import summarize
 from backend.app.pipeline.interpret import interpret
-from backend.app.pipeline.summarize import has_banned_word, valid_summary
+from backend.app.pipeline.summarize import valid_summary
+from backend.app.wording import has_banned_word
 from backend.tests.fakes import INTERPRET, SUMMARIZE, FakeLLM
 from shared.contract import Profile
 from shared.engine_interface import UnresolvedTerm
