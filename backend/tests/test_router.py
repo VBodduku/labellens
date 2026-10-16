@@ -6,6 +6,7 @@ import json
 import pytest
 
 from backend.app.llm.base import (
+    AccessDeniedError,
     InvalidOutputError,
     LLMImage,
     ModelOverloadedError,
@@ -73,6 +74,27 @@ def test_overloaded_model_is_skipped_for_its_cooldown_without_counting_as_rate_l
     assert run(router).model == "lite" and len(main.prompts) == 1      # overloaded model not asked again
     clock.now += 61
     assert run(router).model == main.model
+
+
+def test_a_refused_key_skips_every_model_on_it_and_falls_to_the_next_key() -> None:
+    clock = Clock()
+    main = FakeLLM([AccessDeniedError(600), GOOD], label="gemini:primary:main")
+    lite = FakeLLM([GOOD], label="gemini:primary:lite", model="lite")
+    backup = FakeLLM([GOOD, GOOD], label="gemini:backup:main", model="backup")
+    router = LLMRouter([main, lite, backup], 5, clock=clock)
+    assert run(router).model == "backup" and lite.prompts == []       # same key, never asked
+    assert run(router).model == "backup" and len(main.prompts) == 1
+    assert router.provider_status()["gemini"] is True                   # the backup key still works
+    clock.now += 601
+    assert run(router).model == main.model
+
+
+def test_a_refused_only_key_reports_gemini_down() -> None:
+    router = LLMRouter([FakeLLM([AccessDeniedError(600)], label="gemini:primary:main"),
+                        FakeLLM([GOOD], label="gemini:primary:lite")], 5)
+    with pytest.raises(AllProvidersFailedError) as info:
+        run(router)
+    assert info.value.rate_limited is False and router.provider_status()["gemini"] is False
 
 
 def test_only_overloaded_models_is_not_reported_as_rate_limited() -> None:

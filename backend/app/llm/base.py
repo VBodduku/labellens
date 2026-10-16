@@ -84,5 +84,14 @@ class ModelOverloadedError(ProviderUnavailableError):
         self.retry_after_s = retry_after_s
 
 
+class AccessDeniedError(ProviderUnavailableError):
+    """The key is refused for generation (401/403, e.g. a project Google has blocked). Every model on that key
+    fails the same way, so the whole key is skipped for a while instead of being tried on every call."""
+
+    def __init__(self, retry_after_s: int, message: str = "access denied") -> None:
+        super().__init__(message)
+        self.retry_after_s = retry_after_s
+
+
 class InvalidOutputError(LLMError):
     """The provider answered, but not with usable JSON."""

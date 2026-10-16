@@ -11,13 +11,14 @@ import pytest
 from google.genai import errors
 
 from backend.app.llm.base import (
+    AccessDeniedError,
     InvalidOutputError,
     LLMImage,
     ModelOverloadedError,
     ProviderUnavailableError,
     RateLimitedError,
 )
-from backend.app.llm.gemini import OVERLOAD_COOLDOWN_S, GeminiClient, retry_after_from
+from backend.app.llm.gemini import ACCESS_DENIED_COOLDOWN_S, OVERLOAD_COOLDOWN_S, GeminiClient, retry_after_from
 from backend.app.llm.ollama import OllamaClient
 
 IMAGE = LLMImage("image/jpeg", b"\xff\xd8jpeg")
@@ -106,6 +107,16 @@ def test_gemini_503_is_overloaded_with_a_cooldown(monkeypatch: pytest.MonkeyPatc
     with pytest.raises(ModelOverloadedError) as info:
         asyncio.run(client.generate_json("p", [], SCHEMA, 10))
     assert info.value.retry_after_s == OVERLOAD_COOLDOWN_S
+
+
+@pytest.mark.parametrize("code", [401, 403])
+def test_gemini_refused_key_is_access_denied_with_a_long_cooldown(monkeypatch: pytest.MonkeyPatch, code: int) -> None:
+    refused = errors.ClientError(code, {"error": {"code": code, "status": "PERMISSION_DENIED",
+                                                  "message": "Your project has been denied access."}})
+    client, _ = gemini_with(monkeypatch, refused)
+    with pytest.raises(AccessDeniedError) as info:
+        asyncio.run(client.generate_json("p", [], SCHEMA, 10))
+    assert info.value.retry_after_s == ACCESS_DENIED_COOLDOWN_S and "test-key" not in str(info.value)
 
 
 def test_gemini_empty_text_is_invalid_output(monkeypatch: pytest.MonkeyPatch) -> None:

@@ -8,6 +8,7 @@ from google import genai
 from google.genai import errors, types
 
 from backend.app.llm.base import (
+    AccessDeniedError,
     ChatMessage,
     InvalidOutputError,
     LLMImage,
@@ -21,6 +22,7 @@ from backend.app.llm.base import (
 
 DEFAULT_RETRY_AFTER_S = 60
 OVERLOAD_COOLDOWN_S = 60        # a 503 model usually stays overloaded for minutes; other models still answer
+ACCESS_DENIED_COOLDOWN_S = 600  # a refused key (401/403) stays refused until someone fixes it
 # Google rejects request deadlines under 10 s (400 "Minimum allowed deadline is 10s") and expires
 # ones right at 10 s; our own budget is enforced client-side by the router's wait_for instead.
 MIN_SERVER_DEADLINE_S = 15.0
@@ -64,6 +66,9 @@ class GeminiClient:
         except errors.APIError as exc:
             if exc.code == 429:
                 raise RateLimitedError(retry_after_from(exc.details)) from exc
+            if exc.code in (401, 403):
+                message = f"gemini HTTP {exc.code} {exc.status or ''}".strip()
+                raise AccessDeniedError(ACCESS_DENIED_COOLDOWN_S, message) from exc
             if exc.code == 503:
                 raise ModelOverloadedError(OVERLOAD_COOLDOWN_S, f"gemini HTTP 503 {exc.status or ''}".strip()) from exc
             raise ProviderUnavailableError(f"gemini HTTP {exc.code} {exc.status or ''}".strip()) from exc

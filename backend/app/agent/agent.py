@@ -17,7 +17,14 @@ from pydantic import BaseModel, ValidationError
 
 from backend.app.agent import fallback, guard, tools
 from backend.app.agent.tools import AgentContext
-from backend.app.llm.base import ChatMessage, LLMError, ModelOverloadedError, RateLimitedError, ToolChatClient
+from backend.app.llm.base import (
+    AccessDeniedError,
+    ChatMessage,
+    LLMError,
+    ModelOverloadedError,
+    RateLimitedError,
+    ToolChatClient,
+)
 from backend.app.llm.router import LLMRouter
 from backend.app.wording import LANGUAGE_NAMES, STATE_WORDS, has_banned_word
 from shared.contract import AskRequest, AskResponse, ToolCallTrace, VerdictRef
@@ -146,6 +153,9 @@ async def ask(request: AskRequest, router: LLMRouter, budget_s: float = BUDGET_S
         except ModelOverloadedError as exc:
             router.report_rate_limit(client.label, exc.retry_after_s)
             reason = "overloaded"
+        except AccessDeniedError as exc:
+            router.report_access_denied(client.label, exc.retry_after_s)
+            reason = "access denied"
         except (LLMError, TimeoutError) as exc:
             reason = str(exc) or type(exc).__name__
         except AgentGaveUp as exc:                  # the model answered badly: another model won't be safer

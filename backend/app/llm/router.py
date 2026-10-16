@@ -13,6 +13,7 @@ from pydantic import BaseModel, ValidationError
 
 from backend.app.config import get_settings
 from backend.app.llm.base import (
+    AccessDeniedError,
     LLMClient,
     LLMError,
     LLMImage,
@@ -40,7 +41,8 @@ REPAIR_INSTRUCTION = (
 @dataclass
 class ClientState:
     client: LLMClient
-    cooldown_until: float = 0.0         # rate limited: skipped for every call
+    cooldown_until: float = 0.0         # rate limited, overloaded or refused: skipped for every call
+    rate_limited: bool = False          # the cooldown is a quota limit (worth telling the user to retry later)
     slow_until: float = 0.0             # timed out on an image call: skipped for image calls only
     last_ok: float | None = None
     last_error: str | None = None
@@ -90,6 +92,16 @@ class LLMRouter:
         for state in self._states:
             if state.client.label == client_label:
                 state.cooldown_until = self._clock() + retry_after_s
+                state.rate_limited = True
+
+    def report_access_denied(self, client_label: str, retry_after_s: int) -> None:
+        """A refused key fails for every model: skip all clients that share it ("gemini:primary:*")."""
+        key = _key_of(client_label)
+        for state in self._states:
+            if _key_of(state.client.label) == key:
+                state.cooldown_until = self._clock() + retry_after_s
+                state.rate_limited = False
+                state.last_error = f"access denied, key skipped for {retry_after_s}s"
 
     def can_generate(self, providers: Collection[ProviderName] | None = None) -> bool:
         return any(state.cooldown_until <= self._clock() and (providers is None or state.client.name in providers)
@@ -110,7 +122,8 @@ class LLMRouter:
             if providers is not None and state.client.name not in providers:
                 continue
             if state.cooldown_until > self._clock():
-                retry_after.append(int(state.cooldown_until - self._clock()) + 1)
+                if state.rate_limited:
+                    retry_after.append(int(state.cooldown_until - self._clock()) + 1)
                 continue
             if images and state.slow_until > self._clock():
                 continue
@@ -132,11 +145,17 @@ class LLMRouter:
                     continue
                 except RateLimitedError as exc:
                     state.cooldown_until = self._clock() + exc.retry_after_s
+                    state.rate_limited = True
                     retry_after.append(exc.retry_after_s)
                     self._fail(state, f"rate limited for {exc.retry_after_s}s")
                     break
+                except AccessDeniedError as exc:
+                    self.report_access_denied(state.client.label, exc.retry_after_s)
+                    self._fail(state, f"access denied, key skipped for {exc.retry_after_s}s")
+                    break
                 except ModelOverloadedError as exc:
                     state.cooldown_until = self._clock() + exc.retry_after_s
+                    state.rate_limited = False
                     self._fail(state, f"overloaded, skipped for {exc.retry_after_s}s")
                     break
                 except TimeoutError:
@@ -154,6 +173,11 @@ class LLMRouter:
     def _fail(self, state: ClientState, reason: str) -> None:
         state.last_error = reason
         logger.warning("llm call failed", extra={"fields": {"client": state.client.label, "reason": reason}})
+
+
+def _key_of(label: str) -> str:
+    """The API key part of a client label: "gemini:primary:gemini-flash-latest" -> "gemini:primary"."""
+    return label.rsplit(":", 1)[0] if label.count(":") >= 2 else label
 
 
 def _short_errors(exc: ValidationError) -> str:
