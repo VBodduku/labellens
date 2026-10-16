@@ -64,4 +64,14 @@ describe("scan store recheck", () => {
     expect(state.result?.scan_id).toBe(fixtureScanResult.scan_id);
     expect(state.recheckError?.code).toBe("NETWORK");
   });
+
+  it("answers a demo-label recheck from the bundled fixtures when the backend is unreachable", async () => {
+    useScanStore.setState({ isDemo: true });
+    recheck.mockRejectedValue(new ApiError("NETWORK", "backend down"));
+    await useScanStore.getState().recheck("hi");
+    const state = useScanStore.getState();
+    expect(state).toMatchObject({ status: "done", recheckError: null });
+    expect(state.result?.lang).toBe("hi");
+    useScanStore.setState({ isDemo: false });
+  });
 });

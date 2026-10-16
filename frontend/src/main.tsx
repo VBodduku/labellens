@@ -3,12 +3,14 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { App } from "./App";
 import { initI18n, loadLanguage } from "./i18n";
+import { captureInstallPrompt } from "./lib/installPrompt";
 import { applyTheme, useUiStore } from "./store/ui";
 import "./styles/globals.css";
 
 const { lang, theme } = useUiStore.getState();
 initI18n(lang);
 applyTheme(theme);
+captureInstallPrompt();
 
 const root = document.getElementById("root");
 if (!root) throw new Error("Missing #root element");

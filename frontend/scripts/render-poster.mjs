@@ -32,5 +32,5 @@ try {
 
 for (const [file, width] of [[target, 1000], [small, 500]]) {
   const info = await sharp(source, { density: 96 }).resize(width, Math.round(width * 1.4)).webp({ quality: 82 }).toFile(file);
-  console.log(`[render-poster] wrote ${file.split(/[\/]/).pop()} (${info.width}×${info.height}, ${Math.round(info.size / 1024)} kB).`);
+  console.log(`[render-poster] wrote ${basename(file)} (${info.width}×${info.height}, ${Math.round(info.size / 1024)} kB).`);
 }

@@ -188,6 +188,16 @@ export const useScanStore = create<ScanState>()((set, get) => {
           set({ status: "done" });
           return;
         }
+        // The demo label must work with no backend at all (judging insurance): answer from the fixtures.
+        if (get().isDemo) {
+          const { mockApi } = await import("../api/mock");
+          const extraction = applyCorrections({ ...result.extraction, user_corrections: [] }, corrections);
+          const next = await mockApi.recheck({ extraction, profiles: scanProfiles, lang }).catch(() => null);
+          if (next && !superseded(signal)) {
+            set({ result: next, scanProfiles, status: "done", changedVerdicts: changedVerdicts(result, next) });
+            return;
+          }
+        }
         set({ status: "done", recheckError: isApiError(error) ? error : new ApiError("INTERNAL", String(error)) });
       }
     },

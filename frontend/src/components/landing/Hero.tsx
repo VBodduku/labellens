@@ -2,6 +2,7 @@ import { ChevronDown } from "lucide-react";
 import { m, useMotionValue, useReducedMotion, useScroll } from "motion/react";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { InstallButton } from "../layout/InstallButton";
 import { HeroActions } from "./HeroActions";
 import { HeroStage } from "./HeroStage";
 import { useScrollRange } from "./useScrollRange";
@@ -42,6 +43,9 @@ export function Hero() {
               {t("landing.hero.subtitle")}
             </p>
             <HeroActions className="mt-5 lg:mt-9" />
+            <div className="mt-1 sm:hidden">
+              <InstallButton variant="inline" />
+            </div>
             {!reduce && (
               <m.p
                 style={{ opacity: hintOpacity }}

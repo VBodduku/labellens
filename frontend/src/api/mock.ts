@@ -8,6 +8,7 @@ import {
   fixtureProfileParse,
   fixtureScanResult,
 } from "./fixtures";
+import { unreadableScenario } from "./mockScenarios";
 import type { LabelLensApi } from "./types";
 
 /** Realistic latencies so loading states are visible during development and demos. */
@@ -88,7 +89,10 @@ export const mockApi: LabelLensApi = {
     throwIfMockError(failure);
     if (input.images.length === 0) throw new ApiError("VALIDATION", "Add at least one photo.", { status: 422 });
     if (input.images.length > 3) throw new ApiError("TOO_MANY_IMAGES", MOCK_ERROR_MESSAGES.TOO_MANY_IMAGES, { status: 400 });
-    return freshResult({ lang: input.lang, reports: structuredClone(reportsFor(input.profiles)) });
+    const result = freshResult({ lang: input.lang, reports: structuredClone(reportsFor(input.profiles)) });
+    return new URLSearchParams(globalThis.location?.search ?? "").get("mockScenario") === "unreadable"
+      ? unreadableScenario(result, input.profiles)
+      : result;
   },
   async recheck(request, options) {
     const failure = mockErrorFromUrl();

@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { api, ApiError, isApiError } from "../../api";
 import type { ExplainResponse, Lang } from "../../shared/contract";
 import { useUiStore } from "../../store/ui";
-import { Button } from "../ui/Button";
 import { ErrorNotice } from "../ui/ErrorNotice";
 import { Sheet } from "../ui/Sheet";
 import { Skeleton } from "../ui/Skeleton";
@@ -57,7 +56,7 @@ export function ExplainSheet({ term, onClose }: { term: string | null; onClose: 
           <Skeleton className="h-4 w-4/5" />
         </div>
       )}
-      {state.status === "error" && <ErrorNotice error={state.error} actions={<Button onClick={() => void load()}>{t("common.retry")}</Button>} />}
+      {state.status === "error" && <ErrorNotice error={state.error} onRetry={() => void load()} />}
       {state.status === "done" && (
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-2">

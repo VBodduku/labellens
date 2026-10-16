@@ -1,11 +1,14 @@
 import { SendHorizontal } from "lucide-react";
-import { useRef, useState, type FormEvent } from "react";
+import { lazy, Suspense, useRef, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { api, ApiError, isApiError } from "../../api";
 import type { Profile, ScanResult } from "../../shared/contract";
 import { useUiStore } from "../../store/ui";
 import { MicButton } from "../speech/MicButton";
-import { AnswerSheet, type AnswerState } from "./AnswerSheet";
+import { useLatch } from "../../lib/useLatch";
+import type { AnswerState } from "./AnswerSheet";
+
+const AnswerSheet = lazy(() => import("./AnswerSheet").then((module) => ({ default: module.AnswerSheet })));
 
 /** "Ask the label" (§5.4): sticky question bar, typed or spoken, answered by the agent from this scan only. */
 export function AskBar({ result, profiles }: { result: ScanResult; profiles: Profile[] }) {
@@ -16,6 +19,7 @@ export function AskBar({ result, profiles }: { result: ScanResult; profiles: Pro
   const [answer, setAnswer] = useState<AnswerState | null>(null);
   const inflight = useRef<AbortController | null>(null);
   const disabled = result.reports.length === 0;
+  const sheetMounted = useLatch(answer !== null);
 
   async function ask(text: string) {
     inflight.current?.abort();
@@ -77,7 +81,11 @@ export function AskBar({ result, profiles }: { result: ScanResult; profiles: Pro
           </p>
         )}
       </div>
-      <AnswerSheet state={answer} profiles={profiles} onClose={close} onRetry={() => answer && void ask(answer.question)} />
+      {sheetMounted && (
+        <Suspense fallback={null}>
+          <AnswerSheet state={answer} profiles={profiles} onClose={close} onRetry={() => answer && void ask(answer.question)} />
+        </Suspense>
+      )}
     </>
   );
 }

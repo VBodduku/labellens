@@ -4,7 +4,6 @@ import type { ApiError } from "../../api";
 import type { AskResponse, Profile } from "../../shared/contract";
 import { EvidenceChips } from "../evidence/EvidenceChip";
 import { ReadAloudButton } from "../speech/ReadAloudButton";
-import { Button } from "../ui/Button";
 import { ErrorNotice } from "../ui/ErrorNotice";
 import { Sheet } from "../ui/Sheet";
 import { Skeleton } from "../ui/Skeleton";
@@ -46,7 +45,7 @@ export function AnswerSheet({ state, profiles, onClose, onRetry }: AnswerSheetPr
             </div>
           )}
 
-          {state.status === "error" && <ErrorNotice error={state.error} actions={<Button onClick={onRetry}>{t("common.retry")}</Button>} />}
+          {state.status === "error" && <ErrorNotice error={state.error} onRetry={onRetry} />}
 
           {state.status === "done" && (
             <>

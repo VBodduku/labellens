@@ -1,12 +1,11 @@
 import { Camera, ImagePlus, ScanText, Users } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AskBar } from "../components/ask/AskBar";
 import { EvidenceViewer } from "../components/evidence/EvidenceViewer";
 import type { OverlayItem } from "../components/evidence/EvidenceOverlay";
-import { CorrectionEditor, type EditTarget } from "../components/label/CorrectionEditor";
-import { ExplainSheet } from "../components/label/ExplainSheet";
+import type { EditTarget } from "../components/label/CorrectionEditor";
 import { ExtractionMetaBadges } from "../components/label/ExtractionMetaBadges";
 import { IngredientsList } from "../components/label/IngredientsList";
 import { NutritionTable } from "../components/label/NutritionTable";
@@ -22,6 +21,7 @@ import { AnalysingView } from "../components/verdict/AnalysingView";
 import { FamilyStrip } from "../components/verdict/FamilyStrip";
 import { ProfileVerdictCard } from "../components/verdict/ProfileVerdictCard";
 import { makeCorrection } from "../lib/corrections";
+import { useLatch } from "../lib/useLatch";
 import { sortByStateWorstFirst } from "../lib/verdict";
 import type { Box, ScanResult } from "../shared/contract";
 import { useProfilesStore } from "../store/profiles";
@@ -29,6 +29,10 @@ import { useScanStore, type Panel } from "../store/scan";
 import { useUiStore } from "../store/ui";
 
 type TabKey = "verdicts" | "ingredients" | "nutrition" | "unknowns";
+
+// Sheets load their code the first time they open (kept off the result screen's critical path).
+const CorrectionEditor = lazy(() => import("../components/label/CorrectionEditor").then((module) => ({ default: module.CorrectionEditor })));
+const ExplainSheet = lazy(() => import("../components/label/ExplainSheet").then((module) => ({ default: module.ExplainSheet })));
 const TAB_PREFIX = "result";
 
 function EmptyResult() {
@@ -66,6 +70,8 @@ function ResultView({ result, panels }: { result: ScanResult; panels: Panel[] })
   const [tab, setTab] = useState<TabKey>("verdicts");
   const [editing, setEditing] = useState<EditTarget | null>(null);
   const [explaining, setExplaining] = useState<string | null>(null);
+  const editorMounted = useLatch(editing !== null);
+  const explainMounted = useLatch(explaining !== null);
 
   // Summaries are generated per language: after a switch, recheck (engine only) and show the template meanwhile.
   useEffect(() => {
@@ -177,8 +183,10 @@ function ResultView({ result, panels }: { result: ScanResult; panels: Panel[] })
         </div>
       </div>
 
-      <CorrectionEditor target={editing} onClose={() => setEditing(null)} onSave={saveCorrection} />
-      <ExplainSheet term={explaining} onClose={() => setExplaining(null)} />
+      <Suspense fallback={null}>
+        {editorMounted && <CorrectionEditor target={editing} onClose={() => setEditing(null)} onSave={saveCorrection} />}
+        {explainMounted && <ExplainSheet term={explaining} onClose={() => setExplaining(null)} />}
+      </Suspense>
       <AskBar result={result} profiles={scanProfiles} />
     </div>
   );
@@ -209,17 +217,11 @@ export default function Result() {
         <ErrorNotice
           error={error}
           title={t("result.error.title")}
+          onRetry={panels.length > 0 ? () => void analyse({ profiles: attemptProfiles, lang }) : undefined}
           actions={
-            <>
-              {panels.length > 0 && (
-                <Button onClick={() => void analyse({ profiles: attemptProfiles, lang })}>
-                  {t("common.retry")}
-                </Button>
-              )}
-              <ButtonLink to={{ pathname: "/scan", search }} variant="secondary">
-                {t("analysing.editPhotos")}
-              </ButtonLink>
-            </>
+            <ButtonLink to={{ pathname: "/scan", search }} variant="secondary">
+              {t("analysing.editPhotos")}
+            </ButtonLink>
           }
         />
       </div>

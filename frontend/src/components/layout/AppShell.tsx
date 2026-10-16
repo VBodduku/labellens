@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Header } from "./Header";
+import { OfflineBanner } from "./OfflineBanner";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
@@ -12,6 +13,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       >
         {t("nav.skip")}
       </a>
+      <OfflineBanner />
       <Header />
       <main id="main" className="flex-1">
         {children}

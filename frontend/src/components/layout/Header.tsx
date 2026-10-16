@@ -1,6 +1,7 @@
 import { Info, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link, NavLink } from "react-router-dom";
+import { InstallButton } from "./InstallButton";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { LogoMark, Wordmark } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
@@ -37,6 +38,9 @@ export function Header() {
           ))}
         </nav>
         <LanguageSwitcher />
+        <div className="hidden sm:block">
+          <InstallButton variant="icon" />
+        </div>
         <ThemeToggle />
       </div>
     </header>

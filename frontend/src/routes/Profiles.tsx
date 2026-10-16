@@ -1,16 +1,20 @@
 import { UserPlus, Users } from "lucide-react";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ParseConfirmSheet } from "../components/profiles/ParseConfirmSheet";
-import { ProfileEditor } from "../components/profiles/ProfileEditor";
 import { ProfileList } from "../components/profiles/ProfileList";
 import { SentenceInput } from "../components/profiles/SentenceInput";
 import { Button } from "../components/ui/Button";
 import { Skeleton } from "../components/ui/Skeleton";
 import { createId } from "../lib/ids";
+import { useLatch } from "../lib/useLatch";
 import { finalizeParsedProfiles, nextColor } from "../lib/profileParse";
 import type { Profile, ProfileParseResponse } from "../shared/contract";
 import { useProfilesStore } from "../store/profiles";
+
+const ProfileEditor = lazy(() => import("../components/profiles/ProfileEditor").then((module) => ({ default: module.ProfileEditor })));
+const ParseConfirmSheet = lazy(() =>
+  import("../components/profiles/ParseConfirmSheet").then((module) => ({ default: module.ParseConfirmSheet })),
+);
 
 /** Family members (§5.5): add by form or by describing them in a sentence; stored only on this device. */
 export default function Profiles() {
@@ -19,6 +23,8 @@ export default function Profiles() {
   const [editing, setEditing] = useState<{ profile: Profile; isNew: boolean } | null>(null);
   const [parsed, setParsed] = useState<ProfileParseResponse | null>(null);
   const [addingDemo, setAddingDemo] = useState(false);
+  const editorMounted = useLatch(editing !== null);
+  const confirmMounted = useLatch(parsed !== null);
 
   function startNew() {
     setEditing({
@@ -97,13 +103,19 @@ export default function Profiles() {
         )}
       </div>
 
-      <ProfileEditor
-        profile={editing?.profile ?? null}
-        isNew={editing?.isNew ?? false}
-        onClose={() => setEditing(null)}
-        onSave={(profile) => void saveProfile(profile)}
-      />
-      <ParseConfirmSheet response={parsed} onCancel={() => setParsed(null)} onConfirm={(proposed) => void confirmParsed(proposed)} />
+      <Suspense fallback={null}>
+        {editorMounted && (
+          <ProfileEditor
+            profile={editing?.profile ?? null}
+            isNew={editing?.isNew ?? false}
+            onClose={() => setEditing(null)}
+            onSave={(profile) => void saveProfile(profile)}
+          />
+        )}
+        {confirmMounted && (
+          <ParseConfirmSheet response={parsed} onCancel={() => setParsed(null)} onConfirm={(proposed) => void confirmParsed(proposed)} />
+        )}
+      </Suspense>
     </div>
   );
 }

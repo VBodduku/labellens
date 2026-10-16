@@ -67,7 +67,7 @@ export function SentenceInput({ onParsed }: { onParsed: (response: ProfileParseR
       </Button>
       {error && (
         <div className="mt-4">
-          <ErrorNotice error={error} actions={<Button onClick={() => void submit()}>{t("common.retry")}</Button>} />
+          <ErrorNotice error={error} onRetry={() => void submit()} />
         </div>
       )}
     </form>

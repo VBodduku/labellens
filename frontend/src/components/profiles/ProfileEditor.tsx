@@ -49,7 +49,7 @@ export function ProfileEditor({ profile, isNew, onClose, onSave }: ProfileEditor
             </div>
           )}
           {catalog.status === "error" && (
-            <ErrorNotice error={catalog.error} actions={<Button onClick={() => void catalog.retry()}>{t("common.retry")}</Button>} />
+            <ErrorNotice error={catalog.error} onRetry={() => void catalog.retry()} />
           )}
           {catalog.status === "ready" && <ProfileForm profile={draft} catalog={catalog.items} onChange={setDraft} nameError={nameError} />}
           <div className="sticky -bottom-5 -mx-5 mt-6 flex justify-end gap-2 border-t border-line bg-surface px-5 pb-1 pt-3">
