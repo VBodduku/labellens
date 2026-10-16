@@ -267,6 +267,13 @@ def test_statements_claims_and_veg_mark() -> None:
     assert p.veg_mark.evidence.status == "approximate"
 
 
+@pytest.mark.parametrize("value, kept, status", [("veg", "unclear", None), ("non_veg", "non_veg", "unverified")])
+def test_a_veg_mark_the_model_cannot_locate_never_loosens_a_verdict(value: str, kept: str, status: str | None) -> None:
+    p = align_panel(panel(veg_mark={"value": value, "box_2d": None}), "img_0", INDEX, CITES)
+    assert p.veg_mark.value == kept
+    assert (p.veg_mark.evidence.status if p.veg_mark.evidence else None) == status
+
+
 def test_panel_image_ids_repairs_bad_or_duplicate_ids() -> None:
     panels = [panel(image_id="img_1"), panel(image_id="img_1"), panel(image_id="front")]
     assert panel_image_ids(panels, ["img_0", "img_1", "img_2"]) == ["img_1", "img_0", "img_2"]
@@ -282,3 +289,44 @@ def test_recorded_ollama_response_on_test_label(label_tokens: list) -> None:
     sodium = next(r for r in p.nutrition.rows if r.key == "sodium_mg")  # type: ignore[union-attr]
     assert sodium.values[0].amount is None                                        # model invented "175 mg"
     assert p.nutrition_section.complete is False
+
+
+# A small table: three rows on three printed lines (the covered-table re-read of Test 3, docs/TEST_RESULTS.md).
+TABLE = (line_tokens(["Total", "Sugars", "3.1", "0.6"], 0.10) + line_tokens(["Total", "Fat", "24.1", "4.8"], 0.14, start=4)
+         + line_tokens(["Protein", "6.9", "1.4"], 0.18, start=8))
+TABLE_INDEX = TokenIndex(TABLE)
+TABLE_CITES = [t.token_id for t in TABLE]
+
+
+def table_row(key: str, label: str, amount: float, cite: int) -> dict:
+    return {"key": key, "label": label, "values": [{"basis": "per_100g", "amount": amount, "unit": "g", "text": f"{amount:g}",
+                                                     "token_ids": [cite], "readability": "clear", "box_2d": None}]}
+
+
+def aligned_table(*rows: dict):  # type: ignore[no-untyped-def]
+    return align_panel(panel(nutrition={"rows": list(rows)}, nutrition_section=section()), "img_0", TABLE_INDEX,
+                       TABLE_CITES)
+
+
+def test_a_value_from_another_row_is_not_used_for_this_row() -> None:
+    p = aligned_table(table_row("total_fat_g", "Total Fat", 3.1, 2))        # 3.1 is printed, on the sugars line
+    value = p.nutrition.rows[0].values[0]  # type: ignore[union-attr]
+    assert (value.amount, value.readability) == (3.1, "partial")
+    assert "value_off_row:total_fat_g" in p.nutrition_section.issues
+
+
+def test_a_row_whose_label_is_not_on_the_photo_is_never_used() -> None:
+    p = aligned_table(table_row("sodium_mg", "Sodium (mg)", 24.1, 6))       # a covered row, given Fat's number
+    value = p.nutrition.rows[0].values[0]  # type: ignore[union-attr]
+    assert value.readability == "partial"
+    assert "row_not_on_photo:sodium_mg" in p.nutrition_section.issues
+
+
+def test_the_same_number_on_the_right_line_is_used_instead() -> None:
+    tokens = TABLE + line_tokens(["Saturated", "Fat", "0.6", "0.1"], 0.22, start=len(TABLE))
+    cites = [t.token_id for t in tokens]
+    rows = [table_row("saturated_fat_g", "Saturated Fat", 0.6, 3)]           # cites the sugars line's 0.6
+    p = align_panel(panel(nutrition={"rows": rows}, nutrition_section=section()), "img_0", TokenIndex(tokens), cites)
+    value = p.nutrition.rows[0].values[0]  # type: ignore[union-attr]
+    assert (value.amount, value.readability) == (0.6, "clear")
+    assert value.evidence is not None and value.evidence.token_ids == ["img_0:t13"]   # its own line's 0.6

@@ -144,3 +144,31 @@ def test_recorded_gemini_reading_is_fully_grounded_and_gives_all_four_states(
     overall = {r.profile_id: r.overall for r in result.reports}
     assert overall["p_aarav"] == "conflict" and overall["p_thatha"] == "conflict"
     assert any(u.message_key == "unknown.retake_region" and u.region is not None for u in result.unknowns)
+
+
+def test_the_ai_misreading_a_printed_number_is_shown_and_not_used(label_png: bytes, cache: ExtractionCache) -> None:
+    """Test 3 of docs/TEST_RESULTS.md: real OCR of the demo label; the model reads Total Sugars as 33.0 g where
+    the photo prints 38.0 g. Neither number decides a verdict until the user checks the pack."""
+    answer = json.loads(recorded("gemini_test_label.json"))
+    sugars = next(r for r in answer["panels"][0]["nutrition"]["rows"] if r["key"] == "total_sugars_g")
+    sugars["values"][0]["amount"] = 33.0
+    result = scan(label_png, scan_llm(json.dumps(answer), name="gemini", model="gemini-test"), cache)
+    [contradiction] = [c for c in result.contradictions if c.kind == "ai_vs_print"]
+    assert contradiction.message_params == {"nutrient": "total_sugars_g", "ai_value": 33.0, "value": 38.0}
+    value = next(r for r in result.extraction.nutrition.rows if r.key == "total_sugars_g").values[0]  # type: ignore[union-attr]
+    assert (value.amount, value.readability) == (38.0, "partial")       # the printed number, held back
+    thatha_sugar = next(r for p in result.reports if p.profile_id == "p_thatha" for r in p.results
+                        if r.restriction_id == "r_thatha_sugar")
+    assert thatha_sugar.message_params.get("value") != 33.0              # the AI's number never decides it
+
+
+def test_an_allergen_statement_the_ai_left_out_is_read_from_the_ocr_words(label_png: bytes, cache: ExtractionCache) -> None:
+    answer = json.loads(recorded("gemini_test_label.json"))
+    answer["panels"][0]["allergen_statements"] = []
+    result = scan(label_png, scan_llm(json.dumps(answer), name="gemini", model="gemini-test"), cache)
+    statements = {(s.type, tuple(s.items)) for s in result.extraction.allergen_statements}
+    assert ("contains", ("PEANUT", "MILK", "WHEAT", "SOY")) in statements
+    assert all(e.status == "verified" for s in result.extraction.allergen_statements for e in s.evidence)
+    assert "statements_from_ocr" in result.extraction.allergen_section.issues
+    sesame = next(r for p in result.reports for r in p.results if r.restriction_id == "r_lakshmi_sesame")
+    assert sesame.state != "conflict"

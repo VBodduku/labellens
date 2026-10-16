@@ -24,7 +24,7 @@ from backend.app.llm.base import PROSE_PROVIDERS
 from backend.app.llm.router import AllProvidersFailedError, LLMRouter
 from backend.app.logging_setup import note, stage
 from backend.app.pipeline import ocr_only, summarize
-from backend.app.pipeline.align import PanelExtraction, TokenIndex, align_panel, panel_image_ids
+from backend.app.pipeline.align import ALIGN_VERSION, PanelExtraction, TokenIndex, align_panel, panel_image_ids
 from backend.app.pipeline.assemble import build_scan_result
 from backend.app.pipeline.interpret import interpret
 from backend.app.pipeline.focus import FOCUS_VERSION, Focused, read_panel, to_full_frame
@@ -34,6 +34,7 @@ from backend.app.pipeline.merge import MergedLabel, evidence_of, merge_panels
 from backend.app.pipeline.quality import add_cropped_edge, assess
 from backend.app.pipeline.scan_memory import SCAN_MEMORY, ScanRecord, fingerprint
 from backend.app.pipeline.structure import PROMPT_VERSION, Citations, structure
+from backend.app.pipeline.veg_mark import checked_veg_mark
 from backend.app.pipeline.verify import scan_unknowns, verify
 from shared.contract import (
     ExtractionMeta,
@@ -46,6 +47,7 @@ from shared.contract import (
     Profile,
     Provider,
     ScanResult,
+    SectionStatus,
 )
 from shared.engine_interface import EngineOutput, TermInterpretation, UnresolvedTerm
 
@@ -103,8 +105,22 @@ def _from_llm(extraction: LLMExtraction, citations: Citations, images: list[Prep
     image_ids = [i.image_id for i in images]
     panels = extraction.panels[: len(image_ids)]
     index = TokenIndex(tokens)
-    return [align_panel(p, image_id, index, citations.get(image_id, []))
+    return [_statements_backstop(align_panel(p, image_id, index, citations.get(image_id, [])),
+                                 [t for t in tokens if t.image_id == image_id])
             for p, image_id in zip(panels, panel_image_ids(panels, image_ids))]
+
+
+def _statements_backstop(panel: PanelExtraction, tokens: list[OcrToken]) -> PanelExtraction:
+    """The model sometimes leaves out a sharply printed "Contains: milk, soy" (seen in an acceptance test run).
+    Allergen statements decide conflicts, so when it reports none, the OCR words are read for one; anything
+    found is printed text with a located box. The section stays incomplete: the model may have missed more."""
+    if panel.allergen_statements:
+        return panel
+    found = ocr_only.find_statements(tokens)
+    if not found:
+        return panel
+    section = SectionStatus(presence="found", complete=False, issues=["statements_from_ocr"])
+    return replace(panel, allergen_statements=found, allergen_section=section)
 
 
 def _ocr_only(images: list[PreparedImage], tokens: list[OcrToken]) -> Structured:
@@ -159,7 +175,7 @@ def _extraction(scan: ScanInput, qualities: list[ImageQuality], tokens: list[Ocr
 
 
 def scan_cache_key(scan: ScanInput) -> str:
-    return cache_key(scan.raw, scan.hints, f"{PROMPT_VERSION}+{FOCUS_VERSION}", get_settings().gemini_model)
+    return cache_key(scan.raw, scan.hints, f"{PROMPT_VERSION}+{FOCUS_VERSION}+{ALIGN_VERSION}", get_settings().gemini_model)
 
 
 async def extract(scan: ScanInput, router: LLMRouter, cache: ExtractionCache, deadline: Deadline) -> LabelExtraction:
@@ -190,7 +206,7 @@ async def extract(scan: ScanInput, router: LLMRouter, cache: ExtractionCache, de
     if structured.provider != "ocr_only" and verify_budget:
         with stage("verify"):
             extraction = await verify(extraction, seen.images, scan.profiles, router, verify_budget)
-    extraction = to_full_frame(extraction, views)
+    extraction = checked_veg_mark(to_full_frame(extraction, views), scan.images)
     duration_ms = int((time.perf_counter() - started) * 1000)
     extraction = extraction.model_copy(update={"meta": extraction.meta.model_copy(update={"duration_ms": duration_ms})})
 

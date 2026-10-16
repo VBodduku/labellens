@@ -57,8 +57,13 @@ MIN_WINDOW_LENGTH = 0.8         # window text must be at least this x item text 
 MAX_LENGTH_FACTOR = 1.5         # matched text may be at most this x item text (+ slack) long
 LENGTH_SLACK = 4
 CONFIDENCE: dict[EvidenceStatus, float] = {"verified": 1.0, "approximate": 0.7, "unverified": 0.4}
+ALIGN_VERSION = "align-v5"         # part of the extraction cache key: older readings may trust a veg mark that is not green on the photo, or a
+                                   # value on another row, or miss an allergen statement the OCR words show
 MISMATCH_ISSUE = "llm_ocr_number_mismatch"
 NOT_ON_PHOTO_ISSUE = "value_not_on_photo"
+OFF_ROW_ISSUE = "value_off_row"            # the number is printed, but not on its row's line
+ROW_NOT_FOUND_ISSUE = "row_not_on_photo"   # the row's label could not be found on the photo
+ROW_TOLERANCE = 0.6                        # line centres closer than this x the taller box share a line
 NESTED_MIN_SCORE = 90           # a sub-ingredient must appear inside its parent's printed text
 
 
@@ -119,6 +124,11 @@ def line_evidence(tokens: Sequence[OcrToken], score: float, status: EvidenceStat
         )
         for line in split_lines(tokens)
     ]
+
+
+def _shares_line(box: Box, lines: Sequence[Box]) -> bool:
+    centre = box.y + box.h / 2
+    return any(abs(centre - (line.y + line.h / 2)) < ROW_TOLERANCE * max(box.h, line.h) for line in lines)
 
 
 def box_from_2d(box_2d: Box2d | None) -> Box | None:
@@ -326,11 +336,33 @@ class _PanelAligner:
         )
 
     def nutrient_row(self, row: LLMNutrientRow, issues: list[str]) -> NutrientRow:
-        return NutrientRow(
-            key=row.key,
-            raw_label=row.label,
-            values=[self.nutrient_value(row.key, v, issues) for v in row.values],
-        )
+        """Values whose number is printed on the photo but on another row's line are not this row's values: a
+        re-read once put Total Fat's 24.1 under a covered Sodium row. A value counts only on its label's line;
+        when the label itself is not on the photo, the values are kept for display but never used."""
+        values = [self.nutrient_value(row.key, v, issues) for v in row.values]
+        label = align_span(row.label, [], None, self.image_id, self.index)
+        if label.status == "unverified":
+            if any(v.amount is not None for v in values):
+                issues.append(f"{ROW_NOT_FOUND_ISSUE}:{row.key}")
+            values = [v.model_copy(update={"readability": "partial"}) if v.readability == "clear" else v
+                      for v in values]
+        elif label.status == "verified":
+            lines = [e.box for e in label.evidence if e.box is not None]
+            values = [self._on_row(row.key, v, lines, issues) for v in values]
+        return NutrientRow(key=row.key, raw_label=row.label, values=values)
+
+    def _on_row(self, key: str, value: NutrientValue, lines: Sequence[Box], issues: list[str]) -> NutrientValue:
+        evidence = value.evidence
+        if value.amount is None or evidence is None or evidence.box is None or evidence.status != "verified" \
+                or _shares_line(evidence.box, lines):
+            return value
+        right_of_label = max(b.x + b.w for b in lines)
+        on_row = [t for t in self.index.by_image.get(self.image_id, [])
+                  if _shares_line(t.box, lines) and t.box.x >= right_of_label and parse_number(t.text) == value.amount]
+        if on_row:
+            return value.model_copy(update={"evidence": line_evidence(on_row[:1], 1.0)[0]})
+        issues.append(f"{OFF_ROW_ISSUE}:{key}")
+        return value.model_copy(update={"readability": "partial"})
 
     def nutrition(self, nutrition: LLMNutrition | None, issues: list[str]) -> NutritionTable | None:
         if nutrition is None:
@@ -345,9 +377,17 @@ class _PanelAligner:
         )
 
     def veg_mark(self, mark: LLMVegMark) -> VegMark:
+        """The mark is a symbol, so OCR can't check it; the model must at least point to it. A green mark it
+        can't locate counts as unclear (it would loosen verdicts on the model's word alone); a brown mark it
+        can't locate is kept, the stricter reading, with evidence that says it couldn't be located."""
         box = box_from_2d(mark.box_2d)
-        if mark.value == "not_found" or box is None:
+        if mark.value in ("not_found", "unclear"):
             return VegMark(value=mark.value)
+        if box is None:
+            if mark.value == "veg":
+                return VegMark(value="unclear")
+            return VegMark(value=mark.value, evidence=Evidence(image_id=self.image_id, text=f"{mark.value} mark",
+                                                               status="unverified"))
         evidence = Evidence(image_id=self.image_id, text=f"{mark.value} mark", box=box, status="approximate")
         return VegMark(value=mark.value, evidence=evidence)
 
