@@ -13,6 +13,7 @@ from shared.contract import (
     LabelExtraction,
     NUTRIENT_KEYS,
     NutrientRow,
+    NutrientValue,
     NutritionAnalysis,
     NutritionTable,
 )
@@ -28,14 +29,31 @@ _POLYOLS = "polyols_g"  # Internal only: the frozen contract uses key=other + ra
 class Readings:
     values: ValueMap
     conflicts: frozenset[str]
+    rounding: dict[tuple[str, str], float]
 
 
 def _positive(number: float | None) -> bool:
     return number is not None and math.isfinite(number) and number > 0
 
 
+def _printed_label(row: NutrientRow) -> str:
+    return re.sub(r"\s+(?:mcg|mg|g|kcal|kj)$", "", normalize(row.raw_label))
+
+
+def _printed_rounding(value: NutrientValue) -> float:
+    for token in re.findall(
+        r"(?<![\d.])(?:\d+(?:\.\d+)?|\.\d+)(?![\d.])", value.raw_text
+    ):
+        if value.amount is not None and math.isclose(
+            float(token), value.amount, rel_tol=1e-12, abs_tol=1e-12
+        ):
+            decimals = len(token.split(".", 1)[1]) if "." in token else 0
+            return 0.5 * math.pow(10.0, -decimals)
+    return 0.0
+
+
 def _row_key(row: NutrientRow) -> str:
-    label = normalize(row.raw_label)
+    label = _printed_label(row)
     if row.key == "other":
         if label in {"salt", "salt equivalent"}:
             return "sodium_mg"
@@ -51,6 +69,7 @@ def _row_key(row: NutrientRow) -> str:
 
 def _readings(table: NutritionTable) -> Readings:
     values: ValueMap = {}
+    rounding: dict[tuple[str, str], float] = {}
     blocked: set[tuple[str, str]] = set()
     definitions = {item.key: item for item in NUTRIENTS}
     for row in table.rows:
@@ -78,11 +97,12 @@ def _readings(table: NutritionTable) -> Readings:
             if factor is None:
                 continue
             amount *= factor
-            if key == "sodium_mg" and normalize(row.raw_label) in {
+            if key == "sodium_mg" and _printed_label(row) in {
                 "salt",
                 "salt equivalent",
             }:
                 amount *= 0.4  # g salt -> mg salt -> mg sodium, i.e. g salt x400.
+                factor *= 0.4
             if not math.isfinite(amount):
                 continue
             pair = (key, value.basis)
@@ -92,10 +112,12 @@ def _readings(table: NutritionTable) -> Readings:
                 values[pair][0], amount, rel_tol=0.02, abs_tol=0.001
             ):
                 values.pop(pair)
+                rounding.pop(pair)
                 blocked.add(pair)
-            else:
-                values.setdefault(pair, (amount, value.evidence))
-    return Readings(values, frozenset(key for key, _ in blocked))
+            elif pair not in values:
+                values[pair] = (amount, value.evidence)
+                rounding[pair] = _printed_rounding(value) * factor
+    return Readings(values, frozenset(key for key, _ in blocked), rounding)
 
 
 def readable_values(table: NutritionTable) -> ValueMap:
@@ -112,7 +134,8 @@ def _servings(table: NutritionTable) -> float | None:
         and table.pack_unit == table.serving_unit
     ):
         assert table.pack_size is not None and table.serving_size is not None
-        return table.pack_size / table.serving_size
+        count = table.pack_size / table.serving_size
+        return count if math.isfinite(count) else None
     return None
 
 
@@ -215,7 +238,9 @@ def _deviation(declared: float, computed: float) -> float:
     return abs(computed - declared) / declared * 100
 
 
-def _sanity_suspects(table: NutritionTable, values: ValueMap) -> set[str]:
+def _sanity_suspects(
+    table: NutritionTable, values: ValueMap, rounding: Mapping[tuple[str, str], float]
+) -> set[str]:
     suspects: set[str] = set()
     keys = set(key for key, _ in values)
     for basis in ("per_100g", "per_100ml", "per_serving", "per_pack"):
@@ -245,7 +270,13 @@ def _sanity_suspects(table: NutritionTable, values: ValueMap) -> set[str]:
             )
             if per_100 and serving:
                 expected = per_100[0] * table.serving_size / 100
-                if _deviation(expected, serving[0]) > 10 + 1e-9:
+                rounding_allowance = rounding.get(
+                    (key, f"per_100{table.serving_unit}"), 0.0
+                ) * table.serving_size / 100 + rounding.get((key, "per_serving"), 0.0)
+                if (
+                    abs(serving[0] - expected)
+                    > max(abs(expected) * 0.1, rounding_allowance) + 1e-9
+                ):
                     suspects.add(key)
     return suspects
 
@@ -254,21 +285,28 @@ def _consistency(
     table: NutritionTable, readings: Readings, preferred_basis: str
 ) -> ConsistencyCheck:
     values = readings.values
-    suspects = set(readings.conflicts) | _sanity_suspects(table, values)
+    suspects = set(readings.conflicts) | _sanity_suspects(
+        table, values, readings.rounding
+    )
     amounts: dict[str, float] = {}
+    required = set(_CORE)
+    if _includes_fibre(table):
+        required.add("fibre_g")
+    if any(_row_key(row) == _POLYOLS for row in table.rows):
+        required.add(_POLYOLS)
     for basis in dict.fromkeys((preferred_basis, "per_serving", "per_pack")):
         amounts = {
             key: value[0]
             for key in (*_CORE, "fibre_g", _POLYOLS)
             if (value := _value_at_basis(table, values, key, basis)) is not None
         }
-        if set(_CORE) <= amounts.keys():
+        if required <= amounts.keys():
             break
 
     def ordered_suspects() -> list[str]:
         return [key for key in NUTRIENT_KEYS if key in suspects]
 
-    if not set(_CORE) <= amounts.keys():
+    if not required <= amounts.keys():
         return ConsistencyCheck(
             status="insufficient_data",
             suspect_keys=ordered_suspects(),
@@ -291,12 +329,15 @@ def _consistency(
                 corrected_computed = _computed(corrected, _includes_fibre(table))
                 if (
                     corrected_computed >= 0
-                    and _deviation(corrected["energy_kcal"], corrected_computed) <= 5
+                    and _deviation(corrected["energy_kcal"], corrected_computed)
+                    <= 5 + 1e-9
                 ):
                     plausible.add(key)
                     break
         suspects.update(plausible or _CORE)
-    inconsistent = energy_mismatch or bool(suspects)
+    # Status describes the specified energy check. Other sanity failures remain
+    # actionable through suspect_keys even when the macro energy calculation agrees.
+    inconsistent = energy_mismatch
     return ConsistencyCheck(
         status="inconsistent" if inconsistent else "consistent",
         declared_kcal=declared,

@@ -187,6 +187,7 @@ def match_ingredients(ingredients: list[Ingredient]) -> tuple[IngredientMatches,
     for ingredient in ingredients:
         if ingredient.readability == "unreadable":
             result.append(IngredientMatches(ingredient, (), ()))
+            result.extend(match_ingredients(ingredient.sub_ingredients))
             continue
         matched = match_text(ingredient.name)
         result.append(IngredientMatches(ingredient, matched.matches, matched.unresolved))

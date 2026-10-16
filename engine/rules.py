@@ -52,6 +52,7 @@ class Signal:
     matches: list[Match] = field(default_factory=list)
     confidence: float = 1.0
     unknown_kind: UnknownKind | None = None
+    support_only: bool = False
 
 
 def _signal(
@@ -195,6 +196,7 @@ def _ingredient_signals(
             elif resolved_by_mark:
                 # This supporting signal never asserts absence in an incomplete section.
                 signal = _absence(extraction, categories, records, restriction)
+                signal.support_only = True
                 signal.evidence = evidence + (
                     [extraction.veg_mark.evidence]
                     if extraction.veg_mark.evidence
@@ -444,7 +446,11 @@ def _threshold_signal(
 
 
 def _aggregate(restriction: Restriction, signals: list[Signal]) -> RestrictionResult:
-    ordered = sorted(signals, key=lambda signal: _ORDER[signal.state])
+    ordered = sorted(
+        (signal for signal in signals if not signal.support_only),
+        key=lambda signal: _ORDER[signal.state],
+    )
+    ordered += [signal for signal in signals if signal.support_only]
     first = ordered[0]
     evidence: list[Evidence] = []
     for signal in ordered:
@@ -501,11 +507,12 @@ def _restriction(
     threshold_signal = _threshold_signal(extraction, restriction, analysis)
     if threshold_signal:
         signals.append(threshold_signal)
-    if not signals or (
-        not catalog.needs_threshold and all(s.state == "not_listed" for s in signals)
+    deciding = [signal for signal in signals if not signal.support_only]
+    if not deciding or (
+        not catalog.needs_threshold and all(s.state == "not_listed" for s in deciding)
     ):
         absence = _absence(extraction, categories, records, restriction)
-        if not signals or absence.state == "unknown":
+        if not deciding or absence.state == "unknown":
             signals.append(absence)
     return _aggregate(restriction, signals)
 
@@ -532,14 +539,16 @@ def unknown_items(extraction: LabelExtraction) -> list[UnknownItem]:
         if ingredient.readability != "clear":
             unreadable = True
             regions: list[Evidence | None] = list(ingredient.evidence) or [None]
-            for region in regions:
-                if region is None or not any(item.region == region for item in items):
+            for ingredient_region in regions:
+                if ingredient_region is None or not any(
+                    item.region == ingredient_region for item in items
+                ):
                     items.append(
                         UnknownItem(
                             section="ingredients",
                             message_key="unknown.unreadable_span",
                             detail=ingredient.raw_text,
-                            region=region,
+                            region=ingredient_region,
                         )
                     )
     section = extraction.ingredients_section

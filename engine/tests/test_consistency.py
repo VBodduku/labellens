@@ -159,7 +159,9 @@ def test_sanity_checks_mark_both_sides(make_extraction, part, whole, amount):
         add(extraction, whole, 38)
     add(extraction, part, amount)
     check = analyze_nutrition(extraction).consistency
-    assert check.status == "inconsistent"
+    assert (
+        check.status == "consistent"
+    )  # Calories agree; the independent sanity check does not.
     assert {part, whole} <= set(check.suspect_keys)
 
 
@@ -267,3 +269,47 @@ def test_duplicate_conflict_marks_key_suspect(make_extraction):
     analysis = analyze_nutrition(extraction)
     assert "total_sugars_g" not in analysis.per_100
     assert "total_sugars_g" in analysis.consistency.suspect_keys
+
+
+@pytest.mark.parametrize("key", ["other", "sodium_mg"])
+def test_unit_in_printed_salt_label(make_extraction, key):
+    extraction = label(make_extraction)
+    add(extraction, key, 1.5, raw_label="Salt (g)")
+    assert analyze_nutrition(extraction).per_100["sodium_mg"] == 600
+
+
+@pytest.mark.parametrize("which", ["fibre", "polyols"])
+def test_required_formula_component_cannot_be_assumed_zero(make_extraction, which):
+    extraction = label(make_extraction)
+    if which == "fibre":
+        extraction.nutrition.rows[2].raw_label = "Carbohydrate including fibre"
+    else:
+        add(extraction, "other", 0, raw_label="Polyols")
+        extraction.nutrition.rows[-1].values[0].amount = None
+        extraction.nutrition.rows[-1].values[0].readability = "unreadable"
+    assert analyze_nutrition(extraction).consistency.status == "insufficient_data"
+
+
+def test_derived_serving_count_cannot_overflow(make_extraction):
+    extraction = label(make_extraction)
+    extraction.nutrition.serving_size = 1e-308
+    extraction.nutrition.serving_unit = "g"
+    extraction.nutrition.pack_size = 1e308
+    extraction.nutrition.pack_unit = "g"
+    assert analyze_nutrition(extraction).servings_per_pack is None
+
+
+@pytest.mark.parametrize(
+    "printed_serving,expected_suspect", [(0.0, False), (0.2, True)]
+)
+def test_small_serving_rounding_is_not_misdiagnosed(
+    make_extraction, printed_serving, expected_suspect
+):
+    extraction = label(make_extraction)
+    extraction.nutrition.serving_size = 40
+    extraction.nutrition.serving_unit = "g"
+    add(extraction, "trans_fat_g", 0.1)
+    add(extraction, "trans_fat_g", printed_serving, basis="per_serving")
+    assert (
+        "trans_fat_g" in analyze_nutrition(extraction).consistency.suspect_keys
+    ) == expected_suspect

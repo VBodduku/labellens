@@ -694,3 +694,40 @@ def test_unreadable_row_keeps_location_even_without_section_regions(
     assert output.reports[0].results[0].reason_code == "UNKNOWN_NUTRIENT_MISSING"
     assert value.evidence in output.reports[0].results[0].evidence
     assert any(item.region == value.evidence for item in output.unknowns)
+
+
+def test_readable_child_still_conflicts_when_parent_name_is_unreadable(
+    make_extraction, make_profile
+):
+    extraction = make_extraction("Unreadable coating", complete=False)
+    extraction.ingredients[0].readability = "unreadable"
+    extraction.ingredients[0].sub_ingredients = make_extraction("Peanut").ingredients
+    extraction.ingredients[0].sub_ingredients[0].id = "child"
+    result = engine.evaluate(extraction, [make_profile("peanut")]).reports[0].results[0]
+    assert result.reason_code == "CONFLICT_INGREDIENT"
+    assert result.matches[0].ingredient_id == "child"
+
+
+def test_green_resolution_is_support_not_a_competing_verdict_signal(
+    make_extraction, make_profile
+):
+    extraction = make_extraction("INS 471", mark="veg")
+    extraction.allergen_statements = [
+        AllergenStatement(
+            id="a",
+            type="facility",
+            raw_text="Handles meat",
+            items=["meat"],
+            evidence=[
+                Evidence(image_id="img_0", text="Handles meat", status="verified")
+            ],
+        )
+    ]
+    result = (
+        engine.evaluate(extraction, [make_profile("vegetarian", "preference")])
+        .reports[0]
+        .results[0]
+    )
+    assert result.reason_code == "NOT_LISTED_TRACE_NOTE"
+    assert result.evidence[0].text == "Handles meat"
+    assert any("Green veg mark" in (match.note or "") for match in result.matches)
