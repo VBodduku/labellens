@@ -23,6 +23,12 @@ def explain_term(term: str, lang: Lang = "en") -> ExplainResponse | None:
         caution = f"{hit.entry.notes} Possible categories: {possible}."
     if hit.note:
         caution = f"{caution} {hit.note}" if caution else hit.note
+    if hit.entry.review_reason:
+        caution = (
+            f"{caution} {hit.entry.review_reason}"
+            if caution
+            else hit.entry.review_reason
+        )
     return ExplainResponse(
         term=term,
         canonical_id=hit.entry.id,

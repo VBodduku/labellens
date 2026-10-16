@@ -60,3 +60,8 @@
 - Before/after comparisons require identical case IDs, truth, photo bytes and profiles. Local code fingerprints cannot attest which code a separate backend process has loaded.
 - Error causes require explicit reviewed explanations; engine-owned classifications require regression-test references. Unreviewed dangerous misses make the engine-caused count unmeasured, not zero.
 - Missing expected profiles always fail verdict accuracy, including expected unknown; confusion-matrix fallback remains unknown and missing IDs are separately counted.
+
+- Phase 3 KB has 260 entries; common Hindi/Telugu ingredient aliases are included but still require native-speaker and packet-use review. No new additive numbers were added.
+- Correct generic albumin from definite egg to possible egg/egg-derived (medium); explicit ovalbumin and egg albumen remain definite egg. Albumin is a protein family, not an exclusive egg-source label.
+- Whole-word boundaries treat Unicode combining marks as word content so Hindi/Telugu vowel signs cannot split a syllable. Existing >=92 fuzzy policy is retained.
+- Add optional internal review_reason metadata and generate KB_REVIEW.md from every medium, possible, variable-origin or flagged entry. High-confidence origin taxonomy limitations are flagged without silently changing spec-required lactitol/sugar categories.

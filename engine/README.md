@@ -33,7 +33,7 @@ keep canonical category/nutrient/basis IDs and exact ingredient/statement text.
 
 ## Matching and rules
 
-The KB contains **224 entries**. Import validates every file, category, alias, code
+The KB contains **260 entries**. Import validates every file, category, alias, code
 and catalog key. Hindi/Telugu combining marks survive normalization. Codes retain
 their letter and Roman suffixes; an unknown suffix is unresolved, not silently
 treated as a known parent additive. Qualifiers apply to the attached item, not to
@@ -78,8 +78,18 @@ insufficient_data, with any independently detected sanity suspects retained.
 
 ## Extending the KB
 
+`KB_REVIEW.md` lists every medium-confidence, possible-category, variable-origin or
+explicitly flagged entry, plus every Hindi/Telugu alias for native-speaker review.
+Regenerate it with `python -m engine.kb_review`. Generic albumin has possible egg
+categories; explicit ovalbumin/egg albumen remain definite egg. Combining vowel
+marks count as word content, preventing aliases from matching inside Indic words.
+These fixes were found independently; no real packet corpus was available.
+
 Add entries to `kb/terms.json` using the existing Pydantic schema. Give each entry a
 unique id, aliases, origin, notes, and only contract categories. Entries with
+`review_reason` (optional) record a concrete human review question; explanations
+surface it as a caution even when the ingredient identity is high confidence.
+Entries with
 possible_categories require origin varies; contested entries need medium confidence
 and explicit notes. Add verified codes only; suffixes are significant. Add a
 qualifier with a narrow term_ids scope when a printed source genuinely resolves an

@@ -14,10 +14,12 @@
         "groundnut oil"
       ],
       "hi": [
-        "मूंगफली"
+        "मूंगफली",
+        "मूँगफली"
       ],
       "te": [
-        "వేరుశెనగ"
+        "వేరుశెనగ",
+        "వేరుశెనగపప్పు"
       ]
     },
     "ins": [],
@@ -42,7 +44,9 @@
       "hi": [
         "बादाम"
       ],
-      "te": []
+      "te": [
+        "బాదం"
+      ]
     },
     "ins": [],
     "categories": [
@@ -66,7 +70,9 @@
       "hi": [
         "काजू"
       ],
-      "te": []
+      "te": [
+        "జీడిపప్పు"
+      ]
     },
     "ins": [],
     "categories": [
@@ -88,7 +94,9 @@
       "hi": [
         "पिस्ता"
       ],
-      "te": []
+      "te": [
+        "పిస్తా"
+      ]
     },
     "ins": [],
     "categories": [
@@ -213,10 +221,13 @@
       "hi": [
         "गेहूं",
         "मैदा",
-        "आटा"
+        "आटा",
+        "गेहूँ"
       ],
       "te": [
-        "గోధుమ"
+        "గోధుమ",
+        "గోధుమ పిండి",
+        "మైదా"
       ]
     },
     "ins": [],
@@ -240,9 +251,13 @@
         "rawa"
       ],
       "hi": [
-        "सूजी"
+        "सूजी",
+        "रवा"
       ],
-      "te": []
+      "te": [
+        "రవ్వ",
+        "గోధుమ రవ్వ"
+      ]
     },
     "ins": [],
     "categories": [
@@ -252,7 +267,8 @@
     "possible_categories": [],
     "origin": "plant",
     "notes": "Unqualified semolina/rava conventionally means wheat. Explicit rice rava is a separate compound.",
-    "confidence": "high"
+    "confidence": "high",
+    "review_reason": "Unqualified rava/rawa conventionally means wheat, but regional grain usage differs; verify source on each packet and native-script aliases."
   },
   {
     "id": "barley",
@@ -487,7 +503,8 @@
     "possible_categories": [],
     "origin": "animal",
     "notes": "Milk-derived ingredient. This mapping screens declared milk origin, not individual lactose or allergenic protein concentrations.",
-    "confidence": "high"
+    "confidence": "high",
+    "review_reason": "Milk-origin category follows the frozen catalog; lactose intolerance and milk-protein allergy are different."
   },
   {
     "id": "butter",
@@ -496,8 +513,12 @@
         "butter",
         "butter oil"
       ],
-      "hi": [],
-      "te": []
+      "hi": [
+        "मक्खन"
+      ],
+      "te": [
+        "వెన్న"
+      ]
     },
     "ins": [],
     "categories": [
@@ -516,8 +537,12 @@
         "ghee",
         "clarified butter"
       ],
-      "hi": [],
-      "te": []
+      "hi": [
+        "घी"
+      ],
+      "te": [
+        "నెయ్యి"
+      ]
     },
     "ins": [],
     "categories": [
@@ -527,7 +552,8 @@
     "possible_categories": [],
     "origin": "animal",
     "notes": "Milk-derived ingredient. This mapping screens declared milk origin, not individual lactose or allergenic protein concentrations.",
-    "confidence": "high"
+    "confidence": "high",
+    "review_reason": "Broad milk-origin screen is not a measurement of residual lactose or milk protein."
   },
   {
     "id": "cream",
@@ -536,8 +562,12 @@
         "cream",
         "malai"
       ],
-      "hi": [],
-      "te": []
+      "hi": [
+        "मलाई"
+      ],
+      "te": [
+        "మీగడ"
+      ]
     },
     "ins": [],
     "categories": [
@@ -557,8 +587,13 @@
         "mawa",
         "khoa"
       ],
-      "hi": [],
-      "te": []
+      "hi": [
+        "खोया",
+        "मावा"
+      ],
+      "te": [
+        "కోవా"
+      ]
     },
     "ins": [],
     "categories": [
@@ -577,8 +612,12 @@
         "paneer",
         "cottage cheese"
       ],
-      "hi": [],
-      "te": []
+      "hi": [
+        "पनीर"
+      ],
+      "te": [
+        "పనీర్"
+      ]
     },
     "ins": [],
     "categories": [
@@ -599,8 +638,12 @@
         "yogurt",
         "yoghurt"
       ],
-      "hi": [],
-      "te": []
+      "hi": [
+        "दही"
+      ],
+      "te": [
+        "పెరుగు"
+      ]
     },
     "ins": [],
     "categories": [
@@ -641,8 +684,12 @@
         "chaas",
         "chhach"
       ],
-      "hi": [],
-      "te": []
+      "hi": [
+        "छाछ"
+      ],
+      "te": [
+        "మజ్జిగ"
+      ]
     },
     "ins": [],
     "categories": [
@@ -665,10 +712,12 @@
         "anda"
       ],
       "hi": [
-        "अंडा"
+        "अंडा",
+        "अंडे"
       ],
       "te": [
-        "గుడ్డు"
+        "గుడ్డు",
+        "గుడ్లు"
       ]
     },
     "ins": [],
@@ -685,22 +734,21 @@
     "id": "albumin",
     "names": {
       "en": [
-        "albumin",
-        "ovalbumin",
-        "egg albumen"
+        "albumin"
       ],
       "hi": [],
       "te": []
     },
     "ins": [],
-    "categories": [
+    "categories": [],
+    "possible_categories": [
       "egg",
       "egg_derived"
     ],
-    "possible_categories": [],
-    "origin": "animal",
-    "notes": "Food-label albumin/albumen commonly refers to egg; other explicit protein sources require source-specific review.",
-    "confidence": "high"
+    "origin": "varies",
+    "notes": "Albumin is a protein family name, not an exclusive egg-source declaration. Egg is possible until a source is printed.",
+    "confidence": "medium",
+    "review_reason": "Confirm generic albumin source with the manufacturer; plant and non-egg animal albumins exist."
   },
   {
     "id": "egg_lecithin",
@@ -866,7 +914,8 @@
         "मछली"
       ],
       "te": [
-        "చేప"
+        "చేప",
+        "చేపలు"
       ]
     },
     "ins": [],
@@ -1359,7 +1408,8 @@
     "possible_categories": [],
     "origin": "animal",
     "notes": "Collagen-derived gelling ingredient. 441 is a legacy gelatin label code; do not interpret it as current authorization in any jurisdiction.",
-    "confidence": "high"
+    "confidence": "high",
+    "review_reason": "441 is a legacy label code, not evidence of current INS authorization. Verify label jurisdiction; collagen origin is definite."
   },
   {
     "id": "carmine",
@@ -1402,7 +1452,8 @@
     "possible_categories": [],
     "origin": "insect",
     "notes": "Lac insect secretion; diet practices differ, but insect origin is definite.",
-    "confidence": "high"
+    "confidence": "high",
+    "review_reason": "Insect origin is definite; diet acceptance differs between communities."
   },
   {
     "id": "beeswax",
@@ -1850,7 +1901,9 @@
       "hi": [
         "आलू"
       ],
-      "te": []
+      "te": [
+        "బంగాళాదుంప"
+      ]
     },
     "ins": [],
     "categories": [
@@ -1872,7 +1925,9 @@
       "hi": [
         "गाजर"
       ],
-      "te": []
+      "te": [
+        "క్యారెట్"
+      ]
     },
     "ins": [],
     "categories": [
@@ -1915,7 +1970,9 @@
       "hi": [
         "मूली"
       ],
-      "te": []
+      "te": [
+        "ముల్లంగి"
+      ]
     },
     "ins": [],
     "categories": [
@@ -1956,7 +2013,9 @@
       "hi": [
         "अदरक"
       ],
-      "te": []
+      "te": [
+        "అల్లం"
+      ]
     },
     "ins": [],
     "categories": [
@@ -1995,8 +2054,12 @@
         "ginger powder",
         "sonth"
       ],
-      "hi": [],
-      "te": []
+      "hi": [
+        "सोंठ"
+      ],
+      "te": [
+        "శొంఠి"
+      ]
     },
     "ins": [],
     "categories": [],
@@ -2111,10 +2174,12 @@
         "brown sugar"
       ],
       "hi": [
-        "चीनी"
+        "चीनी",
+        "शक्कर"
       ],
       "te": [
-        "చక్కెర"
+        "చక్కెర",
+        "పంచదార"
       ]
     },
     "ins": [],
@@ -2134,8 +2199,12 @@
         "gur",
         "gud"
       ],
-      "hi": [],
-      "te": []
+      "hi": [
+        "गुड़"
+      ],
+      "te": [
+        "బెల్లం"
+      ]
     },
     "ins": [],
     "categories": [
@@ -2304,7 +2373,8 @@
     "possible_categories": [],
     "origin": "plant",
     "notes": "LabelLens sugar-signal category. Maltodextrin is a glucose polymer, not chemically a sugar; date paste may contain intrinsic sugars. This signal only requests a quantitative sugar check.",
-    "confidence": "high"
+    "confidence": "high",
+    "review_reason": "Spec-required sugar screen; a glucose polymer is not chemically or necessarily regulatorily added sugar."
   },
   {
     "id": "maltose",
@@ -2343,7 +2413,8 @@
     "possible_categories": [],
     "origin": "plant",
     "notes": "LabelLens sugar-signal category. Maltodextrin is a glucose polymer, not chemically a sugar; date paste may contain intrinsic sugars. This signal only requests a quantitative sugar check.",
-    "confidence": "high"
+    "confidence": "high",
+    "review_reason": "Spec groups syrup and paste as sugar signals; date paste may retain intrinsic sugars."
   },
   {
     "id": "sucrose",
@@ -2506,7 +2577,8 @@
     "possible_categories": [],
     "origin": "animal",
     "notes": "Lactose-derived polyol. Milk-origin screening category does not establish residual milk protein or a clinical allergy risk.",
-    "confidence": "high"
+    "confidence": "high",
+    "review_reason": "Spec-required milk-origin taxonomy for lactose-derived lactitol does not establish milk-protein allergenicity."
   },
   {
     "id": "ins_950",
@@ -2840,8 +2912,12 @@
         "nariyal",
         "coconut butter"
       ],
-      "hi": [],
-      "te": []
+      "hi": [
+        "नारियल"
+      ],
+      "te": [
+        "కొబ్బరి"
+      ]
     },
     "ins": [],
     "categories": [],
@@ -2892,8 +2968,13 @@
         "rice semolina",
         "rice milk"
       ],
-      "hi": [],
-      "te": []
+      "hi": [
+        "चावल"
+      ],
+      "te": [
+        "బియ్యం",
+        "బియ్యపు రవ్వ"
+      ]
     },
     "ins": [],
     "categories": [],
@@ -2912,8 +2993,12 @@
         "cornflour",
         "corn starch"
       ],
-      "hi": [],
-      "te": []
+      "hi": [
+        "मक्का"
+      ],
+      "te": [
+        "మొక్కజొన్న"
+      ]
     },
     "ins": [],
     "categories": [],
@@ -2973,7 +3058,8 @@
     "possible_categories": [],
     "origin": "plant",
     "notes": "Tapioca; declared ingredient mapped to root_vegetable.",
-    "confidence": "high"
+    "confidence": "high",
+    "review_reason": "Root origin is definite; processed tapioca/sabudana acceptance differs between Jain practices."
   },
   {
     "id": "ins_500",
@@ -3460,8 +3546,12 @@
       "en": [
         "lassi"
       ],
-      "hi": [],
-      "te": []
+      "hi": [
+        "लस्सी"
+      ],
+      "te": [
+        "లస్సీ"
+      ]
     },
     "ins": [],
     "categories": [
@@ -4452,8 +4542,12 @@
         "coriander seed",
         "dhania"
       ],
-      "hi": [],
-      "te": []
+      "hi": [
+        "धनिया"
+      ],
+      "te": [
+        "ధనియాలు"
+      ]
     },
     "ins": [],
     "categories": [],
@@ -4469,8 +4563,12 @@
         "cumin",
         "jeera"
       ],
-      "hi": [],
-      "te": []
+      "hi": [
+        "जीरा"
+      ],
+      "te": [
+        "జీలకర్ర"
+      ]
     },
     "ins": [],
     "categories": [],
@@ -4486,8 +4584,12 @@
         "fennel",
         "saunf"
       ],
-      "hi": [],
-      "te": []
+      "hi": [
+        "सौंफ"
+      ],
+      "te": [
+        "సోంపు"
+      ]
     },
     "ins": [],
     "categories": [],
@@ -4503,8 +4605,12 @@
         "black pepper",
         "kali mirch"
       ],
-      "hi": [],
-      "te": []
+      "hi": [
+        "काली मिर्च"
+      ],
+      "te": [
+        "మిరియాలు"
+      ]
     },
     "ins": [],
     "categories": [],
@@ -4520,8 +4626,12 @@
         "cardamom",
         "elaichi"
       ],
-      "hi": [],
-      "te": []
+      "hi": [
+        "इलायची"
+      ],
+      "te": [
+        "యాలకులు"
+      ]
     },
     "ins": [],
     "categories": [],
@@ -4538,8 +4648,12 @@
         "cloves",
         "laung"
       ],
-      "hi": [],
-      "te": []
+      "hi": [
+        "लौंग"
+      ],
+      "te": [
+        "లవంగాలు"
+      ]
     },
     "ins": [],
     "categories": [],
@@ -4555,8 +4669,12 @@
         "cinnamon",
         "dalchini"
       ],
-      "hi": [],
-      "te": []
+      "hi": [
+        "दालचीनी"
+      ],
+      "te": [
+        "దాల్చిన చెక్క"
+      ]
     },
     "ins": [],
     "categories": [],
@@ -4572,8 +4690,12 @@
         "nutmeg",
         "jaiphal"
       ],
-      "hi": [],
-      "te": []
+      "hi": [
+        "जायफल"
+      ],
+      "te": [
+        "జాజికాయ"
+      ]
     },
     "ins": [],
     "categories": [],
@@ -4581,5 +4703,721 @@
     "origin": "plant",
     "notes": "Nutmeg; no tracked category inferred from this ingredient name.",
     "confidence": "high"
+  },
+  {
+    "id": "egg_albumen",
+    "names": {
+      "en": [
+        "ovalbumin",
+        "egg albumen"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "egg",
+      "egg_derived"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Explicit egg-white protein; egg source is declared.",
+    "confidence": "high"
+  },
+  {
+    "id": "cream_cheese",
+    "names": {
+      "en": [
+        "cream cheese"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Standard dairy ingredient. An explicitly declared plant alternative requires its own component/source assessment.",
+    "confidence": "high"
+  },
+  {
+    "id": "sour_cream",
+    "names": {
+      "en": [
+        "sour cream"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Standard dairy ingredient. An explicitly declared plant alternative requires its own component/source assessment.",
+    "confidence": "high"
+  },
+  {
+    "id": "ricotta",
+    "names": {
+      "en": [
+        "ricotta"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Standard dairy ingredient. An explicitly declared plant alternative requires its own component/source assessment.",
+    "confidence": "high"
+  },
+  {
+    "id": "mascarpone",
+    "names": {
+      "en": [
+        "mascarpone"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Standard dairy ingredient. An explicitly declared plant alternative requires its own component/source assessment.",
+    "confidence": "high"
+  },
+  {
+    "id": "milk_kefir",
+    "names": {
+      "en": [
+        "milk kefir"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Standard dairy ingredient. An explicitly declared plant alternative requires its own component/source assessment.",
+    "confidence": "high"
+  },
+  {
+    "id": "quark",
+    "names": {
+      "en": [
+        "quark",
+        "quark cheese"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "milk",
+      "dairy"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Standard dairy ingredient. An explicitly declared plant alternative requires its own component/source assessment.",
+    "confidence": "high"
+  },
+  {
+    "id": "egg_powder",
+    "names": {
+      "en": [
+        "egg powder",
+        "whole egg powder",
+        "dried whole egg"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "egg",
+      "egg_derived"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Dried egg ingredient; egg source is explicit.",
+    "confidence": "high"
+  },
+  {
+    "id": "egg_white_powder",
+    "names": {
+      "en": [
+        "egg white powder",
+        "dried egg white"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "egg",
+      "egg_derived"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Dried egg ingredient; egg source is explicit.",
+    "confidence": "high"
+  },
+  {
+    "id": "egg_yolk_powder",
+    "names": {
+      "en": [
+        "egg yolk powder",
+        "dried egg yolk"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "egg",
+      "egg_derived"
+    ],
+    "possible_categories": [],
+    "origin": "animal",
+    "notes": "Dried egg ingredient; egg source is explicit.",
+    "confidence": "high"
+  },
+  {
+    "id": "pistachio_paste",
+    "names": {
+      "en": [
+        "pistachio paste",
+        "pista paste"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "tree_nut"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Declared tree-nut ingredient; name identifies source, not residual allergenic protein or degree of refining.",
+    "confidence": "high"
+  },
+  {
+    "id": "walnut_paste",
+    "names": {
+      "en": [
+        "walnut paste"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "tree_nut"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Declared tree-nut ingredient; name identifies source, not residual allergenic protein or degree of refining.",
+    "confidence": "high"
+  },
+  {
+    "id": "pecan_paste",
+    "names": {
+      "en": [
+        "pecan paste"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "tree_nut"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Declared tree-nut ingredient; name identifies source, not residual allergenic protein or degree of refining.",
+    "confidence": "high"
+  },
+  {
+    "id": "almond_oil",
+    "names": {
+      "en": [
+        "almond oil"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "tree_nut"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Declared tree-nut ingredient; name identifies source, not residual allergenic protein or degree of refining.",
+    "confidence": "high",
+    "review_reason": "Oil processing and residual protein require label/manufacturer review; origin screening is not a clinical risk estimate."
+  },
+  {
+    "id": "walnut_oil",
+    "names": {
+      "en": [
+        "walnut oil"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "tree_nut"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Declared tree-nut ingredient; name identifies source, not residual allergenic protein or degree of refining.",
+    "confidence": "high",
+    "review_reason": "Oil processing and residual protein require label/manufacturer review; origin screening is not a clinical risk estimate."
+  },
+  {
+    "id": "tomato",
+    "names": {
+      "en": [
+        "tomato",
+        "tomatoes",
+        "tomato paste",
+        "tomato powder"
+      ],
+      "hi": [
+        "टमाटर"
+      ],
+      "te": [
+        "టమాటా"
+      ]
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no category in the current frozen restriction vocabulary. This is not an allergen-free claim.",
+    "confidence": "high"
+  },
+  {
+    "id": "chilli",
+    "names": {
+      "en": [
+        "chilli",
+        "chili",
+        "red chilli",
+        "chilli powder"
+      ],
+      "hi": [
+        "मिर्च"
+      ],
+      "te": [
+        "మిరపకాయ",
+        "కారం"
+      ]
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no category in the current frozen restriction vocabulary. This is not an allergen-free claim.",
+    "confidence": "high"
+  },
+  {
+    "id": "mint",
+    "names": {
+      "en": [
+        "mint",
+        "mint leaves",
+        "pudina"
+      ],
+      "hi": [
+        "पुदीना"
+      ],
+      "te": [
+        "పుదీనా"
+      ]
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no category in the current frozen restriction vocabulary. This is not an allergen-free claim.",
+    "confidence": "high"
+  },
+  {
+    "id": "curry_leaf",
+    "names": {
+      "en": [
+        "curry leaf",
+        "curry leaves"
+      ],
+      "hi": [
+        "करी पत्ता"
+      ],
+      "te": [
+        "కరివేపాకు"
+      ]
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no category in the current frozen restriction vocabulary. This is not an allergen-free claim.",
+    "confidence": "high"
+  },
+  {
+    "id": "bay_leaf",
+    "names": {
+      "en": [
+        "bay leaf",
+        "bay leaves",
+        "tej patta"
+      ],
+      "hi": [
+        "तेज पत्ता"
+      ],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no category in the current frozen restriction vocabulary. This is not an allergen-free claim.",
+    "confidence": "high"
+  },
+  {
+    "id": "carom_seed",
+    "names": {
+      "en": [
+        "carom seed",
+        "carom seeds",
+        "ajwain"
+      ],
+      "hi": [
+        "अजवाइन"
+      ],
+      "te": [
+        "వాము"
+      ]
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no category in the current frozen restriction vocabulary. This is not an allergen-free claim.",
+    "confidence": "high"
+  },
+  {
+    "id": "fenugreek",
+    "names": {
+      "en": [
+        "fenugreek",
+        "fenugreek seeds",
+        "methi"
+      ],
+      "hi": [
+        "मेथी"
+      ],
+      "te": [
+        "మెంతులు"
+      ]
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no category in the current frozen restriction vocabulary. This is not an allergen-free claim.",
+    "confidence": "high"
+  },
+  {
+    "id": "pumpkin_seed",
+    "names": {
+      "en": [
+        "pumpkin seed",
+        "pumpkin seeds"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no category in the current frozen restriction vocabulary. This is not an allergen-free claim.",
+    "confidence": "high"
+  },
+  {
+    "id": "watermelon_seed",
+    "names": {
+      "en": [
+        "watermelon seed",
+        "watermelon seeds"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no category in the current frozen restriction vocabulary. This is not an allergen-free claim.",
+    "confidence": "high"
+  },
+  {
+    "id": "flaxseed",
+    "names": {
+      "en": [
+        "flaxseed",
+        "flaxseeds",
+        "linseed",
+        "linseeds"
+      ],
+      "hi": [
+        "अलसी"
+      ],
+      "te": [
+        "అవిసె గింజలు"
+      ]
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no category in the current frozen restriction vocabulary. This is not an allergen-free claim.",
+    "confidence": "high"
+  },
+  {
+    "id": "chia_seed",
+    "names": {
+      "en": [
+        "chia seed",
+        "chia seeds"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no category in the current frozen restriction vocabulary. This is not an allergen-free claim.",
+    "confidence": "high"
+  },
+  {
+    "id": "basil_seed",
+    "names": {
+      "en": [
+        "basil seed",
+        "basil seeds",
+        "sabja"
+      ],
+      "hi": [],
+      "te": [
+        "సబ్జా"
+      ]
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no category in the current frozen restriction vocabulary. This is not an allergen-free claim.",
+    "confidence": "high"
+  },
+  {
+    "id": "sunflower_seed",
+    "names": {
+      "en": [
+        "sunflower seed",
+        "sunflower seeds"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no category in the current frozen restriction vocabulary. This is not an allergen-free claim.",
+    "confidence": "high"
+  },
+  {
+    "id": "poppy_seed",
+    "names": {
+      "en": [
+        "poppy seed",
+        "poppy seeds",
+        "khus khus"
+      ],
+      "hi": [
+        "खसखस"
+      ],
+      "te": [
+        "గసగసాలు"
+      ]
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no category in the current frozen restriction vocabulary. This is not an allergen-free claim.",
+    "confidence": "high"
+  },
+  {
+    "id": "corn_semolina",
+    "names": {
+      "en": [
+        "corn semolina",
+        "maize semolina",
+        "corn rava"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no category in the current frozen restriction vocabulary. This is not an allergen-free claim.",
+    "confidence": "high"
+  },
+  {
+    "id": "rice_flakes",
+    "names": {
+      "en": [
+        "rice flakes",
+        "flattened rice",
+        "poha"
+      ],
+      "hi": [
+        "पोहा"
+      ],
+      "te": [
+        "అటుకులు"
+      ]
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no category in the current frozen restriction vocabulary. This is not an allergen-free claim.",
+    "confidence": "high"
+  },
+  {
+    "id": "puffed_rice",
+    "names": {
+      "en": [
+        "puffed rice",
+        "murmura"
+      ],
+      "hi": [
+        "मुरमुरा"
+      ],
+      "te": [
+        "మరమరాలు"
+      ]
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no category in the current frozen restriction vocabulary. This is not an allergen-free claim.",
+    "confidence": "high"
+  },
+  {
+    "id": "rice_starch",
+    "names": {
+      "en": [
+        "rice starch"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Named plant ingredient; no category in the current frozen restriction vocabulary. This is not an allergen-free claim.",
+    "confidence": "high"
+  },
+  {
+    "id": "arrowroot",
+    "names": {
+      "en": [
+        "arrowroot",
+        "arrowroot starch"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [
+      "root_vegetable"
+    ],
+    "possible_categories": [],
+    "origin": "plant",
+    "notes": "Arrowroot starch comes from an underground rhizome. Jain acceptance of processed starch varies.",
+    "confidence": "high",
+    "review_reason": "Root origin is definite; verify personal Jain practice for processed starch."
+  },
+  {
+    "id": "modified_starch",
+    "names": {
+      "en": [
+        "modified starch",
+        "modified food starch"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [
+      "wheat",
+      "gluten",
+      "root_vegetable"
+    ],
+    "origin": "varies",
+    "notes": "Unspecified botanical source: starch can come from maize, rice, wheat, potato or tapioca. Do not assert wheat or a root source without a printed qualifier.",
+    "confidence": "medium"
+  },
+  {
+    "id": "hydrolysed_vegetable_protein",
+    "names": {
+      "en": [
+        "hydrolysed vegetable protein",
+        "hydrolyzed vegetable protein",
+        "hvp"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [
+      "soy",
+      "wheat",
+      "gluten"
+    ],
+    "origin": "varies",
+    "notes": "Unspecified vegetable protein can come from soy, wheat or other plants. Source-specific ingredients and allergen statements take precedence.",
+    "confidence": "medium"
   }
 ]

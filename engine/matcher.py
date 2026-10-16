@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import unicodedata
 from dataclasses import dataclass
 from typing import Literal
 
@@ -18,6 +19,19 @@ _ALIAS_PATTERNS = tuple(
     (alias, term_id, re.compile(r"(?<!\w)" + re.escape(alias) + r"(?!\w)"))
     for alias, term_id in ALIASES
 )
+
+
+def _word_character(char: str) -> bool:
+    # Python's \w excludes combining vowel signs used by Hindi and Telugu.
+    # Treat those marks as word content, so a boundary cannot split a syllable.
+    return char.isalnum() or char == "_" or unicodedata.category(char).startswith("M")
+
+
+def _whole_word(text: str, start: int, end: int) -> bool:
+    return not (
+        (start and _word_character(text[start - 1]))
+        or (end < len(text) and _word_character(text[end]))
+    )
 
 
 @dataclass(frozen=True)
@@ -160,6 +174,8 @@ def _segment(text: str) -> TextMatches:
     occupied: list[tuple[int, int]] = []
     for alias, term_id, pattern in _ALIAS_PATTERNS:
         for found in pattern.finditer(cleaned):
+            if not _whole_word(cleaned, found.start(), found.end()):
+                continue
             if any(
                 found.start() < end and start < found.end() for start, end in occupied
             ):
