@@ -30,6 +30,7 @@ logger = logging.getLogger("labellens.llm")
 M = TypeVar("M", bound=BaseModel)
 
 TIMEOUT_COOLDOWN_S = 300       # a provider too slow for image calls is skipped for them a while (local Ollama)
+MIN_ATTEMPT_S = 2.0            # less left of a caller's budget than this: stop trying further models
 REPAIR_INSTRUCTION = (
     "\n\nYour previous answer did not match the required JSON schema. Validation errors:\n{errors}\n"
     "Return the corrected JSON only."
@@ -98,9 +99,11 @@ class LLMRouter:
         self, prompt_for: Callable[[ProviderName], str], images: list[LLMImage], schema_model: type[M],
         timeout_s: float | None = None, providers: Collection[ProviderName] | None = None,
     ) -> LLMResult[M]:
-        """`providers` restricts the chain (e.g. user-facing prose only from Gemini)."""
+        """`providers` restricts the chain (e.g. user-facing prose only from Gemini). `timeout_s` is the
+        caller's budget for the whole chain; without it each attempt gets LLM_TIMEOUT_S."""
         schemas = {flag: inline_schema(schema_model, require_all=flag) for flag in (True, False)}
         timeout = min(self._timeout_s, timeout_s) if timeout_s is not None else self._timeout_s
+        deadline = self._clock() + timeout_s if timeout_s is not None else None
         attempts = 0
         retry_after: list[int] = []
         for state in self._states:
@@ -114,9 +117,12 @@ class LLMRouter:
             prompt = prompt_for(state.client.name)
             schema = schemas[getattr(state.client, "require_all_fields", True)]
             for repair in (False, True):
+                limit = timeout if deadline is None else min(timeout, deadline - self._clock())
+                if deadline is not None and limit < MIN_ATTEMPT_S:
+                    break
                 attempts += 1
                 try:
-                    text = await asyncio.wait_for(state.client.generate_json(prompt, images, schema, timeout), timeout)
+                    text = await asyncio.wait_for(state.client.generate_json(prompt, images, schema, limit), limit)
                     value = schema_model.model_validate_json(text)
                 except ValidationError as exc:
                     self._fail(state, f"invalid output: {exc.error_count()} errors")
@@ -134,9 +140,9 @@ class LLMRouter:
                     self._fail(state, f"overloaded, skipped for {exc.retry_after_s}s")
                     break
                 except TimeoutError:
-                    if images and timeout >= self._timeout_s:   # too slow for photos, not a short caller budget
+                    if images and limit >= self._timeout_s:     # too slow for photos, not a short caller budget
                         state.slow_until = self._clock() + TIMEOUT_COOLDOWN_S
-                    self._fail(state, f"timed out after {timeout:g}s")
+                    self._fail(state, f"timed out after {limit:g}s")
                     break
                 except LLMError as exc:
                     self._fail(state, str(exc) or type(exc).__name__)

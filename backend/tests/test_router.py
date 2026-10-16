@@ -56,6 +56,14 @@ def test_rate_limit_cools_down_and_falls_through_to_backup_then_ollama() -> None
     assert router.provider_status()["gemini"] is True
 
 
+def test_a_callers_budget_covers_the_whole_chain(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr("backend.app.llm.router.MIN_ATTEMPT_S", 0.05)
+    slow, next_one = FakeLLM([GOOD], delay_s=1.0), FakeLLM([GOOD], label="gemini:lite", delay_s=1.0)
+    with pytest.raises(AllProvidersFailedError):
+        asyncio.run(LLMRouter([slow, next_one], 5).generate(lambda p: "x", [], LLMExtraction, timeout_s=0.3))
+    assert len(slow.prompts) == 1 and next_one.prompts == []          # no fresh 0.3 s for the next model
+
+
 def test_overloaded_model_is_skipped_for_its_cooldown_without_counting_as_rate_limit() -> None:
     clock = Clock()
     main = FakeLLM([ModelOverloadedError(60), GOOD], label="gemini:primary:main")
