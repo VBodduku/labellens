@@ -18,9 +18,12 @@ import { Spinner } from "../components/ui/Spinner";
 import { Tabs } from "../components/ui/Tabs";
 import { panelId, tabId } from "../components/ui/tabIds";
 import { AnalysingView } from "../components/verdict/AnalysingView";
+import { ContradictionsPanel } from "../components/verdict/ContradictionsPanel";
 import { FamilyStrip } from "../components/verdict/FamilyStrip";
+import { FindingsSummary } from "../components/verdict/FindingsSummary";
 import { ProfileVerdictCard } from "../components/verdict/ProfileVerdictCard";
 import { makeCorrection } from "../lib/corrections";
+import { useCheckedContradictions } from "../lib/useCheckedContradictions";
 import { useLatch } from "../lib/useLatch";
 import { sortByStateWorstFirst } from "../lib/verdict";
 import type { Box, ScanResult } from "../shared/contract";
@@ -71,6 +74,8 @@ function ResultView({ result, panels }: { result: ScanResult; panels: Panel[] })
   const [editing, setEditing] = useState<EditTarget | null>(null);
   const [explaining, setExplaining] = useState<string | null>(null);
   const editorMounted = useLatch(editing !== null);
+  const contradictions = result.contradictions ?? [];
+  const { checked, check } = useCheckedContradictions(result.scan_id);
   const explainMounted = useLatch(explaining !== null);
 
   // Summaries are generated per language: after a switch, recheck (engine only) and show the template meanwhile.
@@ -156,6 +161,15 @@ function ResultView({ result, panels }: { result: ScanResult; panels: Panel[] })
           {reports.length > 0 && selected && (
             <FamilyStrip reports={reports} profiles={scanProfiles} selectedId={selected.profile_id} onSelect={selectProfile} />
           )}
+          {selected && <FindingsSummary report={selected} contradictions={contradictions} checked={checked} />}
+          <ContradictionsPanel
+            contradictions={contradictions}
+            extraction={result.extraction}
+            profiles={scanProfiles}
+            checked={checked}
+            onCheck={check}
+            onFix={setEditing}
+          />
           <Tabs tabs={tabs} value={tab} onChange={setTab} label={t("result.tabs.label")} idPrefix={TAB_PREFIX} />
           <div role="tabpanel" id={panelId(TAB_PREFIX, tab)} aria-labelledby={tabId(TAB_PREFIX, tab)} tabIndex={0} className="focus-visible:outline-none">
             {tab === "verdicts" &&

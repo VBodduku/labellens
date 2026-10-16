@@ -27,3 +27,15 @@ export function joinWithOr(items: string[], lang: Lang): string {
   }
   return format.format(items);
 }
+
+const andLists = new Map<Lang, Intl.ListFormat>();
+
+/** Joins items with the locale's word for "and". */
+export function joinWithAnd(items: string[], lang: Lang): string {
+  let format = andLists.get(lang);
+  if (!format) {
+    format = new Intl.ListFormat(localeFor(lang), { type: "conjunction", style: "long" });
+    andLists.set(lang, format);
+  }
+  return format.format(items);
+}

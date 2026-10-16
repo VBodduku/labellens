@@ -52,6 +52,8 @@ interface ScanState {
   /** Engine-only re-evaluation (no new reading): after a correction, a language switch or profile edits. */
   recheck: (lang: Lang, profiles?: Profile[]) => Promise<void>;
   addCorrection: (correction: Correction, lang: Lang) => Promise<void>;
+  /** Several corrections, one recheck (a confirmation covers each category of an ingredient). */
+  addCorrections: (corrections: Correction[], lang: Lang) => Promise<void>;
   loadDemo: () => Promise<void>;
   hydrate: () => Promise<void>;
   reset: () => void;
@@ -202,8 +204,11 @@ export const useScanStore = create<ScanState>()((set, get) => {
       }
     },
 
-    addCorrection: async (correction, lang) => {
-      set({ corrections: [...get().corrections, correction] });
+    addCorrection: async (correction, lang) => get().addCorrections([correction], lang),
+
+    addCorrections: async (corrections, lang) => {
+      if (corrections.length === 0) return;
+      set({ corrections: [...get().corrections, ...corrections] });
       await get().recheck(lang);
     },
 

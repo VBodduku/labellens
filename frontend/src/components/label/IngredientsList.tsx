@@ -60,6 +60,9 @@ function IngredientRow({ ingredient, path, annotations, editedPaths, onEdit, onE
                 {t(`ingredients.readability.${ingredient.readability}`)}
               </span>
             )}
+            {Object.keys(ingredient.confirmations ?? {}).length > 0 && (
+              <span className="rounded-chip bg-beam/15 px-2 py-0.5 text-[0.7rem] font-semibold text-beam">{t("ingredients.checked")}</span>
+            )}
             {editedPaths.has(namePath) && (
               <span className="rounded-chip bg-beam/15 px-2 py-0.5 text-[0.7rem] font-semibold text-beam">{t("result.edited")}</span>
             )}

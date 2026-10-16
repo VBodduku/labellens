@@ -1,17 +1,22 @@
-import type { Correction, LabelExtraction } from "../shared/contract";
+import type { Correction, Ingredient, LabelExtraction } from "../shared/contract";
 import { parsePath, formatPath, setAtPath, getAtPath } from "./fieldPath";
 
 /**
  * Applies user corrections to an extraction: patches each field, flags corrected nutrient values
  * with `corrected_by_user`, and records the corrections in `user_corrections`. A corrected value or
  * ingredient counts as readable (the user read it off the pack), so the engine uses it; a renamed
- * ingredient's `raw_text` follows so verdict messages quote what the user confirmed.
+ * ingredient's `raw_text` follows so verdict messages quote what the user confirmed. A confirmation
+ * (`ingredients[4].confirmations.animal_derived`) records what the user read on the pack for one category.
  */
 export function applyCorrections(extraction: LabelExtraction, corrections: Correction[]): LabelExtraction {
   let patched = extraction;
   for (const correction of corrections) {
-    patched = setAtPath(patched, correction.field_path, correction.new_value);
     const segments = parsePath(correction.field_path);
+    if (segments.at(-2) === "confirmations") {
+      patched = applyConfirmation(patched, formatPath(segments.slice(0, -2)), String(segments.at(-1)), correction.new_value);
+      continue;
+    }
+    patched = setAtPath(patched, correction.field_path, correction.new_value);
     const parentPath = formatPath(segments.slice(0, -1));
     if (typeof getAtPath(patched, parentPath) !== "object") continue;
     const isNutrientValue = segments[0] === "nutrition" && segments.includes("values");
@@ -25,6 +30,12 @@ export function applyCorrections(extraction: LabelExtraction, corrections: Corre
     }
   }
   return { ...patched, user_corrections: [...extraction.user_corrections, ...corrections] };
+}
+
+function applyConfirmation(extraction: LabelExtraction, ingredientPath: string, category: string, value: string | number): LabelExtraction {
+  const ingredient = getAtPath(extraction, ingredientPath) as Ingredient | undefined;
+  if (!ingredient || (value !== "present" && value !== "absent")) return extraction;
+  return setAtPath(extraction, ingredientPath, { ...ingredient, confirmations: { ...ingredient.confirmations, [category]: value } });
 }
 
 export function makeCorrection(

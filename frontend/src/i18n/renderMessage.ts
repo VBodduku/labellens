@@ -11,7 +11,7 @@ export interface MessageSegment {
 export type MessageParams = Record<string, string | number>;
 
 const PLACEHOLDER = /\{(\w+)\}/g;
-const LABEL_PARAMS = new Set(["term", "item"]);
+const LABEL_PARAMS = new Set(["term", "item", "claim"]);
 export const MISSING_PARAM = "—";
 
 function translateParam(name: string, value: string | number, lang: Lang): MessageSegment {

@@ -1,10 +1,12 @@
 import { AnimatePresence, m } from "motion/react";
 import { useTranslation } from "react-i18next";
+import { confirmPrompt } from "../../lib/confirmations";
 import type { RestrictionResult } from "../../shared/contract";
 import { EvidenceChips } from "../evidence/EvidenceChip";
 import { RetakeLink } from "../label/RetakeLink";
 import { Message } from "../ui/Message";
 import { ConfidenceMeter } from "./ConfidenceMeter";
+import { ConfirmPrompt } from "./ConfirmPrompt";
 import { StateBadge } from "./StateBadge";
 import { WhyDisclosure } from "./WhyDisclosure";
 
@@ -25,6 +27,8 @@ export function ResultCard({ result, label, changed }: ResultCardProps) {
   const { t } = useTranslation();
   const stateKey = `${result.state}:${result.unknown_kind ?? ""}`;
   const unreadableRegion = result.state === "unknown" ? result.evidence.find((item) => item.box && item.status !== "unverified") : undefined;
+  const prompt = confirmPrompt(result);
+  const checkedByUser = result.reason_code.endsWith("_USER_CONFIRMED");
   return (
     <m.li variants={resultItemVariants} className="relative p-4 sm:p-5">
       <AnimatePresence>
@@ -53,12 +57,16 @@ export function ResultCard({ result, label, changed }: ResultCardProps) {
           </m.span>
         </AnimatePresence>
         <h4 className="text-sm font-semibold">{label}</h4>
+        {checkedByUser && (
+          <span className="rounded-chip bg-beam/15 px-2 py-0.5 text-[0.7rem] font-semibold text-beam">{t("confirm.done")}</span>
+        )}
         {changed && <span className="text-xs font-semibold text-beam">{t("result.changed")}</span>}
       </div>
       <p className="mt-2 text-sm leading-relaxed text-text-dim">
         <Message messageKey={result.message_key} params={result.message_params} />
       </p>
       <EvidenceChips evidence={result.evidence} state={result.state} className="mt-3" />
+      {prompt && <ConfirmPrompt prompt={prompt} />}
       {unreadableRegion && <RetakeLink imageId={unreadableRegion.image_id} className="mt-3" />}
       <div className="flex flex-wrap items-end justify-between gap-x-4">
         <WhyDisclosure matches={result.matches} />
