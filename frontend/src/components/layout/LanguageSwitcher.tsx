@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { useTranslation } from "react-i18next";
 import { LANGS } from "../../i18n/resources";
 import type { Lang } from "../../shared/contract";
@@ -25,12 +25,12 @@ export function LanguageSwitcher() {
             aria-label={t(`lang.${option}`)}
             lang={option}
             onClick={() => setLang(option)}
-            className={`relative min-h-9 min-w-9 rounded-chip px-2 text-[0.8rem] font-bold leading-none transition-colors duration-fast ${
+            className={`relative min-h-9 min-w-9 rounded-chip px-2 text-[0.8rem] touch:min-h-11 touch:min-w-11 font-bold leading-none transition-colors duration-fast ${
               selected ? "text-text" : "text-text-dim hover:text-text"
             }`}
           >
             {selected && (
-              <motion.span
+              <m.span
                 layoutId="lang-pill"
                 className="absolute inset-0 rounded-chip bg-surface shadow-[inset_0_0_0_1px_var(--line)]"
                 transition={{ type: "spring", stiffness: 500, damping: 38 }}

@@ -1,50 +1,9 @@
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MetricsSection } from "../components/about/MetricsSection";
 import { StateBadge } from "../components/verdict/StateBadge";
 import { VERDICT_ORDER } from "../shared/contract";
 
 const PIPELINE = ["capture", "read", "understand", "verify", "decide"] as const;
-const METRICS_TIMEOUT_MS = 10_000;
-
-type Metrics =
-  | { status: "loading" }
-  | { status: "pending" }
-  | { status: "error" }
-  | { status: "ready"; values: [string, number][] };
-
-/** Reads public/metrics.json (Part 3 provides the real numbers near the end; "pending" until then). */
-function useMetrics(): Metrics {
-  const [metrics, setMetrics] = useState<Metrics>({ status: "loading" });
-  useEffect(() => {
-    let active = true;
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), METRICS_TIMEOUT_MS);
-    fetch("/metrics.json", { signal: controller.signal, cache: "no-store" })
-      .then((response) => (response.ok ? (response.json() as Promise<unknown>) : Promise.reject(new Error(String(response.status)))))
-      .then((data) => {
-        if (!active) return;
-        const record = typeof data === "object" && data !== null ? (data as Record<string, unknown>) : {};
-        if (record.status !== "ready") {
-          setMetrics({ status: "pending" });
-          return;
-        }
-        const source = typeof record.metrics === "object" && record.metrics !== null ? (record.metrics as Record<string, unknown>) : {};
-        const values = Object.entries(source).filter((entry): entry is [string, number] => typeof entry[1] === "number");
-        setMetrics(values.length > 0 ? { status: "ready", values } : { status: "pending" });
-      })
-      .catch(() => {
-        if (active) setMetrics({ status: "error" });
-      })
-      .finally(() => clearTimeout(timer));
-    return () => {
-      active = false;
-      clearTimeout(timer);
-      controller.abort();
-    };
-  }, []);
-  return metrics;
-}
-
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="border-t border-line py-8">
@@ -56,7 +15,6 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 export default function About() {
   const { t } = useTranslation();
-  const metrics = useMetrics();
   return (
     <div className="page-gutter mx-auto max-w-3xl py-8 lg:py-12">
       <h1 className="text-3xl font-bold sm:text-4xl">{t("about.title")}</h1>
@@ -103,19 +61,7 @@ export default function About() {
       </Section>
 
       <Section title={t("about.metrics.title")}>
-        {metrics.status === "loading" && <p className="text-text-dim">{t("common.loading")}</p>}
-        {metrics.status === "pending" && <p className="card p-5 text-text-dim">{t("about.metrics.pending")}</p>}
-        {metrics.status === "error" && <p className="card p-5 text-text-dim">{t("about.metrics.error")}</p>}
-        {metrics.status === "ready" && (
-          <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {metrics.values.map(([name, value]) => (
-              <div key={name} className="card p-4">
-                <dt className="text-xs text-text-dim">{name.replace(/_/g, " ")}</dt>
-                <dd className="mt-1 font-display text-2xl font-bold">{value}</dd>
-              </div>
-            ))}
-          </dl>
-        )}
+        <MetricsSection />
       </Section>
     </div>
   );

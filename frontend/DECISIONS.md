@@ -27,3 +27,14 @@
 - Template summary (when `summary_lang ≠ lang`) = `{name} — {overall}. {first worst message}`, built only from fixed message keys.
 - The `?debug=1` calibration overlay is developer-only and deliberately untranslated.
 - Phone testing uses `vite preview` (production build) behind a cloudflared quick tunnel; `preview` shares the dev server's host/allowedHosts/proxy settings.
+- Phase 4: the WebGL hero loads on the first interaction (pointer/touch/scroll/key), not on idle — probing WebGL at render cost ~400 ms of main thread on Lighthouse's mobile profile. Until then a raster WebP poster (rendered from the sample-label SVG by sharp at build time) is the LCP image.
+- Hindi/Telugu dictionaries load on demand (a saved non-English language is loaded before first render); English stays in the entry chunk as the fallback.
+- Motion uses `LazyMotion` + `m.*` with `domMax` in its own chunk (layout animations need it); entry chunk 150 → 102 kB gzip.
+- Correction, explain, answer, profile-editor and parse-confirm sheets are `React.lazy` and mount on first open, then stay mounted so their close animation plays (`useLatch`).
+- A `touch:` Tailwind variant (`@media (pointer: coarse)`) grows small controls to 44 px on phones only; on the narrowest phones (< 420 px) the header wordmark becomes screen-reader-only so the language switch fits at 44 px.
+- Light-theme `--beam` (#07707e) and `--not-listed` (#11734d) were darkened to pass WCAG AA as text on the light surfaces.
+- Install: Chrome/Edge use the captured `beforeinstallprompt`; iOS Safari gets a sheet with Share → Add to Home Screen steps; the button hides in standalone mode.
+- About metrics: shown as accuracy only when `dataset_kind === "real"` and `real_packets > 0`; synthetic runs show "coming soon" plus a software-tests note. On phones the confusion-table column headers are icon-only badges (label kept for screen readers and as a tooltip); the row badges carry the full labels.
+- `?mockScenario=unreadable` builds an unknown report for every profile sent (and applies to rechecks too), so families created in the app get cards in mock mode.
+- In demo mode a failed `/api/recheck` (language switch, correction) falls back to the mock recheck, so the demo works with no backend.
+- The service worker precaches the app shell only; `/api` is never cached or served from the navigation fallback. An offline banner says the demo still works and scanning needs a connection.

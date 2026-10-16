@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { fixtureProfiles, fixtureScanResult } from "../../api/fixtures";
+import { restrictionLabel } from "../../lib/restrictionLabel";
 import { sortWorstFirst } from "../../lib/verdict";
+import { useUiStore } from "../../store/ui";
 import { Message } from "../ui/Message";
 import { StateBadge } from "../verdict/StateBadge";
 import { Reveal, SectionHeading } from "./Reveal";
@@ -14,6 +16,7 @@ const FAMILY = fixtureProfiles.flatMap((profile) => {
 /** One packet, one card per person — taken straight from the demo scan. */
 export function FamilySection() {
   const { t } = useTranslation();
+  const lang = useUiStore((state) => state.lang);
   return (
     <section aria-labelledby="family-title" className="border-t border-line bg-surface py-20 lg:py-28">
       <div className="page-gutter mx-auto grid max-w-page gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-center lg:gap-16">
@@ -41,7 +44,7 @@ export function FamilySection() {
                       <h3 className="text-base font-bold">{profile.name}</h3>
                       <StateBadge state={report.overall} unknownKind={worst.unknown_kind} />
                     </div>
-                    <p className="mt-1 text-xs text-text-dim">{profile.restrictions.map((restriction) => restriction.label).join(" · ")}</p>
+                    <p className="mt-1 text-xs text-text-dim">{profile.restrictions.map((restriction) => restrictionLabel(restriction.key, restriction.label, lang)).join(" · ")}</p>
                     <p className="mt-2.5 text-sm leading-relaxed">
                       <Message messageKey={worst.message_key} params={worst.message_params} />
                     </p>

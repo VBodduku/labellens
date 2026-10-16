@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { CATEGORIES, NUTRIENT_KEYS } from "../shared/contract";
+import catalog from "../shared/fixtures/catalog.json";
 import messages from "../shared/messages.en.json";
-import { dictionaries, LANGS } from "./resources";
+import en from "./en.json";
+import hi from "./hi.json";
+import { LANGS, type Dictionary } from "./resources";
+import te from "./te.json";
+
+const dictionaries: Record<(typeof LANGS)[number], Dictionary> = { en, hi, te };
 
 const BASIS_IDS = ["per_100g", "per_100ml", "per_serving", "per_pack"];
 const contentKeys = (dictionary: Record<string, string>) => Object.keys(dictionary).filter((key) => !key.startsWith("_"));
@@ -30,6 +36,19 @@ describe("translation files", () => {
     const langKeys = new Set(contentKeys(dictionaries[lang]));
     expect([...enKeys].filter((key) => !langKeys.has(key)), "missing").toEqual([]);
     expect([...langKeys].filter((key) => !enKeys.has(key)), "extra").toEqual([]);
+  });
+
+  it.each(LANGS.filter((lang) => lang !== "en"))("%s.json is actually translated (not English placeholders)", (lang) => {
+    const keys = contentKeys(dictionaries.en);
+    const translated = keys.filter((key) => dictionaries[lang][key] !== dictionaries.en[key]);
+    expect(translated.length / keys.length).toBeGreaterThan(0.95);
+  });
+
+  it("names every restriction key in the catalog (fixture plus the engine's extra allergens)", () => {
+    const keys = [...catalog.map((item) => item.key), "mollusc", "celery", "lupin"];
+    for (const lang of LANGS) {
+      expect(keys.filter((key) => !dictionaries[lang][`restrictions.${key}`]), lang).toEqual([]);
+    }
   });
 
   it.each(LANGS)("%s.json keeps every {placeholder} from the English text", (lang) => {

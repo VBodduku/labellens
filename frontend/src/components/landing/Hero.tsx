@@ -1,7 +1,8 @@
 import { ChevronDown } from "lucide-react";
-import { motion, useMotionValue, useReducedMotion, useScroll } from "motion/react";
+import { m, useMotionValue, useReducedMotion, useScroll } from "motion/react";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { InstallButton } from "../layout/InstallButton";
 import { HeroActions } from "./HeroActions";
 import { HeroStage } from "./HeroStage";
 import { useScrollRange } from "./useScrollRange";
@@ -20,7 +21,7 @@ export function Hero() {
   const hintOpacity = useScrollRange(scrollYProgress, [0, 0.05], [1, 0]);
 
   return (
-    <section ref={runway} aria-labelledby="hero-title" className={reduce ? "relative" : "relative h-[220vh] lg:h-[260vh]"}>
+    <section ref={runway} aria-labelledby="hero-title" className={reduce ? "relative overflow-x-clip" : "relative h-[220vh] overflow-x-clip lg:h-[260vh]"}>
       <div className="sticky top-16 h-[calc(100svh-4rem)] min-h-[34rem]">
         <div className="page-gutter mx-auto grid h-full max-w-page grid-rows-[minmax(0,1fr)_auto] gap-5 pb-6 pt-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:grid-rows-1 lg:items-center lg:gap-12 lg:py-10">
           <div className="order-2 lg:order-1">
@@ -42,14 +43,17 @@ export function Hero() {
               {t("landing.hero.subtitle")}
             </p>
             <HeroActions className="mt-5 lg:mt-9" />
+            <div className="mt-1 sm:hidden">
+              <InstallButton variant="inline" />
+            </div>
             {!reduce && (
-              <motion.p
+              <m.p
                 style={{ opacity: hintOpacity }}
                 className="mt-8 hidden items-center gap-2 text-sm font-medium text-text-dim lg:flex"
               >
                 <ChevronDown className="size-4 animate-bounce" aria-hidden="true" />
                 {t("landing.hero.scrollHint")}
-              </motion.p>
+              </m.p>
             )}
           </div>
           <div className="relative order-1 min-h-0 lg:order-2 lg:h-full">

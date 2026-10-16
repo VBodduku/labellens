@@ -19,13 +19,20 @@ export class ApiError extends Error {
   readonly code: ApiErrorCode;
   readonly status: number | null;
   readonly retryAfterS: number | null;
+  /** Backend `X-Request-ID`, shown in error details so the matching log line can be found. */
+  readonly requestId: string | null;
 
-  constructor(code: ApiErrorCode, message: string, options: { status?: number | null; retryAfterS?: number | null } = {}) {
+  constructor(
+    code: ApiErrorCode,
+    message: string,
+    options: { status?: number | null; retryAfterS?: number | null; requestId?: string | null } = {},
+  ) {
     super(message);
     this.name = "ApiError";
     this.code = code;
     this.status = options.status ?? null;
     this.retryAfterS = options.retryAfterS ?? null;
+    this.requestId = options.requestId ?? null;
   }
 }
 
@@ -44,14 +51,14 @@ function isErrorResponse(value: unknown): value is ErrorResponse {
 }
 
 /** Builds an ApiError from an HTTP status and a (possibly malformed) JSON body. */
-export function parseErrorResponse(status: number, body: unknown): ApiError {
+export function parseErrorResponse(status: number, body: unknown, requestId: string | null = null): ApiError {
   if (isErrorResponse(body)) {
     const code = isServerErrorCode(body.error_code) ? body.error_code : status === 429 ? "RATE_LIMITED" : "INTERNAL";
-    return new ApiError(code, body.message, { status, retryAfterS: body.retry_after_s ?? null });
+    return new ApiError(code, body.message, { status, retryAfterS: body.retry_after_s ?? null, requestId });
   }
-  if (status === 429) return new ApiError("RATE_LIMITED", "Too many requests", { status });
-  if (status === 422 || status === 400) return new ApiError("VALIDATION", "The request was not accepted", { status });
-  return new ApiError("INTERNAL", `Request failed with status ${status}`, { status });
+  if (status === 429) return new ApiError("RATE_LIMITED", "Too many requests", { status, requestId });
+  if (status === 422 || status === 400) return new ApiError("VALIDATION", "The request was not accepted", { status, requestId });
+  return new ApiError("INTERNAL", `Request failed with status ${status}`, { status, requestId });
 }
 
 /** Normalises anything thrown during a request into an ApiError. */

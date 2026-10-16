@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import type { ReactNode } from "react";
 
 const EASE_OUT = [0.2, 0.8, 0.2, 1] as const;
@@ -6,7 +6,7 @@ const EASE_OUT = [0.2, 0.8, 0.2, 1] as const;
 /** Fades content up once as it enters the viewport (MotionConfig turns this into a fade for reduced motion). */
 export function Reveal({ children, delay = 0, className = "" }: { children: ReactNode; delay?: number; className?: string }) {
   return (
-    <motion.div
+    <m.div
       className={className}
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -14,7 +14,7 @@ export function Reveal({ children, delay = 0, className = "" }: { children: Reac
       transition={{ duration: 0.42, ease: EASE_OUT, delay }}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 }
 

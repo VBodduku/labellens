@@ -1,5 +1,5 @@
 import { RotateCcw, X } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { useTranslation } from "react-i18next";
 import type { PanelHint } from "../../shared/contract";
 import type { Panel } from "../../store/scan";
@@ -23,7 +23,7 @@ export function PanelTray({ panels, retakeIndex, onRetake, onRemove, onHint }: P
         {panels.map((panel, index) => {
           const retaking = retakeIndex === index;
           return (
-            <motion.li
+            <m.li
               key={panel.id}
               layout
               initial={{ opacity: 0, scale: 0.6, y: -40 }}
@@ -74,7 +74,7 @@ export function PanelTray({ panels, retakeIndex, onRetake, onRemove, onHint }: P
                   <RotateCcw className="size-4" aria-hidden="true" />
                 </button>
               </div>
-            </motion.li>
+            </m.li>
           );
         })}
       </AnimatePresence>

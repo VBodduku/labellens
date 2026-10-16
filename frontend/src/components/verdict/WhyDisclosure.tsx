@@ -1,5 +1,5 @@
 import { ChevronDown } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { Match } from "../../shared/contract";
@@ -16,14 +16,14 @@ export function WhyDisclosure({ matches }: { matches: Match[] }) {
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((value) => !value)}
-        className="-ml-2 inline-flex min-h-9 items-center gap-1 rounded-chip px-2 text-xs font-semibold text-text-dim hover:text-text"
+        className="-ml-2 inline-flex min-h-9 items-center gap-1 touch:min-h-11 rounded-chip px-2 text-xs font-semibold text-text-dim hover:text-text"
       >
         {t("result.why")}
         <ChevronDown className={`size-3.5 transition-transform duration-fast ${open ? "rotate-180" : ""}`} aria-hidden="true" />
       </button>
       <AnimatePresence initial={false}>
         {open && (
-          <motion.div
+          <m.div
             id={panelId}
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
@@ -48,7 +48,7 @@ export function WhyDisclosure({ matches }: { matches: Match[] }) {
                 ))}
               </ul>
             )}
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

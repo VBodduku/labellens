@@ -1,4 +1,4 @@
-import { motion, useTransform, type MotionValue } from "motion/react";
+import { m, type MotionValue, useTransform } from "motion/react";
 import { useTranslation } from "react-i18next";
 import { useMediaQuery } from "../../lib/useMediaQuery";
 import { stateColor, stateLabelKey } from "../../lib/verdict";
@@ -50,7 +50,7 @@ function ChipStory({ chip, index, progress, stacked }: ChipStoryProps) {
   if (!anchor) return null;
 
   const word = (
-    <motion.span
+    <m.span
       style={{ opacity: wordOpacity, y: wordY, scale: wordScale }}
       className="evidence-text inline-flex items-center gap-1.5 whitespace-nowrap rounded-chip bg-surface/95 px-2.5 py-1 text-[0.68rem] font-medium text-text shadow-[inset_0_0_0_1px_var(--beam),var(--glow-beam)] sm:text-xs"
     >
@@ -60,29 +60,29 @@ function ChipStory({ chip, index, progress, stacked }: ChipStoryProps) {
           <span className="hatch inline-block h-3 w-8 rounded-sm shadow-[inset_0_0_0_1px_var(--unknown)]" />
         </>
       )}
-    </motion.span>
+    </m.span>
   );
 
   const tag = (
-    <motion.span
+    <m.span
       style={{ opacity: reveal, y: tagY, scale: tagScale }}
       className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-chip bg-surface py-1 pl-1 pr-2.5 shadow-[inset_0_0_0_1px_var(--line),0_10px_30px_-12px_rgb(0_0_0/0.6)]"
     >
       <StateBadge state={chip.state} unknownKind={chip.unknownKind} size="sm" />
       <span className="size-2 rounded-full" style={{ background: chip.profileColor }} />
       <span className="text-[0.72rem] font-semibold text-text">{chip.profileName}</span>
-    </motion.span>
+    </m.span>
   );
 
   return (
     <>
       {chip.boxes.map((box, boxIndex) => (
         <span key={boxIndex} className="absolute" style={boxStyle(box)}>
-          <motion.span
+          <m.span
             style={{ opacity: beamOutline }}
             className="absolute -inset-[3px] rounded-[4px] shadow-[inset_0_0_0_1.5px_var(--beam),0_0_14px_-2px_var(--beam)]"
           />
-          <motion.span
+          <m.span
             style={{ opacity: reveal, boxShadow: `inset 0 0 0 2px ${stateColor(chip.state)}, 0 0 18px -4px ${stateColor(chip.state)}` }}
             className="absolute -inset-[3px] rounded-[4px]"
           />

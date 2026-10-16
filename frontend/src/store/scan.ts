@@ -36,6 +36,8 @@ interface ScanState {
   attemptProfiles: Profile[];
   status: ScanStatus;
   error: ApiError | null;
+  /** A failed recheck keeps the current result on screen; this says why it wasn't updated. */
+  recheckError: ApiError | null;
   corrections: Correction[];
   isDemo: boolean;
   hydrated: boolean;
@@ -47,7 +49,8 @@ interface ScanState {
   removePanel: (index: number) => void;
   analyse: (input: { profiles: Profile[]; lang: Lang }) => Promise<void>;
   cancel: () => void;
-  recheck: (lang: Lang) => Promise<void>;
+  /** Engine-only re-evaluation (no new reading): after a correction, a language switch or profile edits. */
+  recheck: (lang: Lang, profiles?: Profile[]) => Promise<void>;
   addCorrection: (correction: Correction, lang: Lang) => Promise<void>;
   loadDemo: () => Promise<void>;
   hydrate: () => Promise<void>;
@@ -70,6 +73,11 @@ function startRequest(): AbortSignal {
   return inflight.signal;
 }
 
+/** A request replaced by a newer one must not touch the store (the newer request owns the status). */
+function superseded(signal: AbortSignal): boolean {
+  return inflight?.signal !== signal && inflight !== null;
+}
+
 async function persist(state: ScanState): Promise<void> {
   if (!state.result) return;
   const stored: StoredScan = {
@@ -87,7 +95,8 @@ async function persist(state: ScanState): Promise<void> {
 }
 
 export const useScanStore = create<ScanState>()((set, get) => {
-  function failWith(error: unknown): void {
+  function failWith(error: unknown, signal: AbortSignal): void {
+    if (superseded(signal)) return;
     if (isApiError(error) && error.code === "ABORTED") {
       set({ status: get().result ? "done" : "idle", error: null });
       return;
@@ -102,6 +111,7 @@ export const useScanStore = create<ScanState>()((set, get) => {
     attemptProfiles: [],
     status: "idle",
     error: null,
+    recheckError: null,
     corrections: [],
     isDemo: false,
     hydrated: false,
@@ -147,10 +157,11 @@ export const useScanStore = create<ScanState>()((set, get) => {
           { images: panels.map((panel) => panel.file), profiles, lang, panelHints: panels.map((panel) => panel.hint) },
           { signal },
         );
+        if (superseded(signal)) return;
         set({ result, scanProfiles: profiles, status: "done" });
         await persist(get());
       } catch (error) {
-        failWith(error);
+        failWith(error, signal);
       }
     },
 
@@ -159,18 +170,35 @@ export const useScanStore = create<ScanState>()((set, get) => {
       inflight = null;
     },
 
-    recheck: async (lang) => {
-      const { result, corrections, scanProfiles } = get();
+    recheck: async (lang, profiles) => {
+      const { result, corrections } = get();
+      const scanProfiles = profiles ?? get().scanProfiles;
       if (!result) return;
       const signal = startRequest();
-      set({ status: "rechecking", error: null });
+      set({ status: "rechecking", error: null, recheckError: null });
       try {
         const extraction = applyCorrections({ ...result.extraction, user_corrections: [] }, corrections);
         const next = await api.recheck({ extraction, profiles: scanProfiles, lang }, { signal });
-        set({ result: next, status: "done", changedVerdicts: changedVerdicts(result, next) });
+        if (superseded(signal)) return;
+        set({ result: next, scanProfiles, status: "done", changedVerdicts: changedVerdicts(result, next) });
         await persist(get());
       } catch (error) {
-        failWith(error);
+        if (superseded(signal)) return;
+        if (isApiError(error) && error.code === "ABORTED") {
+          set({ status: "done" });
+          return;
+        }
+        // The demo label must work with no backend at all (judging insurance): answer from the fixtures.
+        if (get().isDemo) {
+          const { mockApi } = await import("../api/mock");
+          const extraction = applyCorrections({ ...result.extraction, user_corrections: [] }, corrections);
+          const next = await mockApi.recheck({ extraction, profiles: scanProfiles, lang }).catch(() => null);
+          if (next && !superseded(signal)) {
+            set({ result: next, scanProfiles, status: "done", changedVerdicts: changedVerdicts(result, next) });
+            return;
+          }
+        }
+        set({ status: "done", recheckError: isApiError(error) ? error : new ApiError("INTERNAL", String(error)) });
       }
     },
 

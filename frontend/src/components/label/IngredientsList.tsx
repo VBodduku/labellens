@@ -22,9 +22,10 @@ interface RowProps {
   annotations: Map<string, IngredientAnnotation>;
   editedPaths: Set<string>;
   onEdit: (target: EditTarget) => void;
+  onExplain: (term: string) => void;
 }
 
-function IngredientRow({ ingredient, path, annotations, editedPaths, onEdit }: RowProps) {
+function IngredientRow({ ingredient, path, annotations, editedPaths, onEdit, onExplain }: RowProps) {
   const { t } = useTranslation();
   const annotation = annotations.get(ingredient.id);
   const origin = annotation?.origin ?? "unknown";
@@ -42,9 +43,15 @@ function IngredientRow({ ingredient, path, annotations, editedPaths, onEdit }: R
         </span>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span lang="" className="font-semibold">
+            <button
+              type="button"
+              lang=""
+              onClick={() => onExplain(ingredient.name)}
+              aria-label={t("explain.open", { name: ingredient.name })}
+              className="min-h-8 text-left font-semibold underline touch:min-h-11 decoration-line decoration-dotted underline-offset-4 hover:decoration-text"
+            >
               {ingredient.name}
-            </span>
+            </button>
             {ingredient.percentage !== null && ingredient.percentage !== undefined && (
               <span className="text-xs text-text-dim">{ingredient.percentage}%</span>
             )}
@@ -77,6 +84,7 @@ function IngredientRow({ ingredient, path, annotations, editedPaths, onEdit }: R
                   annotations={annotations}
                   editedPaths={editedPaths}
                   onEdit={onEdit}
+                  onExplain={onExplain}
                 />
               ))}
             </ul>
@@ -94,7 +102,14 @@ function IngredientRow({ ingredient, path, annotations, editedPaths, onEdit }: R
 }
 
 /** Every ingredient as read: origin, what our database says it counts as, readability, and its words on the photo. */
-export function IngredientsList({ result, corrections, onEdit }: { result: ScanResult; corrections: Correction[]; onEdit: (target: EditTarget) => void }) {
+interface IngredientsListProps {
+  result: ScanResult;
+  corrections: Correction[];
+  onEdit: (target: EditTarget) => void;
+  onExplain: (term: string) => void;
+}
+
+export function IngredientsList({ result, corrections, onEdit, onExplain }: IngredientsListProps) {
   const { t } = useTranslation();
   const { ingredients, ingredients_section: section } = result.extraction;
   const annotations = new Map(result.annotations.map((annotation) => [annotation.ingredient_id, annotation]));
@@ -117,6 +132,7 @@ export function IngredientsList({ result, corrections, onEdit }: { result: ScanR
             annotations={annotations}
             editedPaths={editedPaths}
             onEdit={onEdit}
+            onExplain={onExplain}
           />
         ))}
       </ul>

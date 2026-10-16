@@ -1,5 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { MISSING_PARAM, renderMessage, renderMessageParts } from "./renderMessage";
+import { loadDictionary } from "./resources";
+
+beforeAll(async () => {
+  await Promise.all([loadDictionary("hi"), loadDictionary("te")]);
+});
 
 describe("renderMessage", () => {
   it("translates a single category and keeps the label term verbatim", () => {

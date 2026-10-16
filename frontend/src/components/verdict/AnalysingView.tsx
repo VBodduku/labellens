@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { Panel } from "../../store/scan";
@@ -36,7 +36,7 @@ export function AnalysingView({ panels, profileCount, onCancel }: { panels: Pane
       )}
       <div role="status" aria-live="polite" className="mt-6 min-h-8 text-center">
         <AnimatePresence mode="wait" initial={false}>
-          <motion.p
+          <m.p
             key={stage}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -45,7 +45,7 @@ export function AnalysingView({ panels, profileCount, onCancel }: { panels: Pane
             className="text-lg font-semibold"
           >
             {stage === "analysing.checking" ? t(stage, { count: profileCount }) : t(stage)}
-          </motion.p>
+          </m.p>
         </AnimatePresence>
       </div>
       <Button variant="secondary" className="mt-5" onClick={onCancel}>

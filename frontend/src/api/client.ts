@@ -60,7 +60,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
       signal: controller.signal,
     });
     const payload = await readJson(response);
-    if (!response.ok) throw parseErrorResponse(response.status, payload);
+    if (!response.ok) throw parseErrorResponse(response.status, payload, response.headers.get("X-Request-ID"));
     if (payload === null) throw new ApiError("INTERNAL", "The server sent an empty response", { status: response.status });
     return payload as T;
   } catch (error) {

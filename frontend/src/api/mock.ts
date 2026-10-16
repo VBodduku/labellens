@@ -8,6 +8,7 @@ import {
   fixtureProfileParse,
   fixtureScanResult,
 } from "./fixtures";
+import { unreadableScenario } from "./mockScenarios";
 import type { LabelLensApi } from "./types";
 
 /** Realistic latencies so loading states are visible during development and demos. */
@@ -73,6 +74,13 @@ function freshResult(overrides: Partial<ScanResult>): ScanResult {
   return { ...structuredClone(fixtureScanResult), created_at: new Date().toISOString(), ...overrides };
 }
 
+/** Applies `?mockScenario=unreadable` to scans and rechecks alike, so a language switch keeps the scenario. */
+function withScenario(result: ScanResult, profiles: Profile[]): ScanResult {
+  return new URLSearchParams(globalThis.location?.search ?? "").get("mockScenario") === "unreadable"
+    ? unreadableScenario(result, profiles)
+    : result;
+}
+
 export const mockApi: LabelLensApi = {
   async health(options) {
     await delay(MOCK_DELAYS_MS.health, options?.signal);
@@ -88,18 +96,17 @@ export const mockApi: LabelLensApi = {
     throwIfMockError(failure);
     if (input.images.length === 0) throw new ApiError("VALIDATION", "Add at least one photo.", { status: 422 });
     if (input.images.length > 3) throw new ApiError("TOO_MANY_IMAGES", MOCK_ERROR_MESSAGES.TOO_MANY_IMAGES, { status: 400 });
-    return freshResult({ lang: input.lang, reports: structuredClone(reportsFor(input.profiles)) });
+    return withScenario(freshResult({ lang: input.lang, reports: structuredClone(reportsFor(input.profiles)) }), input.profiles);
   },
   async recheck(request, options) {
     const failure = mockErrorFromUrl();
     await delay(MOCK_DELAYS_MS.recheck, options?.signal);
     throwIfMockError(failure);
     // Engine verdicts are not recomputed in mock mode; the corrected extraction is echoed back.
-    return freshResult({
-      lang: request.lang,
-      extraction: structuredClone(request.extraction),
-      reports: structuredClone(reportsFor(request.profiles)),
-    });
+    return withScenario(
+      freshResult({ lang: request.lang, extraction: structuredClone(request.extraction), reports: structuredClone(reportsFor(request.profiles)) }),
+      request.profiles,
+    );
   },
   async ask(request, options) {
     const failure = mockErrorFromUrl();
