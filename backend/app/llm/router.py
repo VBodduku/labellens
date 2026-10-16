@@ -91,7 +91,7 @@ class LLMRouter:
         timeout_s: float | None = None, providers: Collection[ProviderName] | None = None,
     ) -> LLMResult[M]:
         """`providers` restricts the chain (e.g. user-facing prose only from Gemini)."""
-        schema = inline_schema(schema_model)
+        schemas = {flag: inline_schema(schema_model, require_all=flag) for flag in (True, False)}
         timeout = min(self._timeout_s, timeout_s) if timeout_s is not None else self._timeout_s
         attempts = 0
         retry_after: list[int] = []
@@ -104,6 +104,7 @@ class LLMRouter:
             if images and state.slow_until > self._clock():
                 continue
             prompt = prompt_for(state.client.name)
+            schema = schemas[getattr(state.client, "require_all_fields", True)]
             for repair in (False, True):
                 attempts += 1
                 try:

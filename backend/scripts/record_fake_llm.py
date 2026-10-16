@@ -43,9 +43,9 @@ async def record(provider: str) -> None:
     started = time.perf_counter()
     result = await structure([image], ["back"], ocr_tokens, router)
     out = DATA_DIR / f"{provider}_test_label.json"
-    out.write_text(result.value.model_dump_json(indent=2) + "\n", encoding="utf-8")
-    print(f"{result.provider}/{result.model}: {time.perf_counter() - started:.1f} s, "
-          f"{result.attempts} attempt(s) -> {out}")
+    out.write_text(result.result.value.model_dump_json(indent=2) + "\n", encoding="utf-8")
+    print(f"{result.result.provider}/{result.result.model}: {time.perf_counter() - started:.1f} s, "
+          f"{result.result.attempts} attempt(s) -> {out}")
 
 
 if __name__ == "__main__":

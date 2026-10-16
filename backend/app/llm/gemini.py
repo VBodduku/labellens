@@ -19,6 +19,9 @@ from backend.app.llm.base import (
 )
 
 DEFAULT_RETRY_AFTER_S = 60
+# Google rejects request deadlines under 10 s (400 "Minimum allowed deadline is 10s") and expires
+# ones right at 10 s; our own budget is enforced client-side by the router's wait_for instead.
+MIN_SERVER_DEADLINE_S = 15.0
 _RETRY_DELAY = re.compile(r"^(\d+(?:\.\d+)?)s$")
 
 
@@ -35,6 +38,7 @@ def retry_after_from(details: Any) -> int:
 
 class GeminiClient:
     name: ProviderName = "gemini"
+    require_all_fields = False          # optional fields stay optional: shorter answers, lower latency
 
     def __init__(self, api_key: str, model: str, label: str = "gemini") -> None:
         self.label = label
@@ -103,7 +107,7 @@ class GeminiClient:
 def _http_options(timeout_s: float | None) -> types.HttpOptions:
     """No SDK-side retries (the router owns fallback); per-request timeout in milliseconds."""
     return types.HttpOptions(
-        timeout=int(timeout_s * 1000) if timeout_s is not None else None,
+        timeout=int(max(timeout_s, MIN_SERVER_DEADLINE_S) * 1000) if timeout_s is not None else None,
         retry_options=types.HttpRetryOptions(attempts=1),
     )
 

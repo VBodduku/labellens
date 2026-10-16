@@ -11,7 +11,7 @@
         {
           "text": "Sugar",
           "token_ids": [
-            "img_0:t12"
+            12
           ],
           "percentage": null,
           "parent_index": null,
@@ -21,8 +21,8 @@
         {
           "text": "Peanuts (22%)",
           "token_ids": [
-            "img_0:t13",
-            "img_0:t14"
+            13,
+            14
           ],
           "percentage": 22.0,
           "parent_index": null,
@@ -32,9 +32,9 @@
         {
           "text": "Milk Solids (12%)",
           "token_ids": [
-            "img_0:t15",
-            "img_0:t16",
-            "img_0:t17"
+            15,
+            16,
+            17
           ],
           "percentage": 12.0,
           "parent_index": null,
@@ -44,10 +44,10 @@
         {
           "text": "Refined Wheat Flour (Maida)",
           "token_ids": [
-            "img_0:t18",
-            "img_0:t19",
-            "img_0:t20",
-            "img_0:t21"
+            18,
+            19,
+            20,
+            21
           ],
           "percentage": null,
           "parent_index": null,
@@ -57,8 +57,8 @@
         {
           "text": "Cocoa Butter",
           "token_ids": [
-            "img_0:t22",
-            "img_0:t23"
+            22,
+            23
           ],
           "percentage": null,
           "parent_index": null,
@@ -68,10 +68,10 @@
         {
           "text": "Edible Vegetable Oil (Palm)",
           "token_ids": [
-            "img_0:t24",
-            "img_0:t25",
-            "img_0:t26",
-            "img_0:t27"
+            24,
+            25,
+            26,
+            27
           ],
           "percentage": null,
           "parent_index": null,
@@ -81,9 +81,9 @@
         {
           "text": "Invert Sugar Syrup",
           "token_ids": [
-            "img_0:t28",
-            "img_0:t29",
-            "img_0:t30"
+            28,
+            29,
+            30
           ],
           "percentage": null,
           "parent_index": null,
@@ -91,12 +91,12 @@
           "box_2d": null
         },
         {
-          "text": "Emulsifier (INS 322 [Soy])",
+          "text": "Emulsifier (INS 322 [Soyl)",
           "token_ids": [
-            "img_0:t31",
-            "img_0:t32",
-            "img_0:t33",
-            "img_0:t34"
+            31,
+            32,
+            33,
+            34
           ],
           "percentage": null,
           "parent_index": null,
@@ -104,10 +104,10 @@
           "box_2d": null
         },
         {
-          "text": "Iodised Salt",
+          "text": "lodised Salt",
           "token_ids": [
-            "img_0:t35",
-            "img_0:t36"
+            35,
+            36
           ],
           "percentage": null,
           "parent_index": null,
@@ -115,12 +115,12 @@
           "box_2d": null
         },
         {
-          "text": "Raising Agent (INS 500(ii))",
+          "text": "Raising Agent (INS 500(i)",
           "token_ids": [
-            "img_0:t37",
-            "img_0:t38",
-            "img_0:t39",
-            "img_0:t40"
+            37,
+            38,
+            39,
+            40
           ],
           "percentage": null,
           "parent_index": null,
@@ -130,8 +130,8 @@
         {
           "text": "Natural Flavours.",
           "token_ids": [
-            "img_0:t41",
-            "img_0:t42"
+            41,
+            42
           ],
           "percentage": null,
           "parent_index": null,
@@ -157,11 +157,11 @@
             "SOY"
           ],
           "token_ids": [
-            "img_0:t43",
-            "img_0:t44",
-            "img_0:t45",
-            "img_0:t46",
-            "img_0:t47"
+            43,
+            44,
+            45,
+            46,
+            47
           ],
           "box_2d": null
         },
@@ -172,12 +172,12 @@
             "TREE NUTS"
           ],
           "token_ids": [
-            "img_0:t48",
-            "img_0:t49",
-            "img_0:t50",
-            "img_0:t51",
-            "img_0:t52",
-            "img_0:t53"
+            48,
+            49,
+            50,
+            51,
+            52,
+            53
           ],
           "box_2d": null
         }
@@ -206,8 +206,8 @@
                 "unit": "kcal",
                 "text": "520 kcal",
                 "token_ids": [
-                  "img_0:t72",
-                  "img_0:t73"
+                  72,
+                  73
                 ],
                 "readability": "clear",
                 "box_2d": null
@@ -218,8 +218,8 @@
                 "unit": "kcal",
                 "text": "208 kcal",
                 "token_ids": [
-                  "img_0:t74",
-                  "img_0:t75"
+                  74,
+                  75
                 ],
                 "readability": "clear",
                 "box_2d": null
@@ -236,8 +236,8 @@
                 "unit": "g",
                 "text": "9.5 g",
                 "token_ids": [
-                  "img_0:t77",
-                  "img_0:t78"
+                  77,
+                  78
                 ],
                 "readability": "clear",
                 "box_2d": null
@@ -248,8 +248,8 @@
                 "unit": "g",
                 "text": "3.8 g",
                 "token_ids": [
-                  "img_0:t79",
-                  "img_0:t80"
+                  79,
+                  80
                 ],
                 "readability": "clear",
                 "box_2d": null
@@ -266,8 +266,8 @@
                 "unit": "g",
                 "text": "58.0 g",
                 "token_ids": [
-                  "img_0:t82",
-                  "img_0:t83"
+                  82,
+                  83
                 ],
                 "readability": "clear",
                 "box_2d": null
@@ -278,8 +278,8 @@
                 "unit": "g",
                 "text": "23.2 g",
                 "token_ids": [
-                  "img_0:t84",
-                  "img_0:t85"
+                  84,
+                  85
                 ],
                 "readability": "clear",
                 "box_2d": null
@@ -296,8 +296,8 @@
                 "unit": "g",
                 "text": "38.0 g",
                 "token_ids": [
-                  "img_0:t88",
-                  "img_0:t89"
+                  88,
+                  89
                 ],
                 "readability": "clear",
                 "box_2d": null
@@ -308,8 +308,8 @@
                 "unit": "g",
                 "text": "15.2 g",
                 "token_ids": [
-                  "img_0:t90",
-                  "img_0:t91"
+                  90,
+                  91
                 ],
                 "readability": "clear",
                 "box_2d": null
@@ -326,8 +326,8 @@
                 "unit": "g",
                 "text": "30.0 g",
                 "token_ids": [
-                  "img_0:t94",
-                  "img_0:t95"
+                  94,
+                  95
                 ],
                 "readability": "clear",
                 "box_2d": null
@@ -338,8 +338,8 @@
                 "unit": "g",
                 "text": "12.0 g",
                 "token_ids": [
-                  "img_0:t96",
-                  "img_0:t97"
+                  96,
+                  97
                 ],
                 "readability": "clear",
                 "box_2d": null
@@ -356,8 +356,8 @@
                 "unit": "g",
                 "text": "28.0 g",
                 "token_ids": [
-                  "img_0:t100",
-                  "img_0:t101"
+                  100,
+                  101
                 ],
                 "readability": "clear",
                 "box_2d": null
@@ -368,8 +368,8 @@
                 "unit": "g",
                 "text": "11.2 g",
                 "token_ids": [
-                  "img_0:t102",
-                  "img_0:t103"
+                  102,
+                  103
                 ],
                 "readability": "clear",
                 "box_2d": null
@@ -386,8 +386,8 @@
                 "unit": "g",
                 "text": "14.0 g",
                 "token_ids": [
-                  "img_0:t106",
-                  "img_0:t107"
+                  106,
+                  107
                 ],
                 "readability": "clear",
                 "box_2d": null
@@ -398,8 +398,8 @@
                 "unit": "g",
                 "text": "5.6 g",
                 "token_ids": [
-                  "img_0:t108",
-                  "img_0:t109"
+                  108,
+                  109
                 ],
                 "readability": "clear",
                 "box_2d": null
@@ -416,7 +416,7 @@
                 "unit": "g",
                 "text": "0.1 g",
                 "token_ids": [
-                  "img_0:t112"
+                  112
                 ],
                 "readability": "clear",
                 "box_2d": null
@@ -427,7 +427,7 @@
                 "unit": "g",
                 "text": "0.0 g",
                 "token_ids": [
-                  "img_0:t113"
+                  113
                 ],
                 "readability": "clear",
                 "box_2d": null
@@ -444,7 +444,7 @@
                 "unit": "",
                 "text": "1?5",
                 "token_ids": [
-                  "img_0:t115"
+                  115
                 ],
                 "readability": "unreadable",
                 "box_2d": null
@@ -455,7 +455,7 @@
                 "unit": "",
                 "text": "??",
                 "token_ids": [
-                  "img_0:t116"
+                  116
                 ],
                 "readability": "unreadable",
                 "box_2d": null
@@ -469,8 +469,8 @@
         "complete": true,
         "issues": [],
         "unreadable_token_ids": [
-          "img_0:t115",
-          "img_0:t116"
+          115,
+          116
         ],
         "unreadable_boxes": []
       },
@@ -482,8 +482,8 @@
         {
           "text": "HIGH PROTEIN",
           "token_ids": [
-            "img_0:t5",
-            "img_0:t6"
+            5,
+            6
           ],
           "box_2d": null
         }

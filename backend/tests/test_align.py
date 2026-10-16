@@ -29,10 +29,16 @@ def tokens() -> list:
 
 
 INDEX = TokenIndex(tokens())
+CITES = [t.token_id for t in tokens()]          # the model's word number n -> img_0:tn
 
 
 def ids(*numbers: int) -> list[str]:
     return [f"img_0:t{n}" for n in numbers]
+
+
+def nums(*numbers: int) -> list[int]:
+    """What the model cites in its JSON: word numbers."""
+    return list(numbers)
 
 
 def section(**overrides: object) -> dict:
@@ -135,9 +141,9 @@ def test_split_lines_breaks_when_x_goes_back() -> None:
 # ---------------------------------------------------------------- numbers come from the photo
 def test_nutrient_amount_is_parsed_from_ocr_text_not_llm() -> None:
     rows = [{"key": "energy_kcal", "label": "Energy", "values": [
-        {"basis": "per_100g", "amount": 502, "unit": "kcal", "text": "520 kcal", "token_ids": ids(16, 17),
+        {"basis": "per_100g", "amount": 502, "unit": "kcal", "text": "520 kcal", "token_ids": nums(16, 17),
          "readability": "clear", "box_2d": None}]}]
-    p = align_panel(panel(nutrition={"rows": rows}, nutrition_section=section()), "img_0", INDEX)
+    p = align_panel(panel(nutrition={"rows": rows}, nutrition_section=section()), "img_0", INDEX, CITES)
     value = p.nutrition.rows[0].values[0]  # type: ignore[union-attr]
     assert value.amount == 520
     assert value.raw_text == "520 kcal"
@@ -147,9 +153,9 @@ def test_nutrient_amount_is_parsed_from_ocr_text_not_llm() -> None:
 
 def test_smudged_value_is_unreadable_even_if_llm_guessed() -> None:
     rows = [{"key": "sodium_mg", "label": "Sodium", "values": [
-        {"basis": "per_100g", "amount": 175, "unit": "mg", "text": "1?5 mg", "token_ids": ids(19, 20),
+        {"basis": "per_100g", "amount": 175, "unit": "mg", "text": "1?5 mg", "token_ids": nums(19, 20),
          "readability": "clear", "box_2d": None}]}]
-    p = align_panel(panel(nutrition={"rows": rows}, nutrition_section=section()), "img_0", INDEX)
+    p = align_panel(panel(nutrition={"rows": rows}, nutrition_section=section()), "img_0", INDEX, CITES)
     value = p.nutrition.rows[0].values[0]  # type: ignore[union-attr]
     assert value.amount is None and value.readability == "unreadable"
     assert value.evidence is not None and value.evidence.status == "verified"
@@ -160,7 +166,7 @@ def test_llm_marked_unreadable_value_has_no_amount() -> None:
     rows = [{"key": "sodium_mg", "label": "Sodium", "values": [
         {"basis": "per_100g", "amount": 150, "unit": "mg", "text": "", "token_ids": [],
          "readability": "unreadable", "box_2d": [600, 300, 620, 350]}]}]
-    p = align_panel(panel(nutrition={"rows": rows}, nutrition_section=section()), "img_0", INDEX)
+    p = align_panel(panel(nutrition={"rows": rows}, nutrition_section=section()), "img_0", INDEX, CITES)
     value = p.nutrition.rows[0].values[0]  # type: ignore[union-attr]
     assert value.amount is None and value.evidence is not None and value.evidence.status == "approximate"
 
@@ -169,7 +175,7 @@ def test_value_not_on_photo_is_dropped_not_trusted() -> None:
     rows = [{"key": "protein_g", "label": "Protein", "values": [
         {"basis": "per_100g", "amount": 9.5, "unit": "g", "text": "9.5 g", "token_ids": [],
          "readability": "clear", "box_2d": None}]}]
-    p = align_panel(panel(nutrition={"rows": rows}, nutrition_section=section()), "img_0", INDEX)
+    p = align_panel(panel(nutrition={"rows": rows}, nutrition_section=section()), "img_0", INDEX, CITES)
     value = p.nutrition.rows[0].values[0]  # type: ignore[union-attr]
     assert value.amount is None and value.readability == "unreadable"
     assert value.evidence is not None and value.evidence.status == "unverified"
@@ -181,33 +187,33 @@ def test_value_located_only_by_model_box_is_partial() -> None:
     rows = [{"key": "protein_g", "label": "Protein", "values": [
         {"basis": "per_100g", "amount": 9.5, "unit": "g", "text": "9.5 g", "token_ids": [],
          "readability": "clear", "box_2d": [600, 300, 620, 350]}]}]
-    p = align_panel(panel(nutrition={"rows": rows}, nutrition_section=section()), "img_0", INDEX)
+    p = align_panel(panel(nutrition={"rows": rows}, nutrition_section=section()), "img_0", INDEX, CITES)
     value = p.nutrition.rows[0].values[0]  # type: ignore[union-attr]
     assert value.amount == 9.5 and value.readability == "partial"
 
 
 def test_percentage_from_ocr_wins_with_issue() -> None:
-    items = [{"text": "Peanuts (2.2%)", "token_ids": ids(2, 3), "percentage": 2.2, "parent_index": None,
+    items = [{"text": "Peanuts (2.2%)", "token_ids": nums(2, 3), "percentage": 2.2, "parent_index": None,
               "readability": "clear", "box_2d": None}]
-    p = align_panel(panel(ingredients=items), "img_0", INDEX)
+    p = align_panel(panel(ingredients=items), "img_0", INDEX, CITES)
     assert p.ingredients[0].percentage == 22.0
     assert "llm_ocr_number_mismatch" in p.ingredients_section.issues
 
 
 # ---------------------------------------------------------------- ingredients and sections
-def ingredient(text: str, token_ids: list[str], parent: int | None = None, readability: str = "clear") -> dict:
+def ingredient(text: str, token_ids: list[int], parent: int | None = None, readability: str = "clear") -> dict:
     return {"text": text, "token_ids": token_ids, "percentage": None, "parent_index": parent,
             "readability": readability, "box_2d": None}
 
 
 def test_ingredients_raw_text_name_confidence_and_nesting() -> None:
     items = [
-        ingredient("Sugar", ids(1)),
-        ingredient("Emulsifier (INS 322 [Soy])", ids(10, 11, 12, 13)),
-        ingredient("INS 322", ids(11, 12), parent=1),
-        ingredient("Salt", ids(14)),
+        ingredient("Sugar", nums(1)),
+        ingredient("Emulsifier (INS 322 [Soy])", nums(10, 11, 12, 13)),
+        ingredient("INS 322", nums(11, 12), parent=1),
+        ingredient("Salt", nums(14)),
     ]
-    p = align_panel(panel(ingredients=items), "img_0", INDEX)
+    p = align_panel(panel(ingredients=items), "img_0", INDEX, CITES)
     assert [i.name for i in p.ingredients] == ["Sugar", "Emulsifier (INS 322 [Soy])", "Salt"]
     assert p.ingredients[0].raw_text == "Sugar"
     assert p.ingredients[2].raw_text == "Salt."
@@ -219,34 +225,34 @@ def test_ingredients_raw_text_name_confidence_and_nesting() -> None:
 @pytest.mark.parametrize("parent", [0, 5, 2, -1])
 def test_implausible_parents_are_ignored(parent: int) -> None:
     # 0: "Salt" is not inside "Sugar"; 5: out of range; 2: self; -1: invalid.
-    items = [ingredient("Sugar", ids(1)), ingredient("Peanuts", ids(2)), ingredient("Salt", ids(14), parent=parent)]
-    p = align_panel(panel(ingredients=items), "img_0", INDEX)
+    items = [ingredient("Sugar", nums(1)), ingredient("Peanuts", nums(2)), ingredient("Salt", nums(14), parent=parent)]
+    p = align_panel(panel(ingredients=items), "img_0", INDEX, CITES)
     assert [i.name for i in p.ingredients] == ["Sugar", "Peanuts", "Salt"]
 
 
 def test_section_completeness_is_forced_false_by_unclear_items_or_regions() -> None:
-    partial = align_panel(panel(ingredients=[ingredient("Sugar", ids(1), readability="partial")]), "img_0", INDEX)
+    partial = align_panel(panel(ingredients=[ingredient("Sugar", nums(1), readability="partial")]), "img_0", INDEX, CITES)
     assert partial.ingredients_section.complete is False
 
-    regions = align_panel(panel(ingredients_section=section(unreadable_token_ids=ids(19, 20),
+    regions = align_panel(panel(ingredients_section=section(unreadable_token_ids=nums(19, 20),
                                                             unreadable_boxes=[{"box_2d": [10, 10, 20, 50]}])),
-                          "img_0", INDEX)
+                          "img_0", INDEX, CITES)
     s = regions.ingredients_section
     assert s.complete is False and "unreadable_span" in s.issues
     assert [r.status for r in s.unreadable_regions] == ["verified", "approximate"]
     assert s.unreadable_regions[0].token_ids == ids(19, 20)
 
-    missing = align_panel(panel(ingredients_section=section(presence="partial")), "img_0", INDEX)
+    missing = align_panel(panel(ingredients_section=section(presence="partial")), "img_0", INDEX, CITES)
     assert missing.ingredients_section.complete is False
 
 
 def test_statements_claims_and_veg_mark() -> None:
     p = align_panel(panel(
-        allergen_statements=[{"type": "contains", "text": "Milk Solids", "items": ["Milk"], "token_ids": ids(4, 5),
+        allergen_statements=[{"type": "contains", "text": "Milk Solids", "items": ["Milk"], "token_ids": nums(4, 5),
                               "box_2d": None}],
-        claims=[{"text": "Energy", "token_ids": ids(15), "box_2d": None}],
+        claims=[{"text": "Energy", "token_ids": nums(15), "box_2d": None}],
         veg_mark={"value": "veg", "box_2d": [20, 860, 70, 940]},
-    ), "img_0", INDEX)
+    ), "img_0", INDEX, CITES)
     assert p.allergen_statements[0].raw_text == "Milk Solids"
     assert p.allergen_statements[0].evidence[0].status == "verified"
     assert p.claims[0].evidence[0].token_ids == ids(15)
@@ -262,7 +268,7 @@ def test_panel_image_ids_repairs_bad_or_duplicate_ids() -> None:
 # ---------------------------------------------------------------- a real recorded model response
 def test_recorded_ollama_response_on_test_label(label_tokens: list) -> None:
     extraction = LLMExtraction.model_validate(json.loads(recorded("ollama_test_label.json")))
-    p = align_panel(extraction.panels[0], "img_0", TokenIndex(label_tokens))
+    p = align_panel(extraction.panels[0], "img_0", TokenIndex(label_tokens), [t.token_id for t in label_tokens])
     names = [i.name for i in p.ingredients]
     assert names[:3] == ["Sugar", "Peanuts (22%)", "Milk Solids (12%)"]          # bogus parent_index=0 ignored
     assert p.evidence_count["verified"] >= 0.8 * sum(p.evidence_count.values())

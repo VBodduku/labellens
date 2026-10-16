@@ -65,9 +65,11 @@ def test_gemini_sdk_client_is_reused_and_has_no_retries() -> None:
 
 def test_gemini_request_carries_its_own_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
     client, models = gemini_with(monkeypatch, FakeResponse('{"a": "b"}'))
-    asyncio.run(client.generate_json("p", [], SCHEMA, 12.5))
+    asyncio.run(client.generate_json("p", [], SCHEMA, 25.5))
     options = models.calls[0]["config"].http_options
-    assert options.timeout == 12500 and options.retry_options.attempts == 1
+    assert options.timeout == 25500 and options.retry_options.attempts == 1
+    asyncio.run(client.generate_json("p", [], SCHEMA, 4))                # Google's minimum deadline is 10 s
+    assert models.calls[1]["config"].http_options.timeout == 15000
 
 
 def test_gemini_429_becomes_rate_limited_with_retry_delay(monkeypatch: pytest.MonkeyPatch) -> None:

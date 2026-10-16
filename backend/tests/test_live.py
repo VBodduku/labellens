@@ -40,7 +40,7 @@ def test_gemini_reads_and_grounds_the_fixture_label(label_image: Image.Image, la
     image = PreparedImage("img_0", label_image.width, label_image.height, label_image)
     result = asyncio.run(structure([image], ["back"], label_tokens, LLMRouter(clients, LIVE_TIMEOUT_S)))
 
-    panel = align_panel(result.value.panels[0], "img_0", TokenIndex(label_tokens))
+    panel = align_panel(result.result.value.panels[0], "img_0", TokenIndex(label_tokens), result.citations["img_0"])
     names = " ".join(i.name.lower() for i in panel.ingredients)
     assert "peanut" in names and "milk solids" in names
     verified = sum(1 for i in panel.ingredients if i.evidence[0].status == "verified")

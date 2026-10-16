@@ -34,7 +34,7 @@ from backend.app.pipeline.images import OCR_MAX_SIDE, PreparedImage
 from backend.app.pipeline.llm_schema import LLMExtraction
 from backend.app.pipeline.merge import assign_ingredient_ids
 from backend.app.pipeline.ocr import ocr_image_async
-from backend.app.pipeline.structure import JPEG_QUALITY, TOKEN_CAP, build_prompt
+from backend.app.pipeline.structure import JPEG_QUALITY, TOKEN_CAP, build_prompt, citations_for
 from shared.contract import (
     Box,
     Evidence,
@@ -325,7 +325,8 @@ async def _reread(trigger: Trigger, extraction: LabelExtraction, image: Prepared
         [_jpeg(crop.image)], LLMExtraction, timeout_s=timeout_s,
     )
     panel = result.value.panels[0]
-    aligned = align_panel(panel, image.image_id, TokenIndex([*extraction.ocr_tokens, *crop_tokens]))
+    citations = citations_for(crop_tokens, [image.image_id], TOKEN_CAP[result.provider])[image.image_id]
+    aligned = align_panel(panel, image.image_id, TokenIndex([*extraction.ocr_tokens, *crop_tokens]), citations)
     return candidate(extraction, trigger, aligned, crop_tokens), result.attempts
 
 

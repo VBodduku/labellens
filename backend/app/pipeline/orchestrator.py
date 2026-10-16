@@ -31,7 +31,7 @@ from backend.app.pipeline.merge import MergedLabel, evidence_of, merge_panels
 from backend.app.pipeline.ocr import run_ocr
 from backend.app.pipeline.quality import add_cropped_edge, assess
 from backend.app.pipeline.scan_memory import SCAN_MEMORY, ScanRecord, fingerprint
-from backend.app.pipeline.structure import PROMPT_VERSION, structure
+from backend.app.pipeline.structure import PROMPT_VERSION, Citations, structure
 from backend.app.pipeline.verify import merge_unknowns, pending_unknowns, verify
 from shared.contract import (
     ExtractionMeta,
@@ -96,11 +96,13 @@ async def _ocr_all(images: list[PreparedImage]) -> list[list[OcrToken]]:
     return list(await asyncio.gather(*(run_ocr(image) for image in images)))
 
 
-def _from_llm(extraction: LLMExtraction, images: list[PreparedImage], tokens: list[OcrToken]) -> list[PanelExtraction]:
+def _from_llm(extraction: LLMExtraction, citations: Citations, images: list[PreparedImage],
+              tokens: list[OcrToken]) -> list[PanelExtraction]:
     image_ids = [i.image_id for i in images]
     panels = extraction.panels[: len(image_ids)]
     index = TokenIndex(tokens)
-    return [align_panel(p, image_id, index) for p, image_id in zip(panels, panel_image_ids(panels, image_ids))]
+    return [align_panel(p, image_id, index, citations.get(image_id, []))
+            for p, image_id in zip(panels, panel_image_ids(panels, image_ids))]
 
 
 def _ocr_only(images: list[PreparedImage], tokens: list[OcrToken]) -> Structured:
@@ -113,13 +115,14 @@ async def _structure(scan: ScanInput, tokens: list[OcrToken], router: LLMRouter,
         if budget_s <= 0:
             raise TimeoutError
         with stage("llm"):
-            result = await asyncio.wait_for(structure(scan.images, scan.hints, tokens, router), budget_s)
+            structured = await asyncio.wait_for(structure(scan.images, scan.hints, tokens, router), budget_s)
     except (AllProvidersFailedError, TimeoutError) as exc:
         note("llm_failure", type(exc).__name__)
         with stage("ocr_only"):
             return _ocr_only(scan.images, tokens)
+    result = structured.result
     with stage("align"):
-        panels = _from_llm(result.value, scan.images, tokens)
+        panels = _from_llm(result.value, structured.citations, scan.images, tokens)
     with stage("merge"):
         label = merge_panels(panels)
     return Structured(label, result.provider, result.model, result.attempts,
