@@ -21,7 +21,7 @@
 - Phase 2: `react-zoom-pan-pinch` pinned to 3.7 (v4 targets React 19 and warns about `ref` under React 18); same API except `onTransformed`.
 - The zoomable content is exactly the viewer's size with the fitted photo centred inside it, so `focusTransform` (lib/boxMath.ts) is plain arithmetic; evidence outlines divide their stroke by the zoom because `non-scaling-stroke` ignores the parent's CSS scale.
 - Mobile result layout keeps the photo viewer sticky under the header (collapsible), so tapping any chip shows the zoom without scrolling.
-- Auto-capture re-arms only after ≥ 800 ms of failing frames (a real move to the next panel); one jittery frame while holding still never triggers a duplicate panel.
+- No auto-capture (overrides spec §5.2): a photo is taken only when the user taps the shutter. Auto-capture fired as soon as camera permission was granted and photographed whatever was in front of the lens. The live checks still drive the hint and the shutter ring, which fills to show "ready".
 - Live coaching reports motion as `quality.blurry` ("Hold steady") — the contract's `QualityIssue` has no motion value and the message fits.
 - Evidence with a box but no text (an unreadable region) shows a "Hard-to-read area on the photo" chip, so every unknown flag can still be traced to the photo; unknown verdicts with a located region get a "Retake this area" button inline.
 - Template summary (when `summary_lang ≠ lang`) = `{name} — {overall}. {first worst message}`, built only from fixed message keys.

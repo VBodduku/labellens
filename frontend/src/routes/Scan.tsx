@@ -1,6 +1,6 @@
 import { ArrowRight, Users, X } from "lucide-react";
 import { AnimatePresence, m } from "motion/react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { CameraStateCard } from "../components/capture/CameraStateCard";
@@ -27,8 +27,8 @@ function resultSearch(search: string): string {
 }
 
 /**
- * Camera-first capture (§5.2): live quality coaching, auto-capture when sharp and steady, up to three
- * panels, upload fallback. `?retake=<i>` replaces panel i from the result screen and reruns the scan.
+ * Camera-first capture (§5.2): live quality coaching, a photo only when the user taps the shutter, up to
+ * three panels, upload fallback. `?retake=<i>` replaces panel i from the result screen and reruns the scan.
  */
 export default function Scan() {
   const { t } = useTranslation();
@@ -49,7 +49,6 @@ export default function Scan() {
   const panels = isDemo && resultRetake === null ? [] : storedPanels;
 
   const videoRef = useRef<HTMLVideoElement>(null);
-  const captureRef = useRef<() => void>(() => undefined);
   const [trayRetake, setTrayRetake] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const [flash, setFlash] = useState(0);
@@ -59,7 +58,7 @@ export default function Scan() {
   const live = camera.status === "live";
   const replacing = resultRetake !== null || trayRetake !== null;
   const full = panels.length >= MAX_PANELS && !replacing;
-  const monitor = useQualityMonitor(videoRef, live, !full && !busy, () => captureRef.current());
+  const monitor = useQualityMonitor(videoRef, live);
 
   const storePhoto = useCallback(
     (photo: Blob) => {
@@ -90,18 +89,13 @@ export default function Scan() {
     setBusy(true);
     try {
       const photo = await captureVideoFrame(video);
-      monitor.markCaptured();
       setFlash((value) => value + 1);
       navigator.vibrate?.(30);
       storePhoto(photo);
     } finally {
       setBusy(false);
     }
-  }, [busy, full, monitor, storePhoto]);
-
-  useEffect(() => {
-    captureRef.current = () => void capture();
-  }, [capture]);
+  }, [busy, full, storePhoto]);
 
   async function onFiles(files: File[]) {
     setBusy(true);

@@ -143,7 +143,7 @@
   "scan.camera.insecure.body": "कैमरा इस्तेमाल करने के लिए LabelLens को https:// से खोलें, या फ़ोटो अपलोड करें।",
   "scan.camera.error": "कैमरा शुरू नहीं हो सका। फिर कोशिश करें या फ़ोटो अपलोड करें।",
   "scan.camera.retry": "कैमरा फिर से आज़माएँ",
-  "scan.hint.good": "साफ़ दिख रहा है — स्थिर रखें",
+  "scan.hint.good": "साफ़ दिख रहा है — फ़ोटो के लिए बटन दबाएँ",
   "scan.shutter": "फ़ोटो लें",
   "scan.torch.on": "लाइट चालू करें",
   "scan.torch.off": "लाइट बंद करें",

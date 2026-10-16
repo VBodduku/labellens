@@ -1,31 +1,19 @@
 import { useMotionValue } from "motion/react";
-import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
-import { CAPTURED_STATE, INITIAL_CAPTURE_STATE, nextCaptureState, type QualityRequest, type QualityResponse } from "../../lib/quality";
+import { useEffect, useRef, useState, type RefObject } from "react";
+import { nextReadyStep, type QualityRequest, type QualityResponse } from "../../lib/quality";
 import { FRAME_WIDTH, SAMPLE_FPS } from "../../lib/qualityThresholds";
 
 /**
- * Samples the live video ~SAMPLE_FPS times a second at FRAME_WIDTH px, scores each frame in a Web Worker
- * and drives auto-capture: `onAutoCapture` fires once after GOOD_HOLD_MS of continuously good frames.
+ * Samples the live video ~SAMPLE_FPS times a second at FRAME_WIDTH px and scores each frame in a Web Worker
+ * for the live hints and the shutter ring. It never takes a photo: only the shutter does.
  * Frames are skipped while the worker is still busy, so slow phones never queue up work.
  */
-export function useQualityMonitor(
-  videoRef: RefObject<HTMLVideoElement>,
-  active: boolean,
-  autoCaptureEnabled: boolean,
-  onAutoCapture: () => void,
-) {
+export function useQualityMonitor(videoRef: RefObject<HTMLVideoElement>, active: boolean) {
   const [latest, setLatest] = useState<QualityResponse | null>(null);
   const [fps, setFps] = useState(0);
   const [streakMs, setStreakMs] = useState(0);
   const progress = useMotionValue(0);
-  const captureState = useRef(INITIAL_CAPTURE_STATE);
-  const onAutoCaptureRef = useRef(onAutoCapture);
-  const autoRef = useRef(autoCaptureEnabled);
-
-  useEffect(() => {
-    onAutoCaptureRef.current = onAutoCapture;
-    autoRef.current = autoCaptureEnabled;
-  }, [onAutoCapture, autoCaptureEnabled]);
+  const goodSince = useRef<number | null>(null);
 
   useEffect(() => {
     if (!active) return;
@@ -46,12 +34,10 @@ export function useQualityMonitor(
         frames = 0;
         windowStart = now;
       }
-      const issues = autoRef.current ? event.data.issues : ["blurry" as const];
-      const step = nextCaptureState(captureState.current, issues, now);
-      captureState.current = step.state;
+      const step = nextReadyStep(goodSince.current, event.data.issues, now);
+      goodSince.current = step.goodSince;
       progress.set(step.progress);
-      setStreakMs(step.state.goodSince === null ? 0 : now - step.state.goodSince);
-      if (step.shouldCapture) onAutoCaptureRef.current();
+      setStreakMs(step.goodSince === null ? 0 : now - step.goodSince);
     };
 
     const timer = window.setInterval(() => {
@@ -73,17 +59,11 @@ export function useQualityMonitor(
     return () => {
       window.clearInterval(timer);
       worker.terminate();
-      captureState.current = INITIAL_CAPTURE_STATE;
+      goodSince.current = null;
       progress.set(0);
       setLatest(null);
     };
   }, [active, videoRef, progress]);
 
-  /** After a manual capture: disarm until the camera moves, like an auto-capture. */
-  const markCaptured = useCallback(() => {
-    captureState.current = CAPTURED_STATE;
-    progress.set(0);
-  }, [progress]);
-
-  return { latest, fps, streakMs, progress, markCaptured };
+  return { latest, fps, streakMs, progress };
 }

@@ -2,12 +2,11 @@ import { describe, expect, it } from "vitest";
 import {
   assessFrame,
   glareRatio,
-  INITIAL_CAPTURE_STATE,
   laplacianVariance,
   meanBrightness,
   measureFrame,
   motionScore,
-  nextCaptureState,
+  nextReadyStep,
   toGray,
 } from "./quality";
 import { QUALITY_THRESHOLDS } from "./qualityThresholds";
@@ -74,45 +73,22 @@ describe("assessFrame", () => {
   });
 });
 
-describe("auto-capture streak", () => {
-  it("captures once after 700 ms of continuously good frames", () => {
-    let step = nextCaptureState(INITIAL_CAPTURE_STATE, [], 1000);
+describe("shutter ready ring", () => {
+  it("fills over 700 ms of continuously good frames and never asks to capture", () => {
+    let step = nextReadyStep(null, [], 1000);
     expect(step.progress).toBe(0);
-    step = nextCaptureState(step.state, [], 1350);
+    step = nextReadyStep(step.goodSince, [], 1350);
     expect(step.progress).toBeCloseTo(0.5);
-    expect(step.shouldCapture).toBe(false);
-    step = nextCaptureState(step.state, [], 1700);
-    expect(step.shouldCapture).toBe(true);
-    step = nextCaptureState(step.state, [], 1900);
-    expect(step.shouldCapture).toBe(false);
+    step = nextReadyStep(step.goodSince, [], 1700);
+    expect(step.progress).toBe(1);
+    step = nextReadyStep(step.goodSince, [], 9000);
+    expect(step).toEqual({ goodSince: 1000, progress: 1 });
+    expect(step).not.toHaveProperty("shouldCapture");
   });
 
-  it("stays disarmed after a capture until the camera really moves", () => {
-    let step = nextCaptureState({ goodSince: 0, captured: false, badSince: null }, [], 700);
-    expect(step.shouldCapture).toBe(true);
-    step = nextCaptureState(step.state, [], 5000);
-    expect(step.shouldCapture).toBe(false);
-
-    // One jittery frame while holding still does not re-arm.
-    step = nextCaptureState(step.state, ["blurry"], 5100);
-    step = nextCaptureState(step.state, [], 5200);
-    expect(nextCaptureState(step.state, [], 6000).shouldCapture).toBe(false);
-
-    // Sustained movement (at least 800 ms of bad frames) re-arms; then a new steady 700 ms captures.
-    step = nextCaptureState(step.state, ["blurry"], 7000);
-    step = nextCaptureState(step.state, ["blurry"], 7900);
-    step = nextCaptureState(step.state, [], 8000);
-    expect(nextCaptureState(step.state, [], 8700).shouldCapture).toBe(true);
-  });
-
-  it("restarts the window when a frame turns bad", () => {
-    let step = nextCaptureState(INITIAL_CAPTURE_STATE, [], 0);
-    step = nextCaptureState(step.state, [], 600);
-    step = nextCaptureState(step.state, ["blurry"], 650);
-    expect(step.progress).toBe(0);
-    step = nextCaptureState(step.state, [], 700);
-    step = nextCaptureState(step.state, [], 1300);
-    expect(step.shouldCapture).toBe(false);
-    expect(nextCaptureState(step.state, [], 1400).shouldCapture).toBe(true);
+  it("empties as soon as a frame turns bad", () => {
+    const step = nextReadyStep(0, ["blurry"], 650);
+    expect(step).toEqual({ goodSince: null, progress: 0 });
+    expect(nextReadyStep(step.goodSince, [], 700).progress).toBe(0);
   });
 });

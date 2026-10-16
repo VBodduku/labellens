@@ -7,7 +7,7 @@ interface CaptureButtonProps {
   onCapture: () => void;
 }
 
-/** Manual shutter; the ring around it fills while every quality check is passing (auto-capture at full). */
+/** The only way to take a photo. The ring fills while every quality check passes (full = ready to tap). */
 export function CaptureButton({ progress, disabled, onCapture }: CaptureButtonProps) {
   const { t } = useTranslation();
   return (

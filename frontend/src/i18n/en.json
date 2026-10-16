@@ -142,7 +142,7 @@
   "scan.camera.insecure.body": "Open LabelLens over https:// to use the camera, or upload a photo.",
   "scan.camera.error": "The camera couldn't start. Try again or upload a photo.",
   "scan.camera.retry": "Try the camera again",
-  "scan.hint.good": "Looks sharp — hold still",
+  "scan.hint.good": "Looks sharp — tap the shutter",
   "scan.shutter": "Take photo",
   "scan.torch.on": "Turn on the light",
   "scan.torch.off": "Turn off the light",
