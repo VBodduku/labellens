@@ -1,0 +1,101 @@
+"""End-to-end scan pipeline with a FakeLLM: grounding, fallback, caching, parallel OCR."""
+from __future__ import annotations
+
+import asyncio
+import io
+import json
+
+import pytest
+from PIL import Image
+
+from backend.app.cache import ExtractionCache
+from backend.app.errors import ApiError
+from backend.app.fixtures import FIXTURES_DIR
+from backend.app.llm.base import ProviderUnavailableError, RateLimitedError
+from backend.app.pipeline import orchestrator
+from backend.app.pipeline.align import union_box
+from backend.app.pipeline.images import decode_upload
+from backend.app.pipeline.orchestrator import ScanInput, run_scan
+from backend.scripts.make_test_label import fixture_tokens
+from backend.tests.fakes import FakeLLM, recorded, router_with, token
+from backend.tests.test_ocr_label import iou
+from shared.contract import Profile, ScanResult
+
+PROFILES = [Profile.model_validate(p)
+            for p in json.loads((FIXTURES_DIR / "profiles.json").read_text(encoding="utf-8"))]
+
+
+def scan_input(png: bytes, count: int = 1) -> ScanInput:
+    return ScanInput(
+        images=[decode_upload(png, f"img_{n}") for n in range(count)], raw=[png] * count,
+        hints=["back"], profiles=PROFILES, lang="en",
+    )
+
+
+def scan(png: bytes, llm: FakeLLM, cache: ExtractionCache, count: int = 1) -> ScanResult:
+    return asyncio.run(run_scan(scan_input(png, count), router_with(llm), cache))
+
+
+def test_evidence_boxes_land_on_the_printed_words(label_png: bytes, cache: ExtractionCache) -> None:
+    result = scan(label_png, FakeLLM([recorded("ollama_test_label.json")], name="ollama", model="gemma3:4b"), cache)
+    extraction = result.extraction
+    assert (extraction.meta.provider, extraction.meta.model, extraction.meta.cache_hit) == ("ollama", "gemma3:4b", False)
+    expected = {t.text: t.box for t in fixture_tokens()[0]}
+    printed = union_box([expected["Peanuts"], expected["(22%),"]])
+    peanuts = next(i for i in extraction.ingredients if i.name.startswith("Peanuts"))
+    [evidence] = peanuts.evidence
+    assert evidence.status == "verified" and evidence.box is not None
+    assert iou(evidence.box, printed) >= 0.3
+    assert all(e.box is not None for i in extraction.ingredients for e in i.evidence if e.status == "verified")
+    assert extraction.images[0].quality.blur_score > 0
+    assert len(result.reports) == 3
+
+
+def test_all_providers_down_gives_honest_ocr_only_result(label_png: bytes, cache: ExtractionCache) -> None:
+    llm = FakeLLM([ProviderUnavailableError("down")])
+    result = scan(label_png, llm, cache)
+    extraction = result.extraction
+    assert extraction.meta.provider == "ocr_only"
+    assert len(extraction.ingredients) == 11
+    assert not extraction.ingredients_section.complete
+    assert all(r.state != "not_listed" for report in result.reports for r in report.results)
+    assert not list(cache.directory.glob("*.json"))            # degraded results are not cached
+
+
+def test_rate_limited_everywhere_still_answers(label_png: bytes, cache: ExtractionCache) -> None:
+    result = scan(label_png, FakeLLM([RateLimitedError(30)]), cache)
+    assert result.extraction.meta.provider == "ocr_only"
+
+
+def test_second_scan_is_a_cache_hit_without_llm_call(label_png: bytes, cache: ExtractionCache) -> None:
+    llm = FakeLLM([recorded("ollama_test_label.json")], name="ollama")
+    first = scan(label_png, llm, cache)
+    second = scan(label_png, llm, cache)
+    assert len(llm.prompts) == 1
+    assert second.extraction.meta.cache_hit is True
+    assert second.scan_id != first.scan_id
+    assert second.extraction.ingredients == first.extraction.ingredients
+
+
+def test_panels_run_ocr_in_parallel(label_png: bytes, cache: ExtractionCache, monkeypatch: pytest.MonkeyPatch) -> None:
+    active, peak = 0, 0
+
+    async def slow_ocr(image):  # type: ignore[no-untyped-def]
+        nonlocal active, peak
+        active += 1
+        peak = max(peak, active)
+        await asyncio.sleep(0.05)
+        active -= 1
+        return [token(0, "Sugar", 0.1, 0.1, image_id=image.image_id)]
+
+    monkeypatch.setattr(orchestrator, "run_ocr", slow_ocr)
+    scan(label_png, FakeLLM([recorded("ollama_test_label.json")], name="ollama"), cache, count=3)
+    assert peak == 3
+
+
+def test_blank_photo_is_rejected(cache: ExtractionCache) -> None:
+    buffer = io.BytesIO()
+    Image.new("RGB", (800, 800), (128, 128, 128)).save(buffer, format="PNG")
+    with pytest.raises(ApiError) as info:
+        scan(buffer.getvalue(), FakeLLM([recorded("ollama_test_label.json")]), cache)
+    assert info.value.error_code == "BAD_IMAGE"
