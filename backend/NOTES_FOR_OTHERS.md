@@ -14,7 +14,7 @@
 - `/api/profile/parse` may return `warnings` such as "Also mentioned: Jain. Add it to the right person if it applies." and `basic_parsing` (no LLM) — show them on the confirmation screen.
 - `/api/explain` returns 503 `LLM_UNAVAILABLE` for a term that is not in the KB when Gemini is unavailable.
 
-- Deployed backend: set `VITE_API_BASE_URL` to the Space URL (`https://<hf-user>-labellens-api.hf.space`). Tell us the Vercel URL so it goes into the Space's `CORS_ORIGINS`.
+- Deployed backend: set `VITE_API_BASE_URL` to the Render URL (`https://<service>.onrender.com`). Tell us the Vercel URL so it goes into Render's `CORS_ORIGINS`. The free service sleeps after 15 min idle: the first request can take ~1 min, so the UI's scan timeout/"waking up" message matters.
 - HEIC photos are accepted now; files over 50 MP get 422 `BAD_IMAGE`; bodies over the limit get 413 (also for chunked uploads).
 
 ## For Part 3 (engine)
@@ -31,4 +31,5 @@
 - On the M2 demo Mac, gemma3:4b (Ollama) is too slow for full label extraction within the 45 s scan budget (~120 s). Without Gemini the app answers in OCR-only mode. Warm the cache with Gemini before judging (`scripts/warm_cache.py`, Phase 4).
 - Docker image builds from the repo root with `docker build -f backend/Dockerfile .`; it copies `engine/*.py` and `engine/kb/` — keep any new runtime engine files in those places (or tell us).
 - Native-speaker review needed for the hi/te strings in `backend/app/wording.py` and `backend/app/agent/templates.py` (marked `REVIEW`).
+- `.env.example` (main): optional new backend variable `OCR_WORKERS` (default 3; set 1 on small hosts such as Render free).
 - No contract changes requested.

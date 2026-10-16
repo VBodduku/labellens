@@ -29,6 +29,7 @@ class Settings:
     max_images: int
     max_image_mb: float
     log_level: str
+    ocr_workers: int                    # parallel OCR runs; 1 on small hosts (Render free: 512 MB)
 
     @property
     def max_image_bytes(self) -> int:
@@ -69,4 +70,5 @@ def get_settings() -> Settings:
         max_images=int(_env("MAX_IMAGES", "3")),
         max_image_mb=float(_env("MAX_IMAGE_MB", "8")),
         log_level=_env("LOG_LEVEL", "info").upper(),
+        ocr_workers=max(1, int(_env("OCR_WORKERS", "3"))),
     )

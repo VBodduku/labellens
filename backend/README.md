@@ -36,24 +36,33 @@ docker build -f backend/Dockerfile -t labellens-api .
 docker run -p 7860:7860 -e GEMINI_API_KEY=AIza... -e CORS_ORIGINS=http://localhost:5173 labellens-api
 curl localhost:7860/api/health
 ```
-The port comes from `$PORT` (default 7860). `backend/Dockerfile.dockerignore` keeps the build
+The port comes from `$PORT` (default 7860); `OCR_WORKERS` (default 3) limits parallel OCR on small hosts. `backend/Dockerfile.dockerignore` keeps the build
 context small (BuildKit). On a Mac without Docker Desktop: `brew install colima docker docker-buildx`,
 `colima start --cpu 2 --memory 4 --disk 20`.
 
-## Deploy to a Hugging Face Docker Space (free CPU)
-1. One time: `.venv/bin/pip install huggingface_hub` and `.venv/bin/hf auth login` with a **write** token
-   from https://huggingface.co/settings/tokens.
-2. Publish (creates or updates the Space, sets `ENGINE_MODE=real`, `CORS_ORIGINS`, `CACHE_DIR`, uploads,
-   then waits for `/api/health`):
-   ```bash
-   .venv/bin/python -m backend.scripts.publish_space <hf-user>/labellens-api --cors https://<frontend>.vercel.app
-   ```
-3. Add the secret yourself: Space -> Settings -> Variables and secrets -> New secret
-   `GEMINI_API_KEY` (and `GEMINI_API_KEY_BACKUP`). The Space restarts by itself.
-4. Check: `curl https://<hf-user>-labellens-api.hf.space/api/health` -> `"gemini":true`.
-   Ollama is not available on Spaces, so `"ollama":false` is expected there.
-5. Frontend: set `VITE_API_BASE_URL=https://<hf-user>-labellens-api.hf.space` in Vercel. If the Vercel URL
-   changes, rerun step 2 with the new `--cors` (or edit the `CORS_ORIGINS` variable in the Space settings).
+## Deploy to Render (free web service)
+Hugging Face Docker Spaces now need a paid PRO plan, so the public backend runs on Render's free tier
+(512 MB RAM; the service sleeps after 15 min idle and takes about a minute to wake up).
+1. Sign up at https://render.com with GitHub and allow access to the `labellens` repository.
+2. Dashboard -> **New** -> **Web Service** -> pick the repository.
+   - **Branch**: `main` (or `part-2-backend` before the merge)
+   - **Language / Runtime**: Docker
+   - **Dockerfile Path**: `backend/Dockerfile`  - **Docker Build Context Directory**: `.` (repo root)
+   - **Instance Type**: Free
+   - **Health Check Path** (Advanced): `/api/catalog`
+3. **Environment Variables** (same page, or later under *Environment*):
+   - `GEMINI_API_KEY` = your AI Studio key (and `GEMINI_API_KEY_BACKUP` if you have one)
+   - `ENGINE_MODE` = `real`
+   - `CORS_ORIGINS` = `https://<frontend>.vercel.app` (comma-separate several; add `http://localhost:5173` for local dev)
+   - `OCR_WORKERS` = `1` (keeps memory inside 512 MB; panels are read one after another)
+   - Render sets `PORT` itself; the image listens on it.
+4. **Create Web Service**. The first build takes ~5-10 min. Then check
+   `curl https://<service>.onrender.com/api/health` -> `"engine_mode":"real"`, `"gemini":true`.
+   Ollama is not available on Render, so `"ollama":false` is expected.
+5. Frontend: set `VITE_API_BASE_URL=https://<service>.onrender.com` in Vercel and redeploy it.
+   Open the backend URL once before a demo to wake it up.
+6. If Render reports "out of memory" (Events tab): check `OCR_WORKERS=1`; a scan of 3 photos then
+   reads them one by one (slower, same result).
 
 ## Scripts
 - `make_test_label [out.png]` - draws the fixture's OCR tokens onto a PNG (default `.cache/test_label.png`).
@@ -61,6 +70,5 @@ context small (BuildKit). On a Mac without Docker Desktop: `brew install colima 
 - `smoke_scan <photos_dir> [--url]` - scans every packet folder and prints a table with latency stats.
 - `warm_cache <photos_dir> [--url] [--lang ...]` - fills the demo cache and proves cache hits are fast.
 - `record_fake_llm gemini|ollama` - records a real structuring response for the offline tests.
-- `publish_space <user>/<space> [--cors ...]` - deploys to Hugging Face (see above).
 
 Run each as `python -m backend.scripts.<name>` from the repo root.
