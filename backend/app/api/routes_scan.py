@@ -13,9 +13,12 @@ from backend.app.cache import ExtractionCache, get_cache
 from backend.app.config import get_settings
 from backend.app.llm.router import LLMRouter, get_router
 from backend.app.logging_setup import stage
+from backend.app.pipeline import summarize
 from backend.app.pipeline.assemble import build_scan_result
 from backend.app.pipeline.images import BadImageError, PreparedImage, decode_upload, image_id
 from backend.app.pipeline.orchestrator import SCAN_BUDGET_S, ScanInput, run_scan
+from backend.app.pipeline.scan_memory import SCAN_MEMORY
+from backend.app.pipeline.verify import merge_unknowns, pending_unknowns
 from shared.contract import Lang, PanelHint, Profile, RecheckRequest, ScanResult
 
 router = APIRouter(prefix="/api")
@@ -91,8 +94,26 @@ async def scan(
         raise errors.ApiError(503, "LLM_UNAVAILABLE", "Reading the label took too long. Please try again.") from exc
 
 
+RECHECK_SUMMARY_BUDGET_S = 8.0
+
+
 @router.post("/recheck", response_model=ScanResult)
-def recheck(body: RecheckRequest) -> ScanResult:
+async def recheck(body: RecheckRequest, router: LLMRouter = Depends(get_router)) -> ScanResult:
+    """Engine only. Summaries: regenerated when the language changed, reused only for unchanged verdicts."""
+    record = SCAN_MEMORY.get(body.extraction.scan_id)
     with stage("engine"):
-        output = engine_adapter.evaluate(body.extraction, body.profiles)
-    return build_scan_result(body.extraction, output, body.lang)
+        output = engine_adapter.evaluate(body.extraction, body.profiles, record.interpretations if record else None)
+    summaries: dict[str, str] = {}
+    if record is not None and body.lang != record.lang:
+        with stage("summarize"):
+            summaries = await summarize.summarize(output.reports, body.profiles, body.lang, router,
+                                                  RECHECK_SUMMARY_BUDGET_S)
+    elif record is not None:
+        summaries = record.reusable_summaries(output.reports)
+    reports = summarize.apply(output.reports, summaries, body.lang)
+    if record is not None and summaries:
+        record.lang = body.lang
+        record.remember_summaries(reports)
+    unknowns = merge_unknowns(output.unknowns, pending_unknowns(body.extraction, body.profiles))
+    return build_scan_result(body.extraction, output.model_copy(update={"reports": reports, "unknowns": unknowns}),
+                             body.lang)

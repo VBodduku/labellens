@@ -91,3 +91,11 @@ def test_timed_out_provider_is_skipped_until_cooldown_ends() -> None:
     assert router.provider_status()["ollama"] is False
     clock.now += 301
     assert router.provider_status()["ollama"] is True
+
+
+def test_short_caller_budget_timeout_does_not_cool_down() -> None:
+    slow = FakeLLM([GOOD], name="ollama", delay_s=1.0)
+    router = LLMRouter([slow], 5)
+    with pytest.raises(AllProvidersFailedError):
+        asyncio.run(router.generate(lambda p: "x", [], LLMExtraction, timeout_s=0.05))
+    assert router.provider_status()["ollama"] is True

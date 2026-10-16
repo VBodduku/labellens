@@ -12,7 +12,7 @@ from typing import Generic, TypeVar
 from pydantic import BaseModel, ValidationError
 
 from backend.app.config import get_settings
-from backend.app.llm.base import LLMClient, LLMError, LLMImage, ProviderName, RateLimitedError
+from backend.app.llm.base import LLMClient, LLMError, LLMImage, ProviderName, RateLimitedError, ToolChatClient
 from backend.app.llm.gemini import GeminiClient
 from backend.app.llm.ollama import OllamaClient
 from backend.app.llm.schema_utils import inline_schema
@@ -65,10 +65,29 @@ class LLMRouter:
             status[state.client.name] = status[state.client.name] or state.cooldown_until <= now
         return status
 
+    def tool_client(self) -> ToolChatClient | None:
+        """First client that can call tools (Gemini) and is not cooling down."""
+        now = self._clock()
+        for state in self._states:
+            if state.cooldown_until <= now and hasattr(state.client, "chat_with_tools"):
+                return state.client  # type: ignore[return-value]
+        return None
+
+    def report_rate_limit(self, client_label: str, retry_after_s: int) -> None:
+        """Let callers that talk to a client directly (the agent) share the cooldown bookkeeping."""
+        for state in self._states:
+            if state.client.label == client_label:
+                state.cooldown_until = self._clock() + retry_after_s
+
+    def can_generate(self) -> bool:
+        return any(state.cooldown_until <= self._clock() for state in self._states)
+
     async def generate(
         self, prompt_for: Callable[[ProviderName], str], images: list[LLMImage], schema_model: type[M],
+        timeout_s: float | None = None,
     ) -> LLMResult[M]:
         schema = inline_schema(schema_model)
+        timeout = min(self._timeout_s, timeout_s) if timeout_s is not None else self._timeout_s
         attempts = 0
         retry_after: list[int] = []
         for state in self._states:
@@ -79,9 +98,7 @@ class LLMRouter:
             for repair in (False, True):
                 attempts += 1
                 try:
-                    text = await asyncio.wait_for(
-                        state.client.generate_json(prompt, images, schema, self._timeout_s), self._timeout_s,
-                    )
+                    text = await asyncio.wait_for(state.client.generate_json(prompt, images, schema, timeout), timeout)
                     value = schema_model.model_validate_json(text)
                 except ValidationError as exc:
                     self._fail(state, f"invalid output: {exc.error_count()} errors")
@@ -95,8 +112,9 @@ class LLMRouter:
                     self._fail(state, f"rate limited for {exc.retry_after_s}s")
                     break
                 except TimeoutError:
-                    state.cooldown_until = self._clock() + TIMEOUT_COOLDOWN_S
-                    self._fail(state, f"timed out; skipped for {TIMEOUT_COOLDOWN_S}s")
+                    if timeout >= self._timeout_s:      # slow provider, not just a caller's short budget
+                        state.cooldown_until = self._clock() + TIMEOUT_COOLDOWN_S
+                    self._fail(state, f"timed out after {timeout:g}s")
                     break
                 except LLMError as exc:
                     self._fail(state, str(exc) or type(exc).__name__)

@@ -15,7 +15,7 @@ from backend.app.llm.router import LLMRouter, get_router
 from backend.app.main import create_app
 from backend.app.pipeline.ocr import ocr_image
 from backend.scripts.make_test_label import fixture_tokens, render_label
-from backend.tests.fakes import FakeLLM, recorded
+from backend.tests.fakes import FakeLLM, recorded, scan_llm
 from shared.contract import OcrToken
 
 TEST_ENV = {
@@ -69,7 +69,7 @@ def providers(monkeypatch: pytest.MonkeyPatch) -> dict[str, bool]:
 @pytest.fixture
 def llm() -> FakeLLM:
     """The structuring model behind /api/scan; tests change its responses as needed."""
-    return FakeLLM([recorded("ollama_test_label.json")], name="ollama", model="gemma3:4b")
+    return scan_llm(recorded("ollama_test_label.json"))
 
 
 @pytest.fixture

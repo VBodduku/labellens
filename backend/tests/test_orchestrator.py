@@ -17,7 +17,7 @@ from backend.app.pipeline.align import union_box
 from backend.app.pipeline.images import decode_upload
 from backend.app.pipeline.orchestrator import ScanInput, run_scan
 from backend.scripts.make_test_label import fixture_tokens
-from backend.tests.fakes import FakeLLM, recorded, router_with, token
+from backend.tests.fakes import STRUCTURE, FakeLLM, recorded, router_with, scan_llm, token
 from backend.tests.test_ocr_label import iou
 from shared.contract import Profile, ScanResult
 
@@ -37,7 +37,7 @@ def scan(png: bytes, llm: FakeLLM, cache: ExtractionCache, count: int = 1) -> Sc
 
 
 def test_evidence_boxes_land_on_the_printed_words(label_png: bytes, cache: ExtractionCache) -> None:
-    result = scan(label_png, FakeLLM([recorded("ollama_test_label.json")], name="ollama", model="gemma3:4b"), cache)
+    result = scan(label_png, scan_llm(recorded("ollama_test_label.json")), cache)
     extraction = result.extraction
     assert (extraction.meta.provider, extraction.meta.model, extraction.meta.cache_hit) == ("ollama", "gemma3:4b", False)
     expected = {t.text: t.box for t in fixture_tokens()[0]}
@@ -68,10 +68,10 @@ def test_rate_limited_everywhere_still_answers(label_png: bytes, cache: Extracti
 
 
 def test_second_scan_is_a_cache_hit_without_llm_call(label_png: bytes, cache: ExtractionCache) -> None:
-    llm = FakeLLM([recorded("ollama_test_label.json")], name="ollama")
+    llm = scan_llm(recorded("ollama_test_label.json"))
     first = scan(label_png, llm, cache)
     second = scan(label_png, llm, cache)
-    assert len(llm.prompts) == 1
+    assert len(llm.calls(STRUCTURE)) == 1
     assert second.extraction.meta.cache_hit is True
     assert second.scan_id != first.scan_id
     assert second.extraction.ingredients == first.extraction.ingredients
@@ -89,7 +89,7 @@ def test_panels_run_ocr_in_parallel(label_png: bytes, cache: ExtractionCache, mo
         return [token(0, "Sugar", 0.1, 0.1, image_id=image.image_id)]
 
     monkeypatch.setattr(orchestrator, "run_ocr", slow_ocr)
-    scan(label_png, FakeLLM([recorded("ollama_test_label.json")], name="ollama"), cache, count=3)
+    scan(label_png, scan_llm(recorded("ollama_test_label.json")), cache, count=3)
     assert peak == 3
 
 
@@ -97,5 +97,29 @@ def test_blank_photo_is_rejected(cache: ExtractionCache) -> None:
     buffer = io.BytesIO()
     Image.new("RGB", (800, 800), (128, 128, 128)).save(buffer, format="PNG")
     with pytest.raises(ApiError) as info:
-        scan(buffer.getvalue(), FakeLLM([recorded("ollama_test_label.json")]), cache)
+        scan(buffer.getvalue(), scan_llm(recorded("ollama_test_label.json")), cache)
     assert info.value.error_code == "BAD_IMAGE"
+
+
+def test_unresolved_terms_are_interpreted_and_evaluated_again(
+    label_png: bytes, cache: ExtractionCache, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from backend.app import engine_adapter
+    from backend.tests.fakes import INTERPRET
+    from shared.engine_interface import UnresolvedTerm
+
+    real_evaluate = engine_adapter.evaluate
+    calls: list[object] = []
+
+    def evaluate(extraction, profiles, interpretations=None):  # type: ignore[no-untyped-def]
+        calls.append(interpretations)
+        output = real_evaluate(extraction, profiles, interpretations)
+        return output.model_copy(update={"unresolved_terms": [UnresolvedTerm(ingredient_id="ing_6", term="Zorbex")]})
+
+    monkeypatch.setattr(orchestrator.engine_adapter, "evaluate", evaluate)
+    answer = {"interpretations": [{"term": "Zorbex", "categories": ["milk"], "origin": "varies",
+                                   "confidence": 0.6, "rationale": "May be dairy based."}]}
+    llm = scan_llm(recorded("ollama_test_label.json"), interpret=[json.dumps(answer)])
+    scan(label_png, llm, cache)
+    assert calls[0] is None
+    assert list(calls[1]) == ["Zorbex"] and calls[1]["Zorbex"].categories == ["milk"]  # type: ignore[index]
