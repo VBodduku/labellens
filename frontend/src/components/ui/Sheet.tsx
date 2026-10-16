@@ -28,12 +28,16 @@ export function Sheet({ open, title, onClose, children, wide = false }: SheetPro
   useEffect(() => {
     if (!open) return;
     const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    // The sheet renders outside #root, so making the app inert keeps focus and screen readers inside it.
+    const app = document.getElementById("root");
+    app?.setAttribute("inert", "");
     const frame = requestAnimationFrame(() => {
       const first = panel.current?.querySelector<HTMLElement>("input, select, textarea") ?? panel.current?.querySelector<HTMLElement>(FOCUSABLE);
       first?.focus();
     });
     return () => {
       cancelAnimationFrame(frame);
+      app?.removeAttribute("inert");
       opener?.focus();
     };
   }, [open]);
