@@ -42,4 +42,21 @@ describe("corrections", () => {
     const correction = makeCorrection(extraction, "ingredients[0].name", "Cane Sugar");
     expect(correction.old_value).toBe("Sugar");
   });
+
+  it("makes a corrected unreadable value readable so the engine uses it", () => {
+    const smudged = setAtPath(
+      setAtPath(extraction, `nutrition.rows[${sodiumRow}].values[0].readability`, "unreadable"),
+      `nutrition.rows[${sodiumRow}].values[0].amount`,
+      null,
+    );
+    const path = `nutrition.rows[${sodiumRow}].values[0].amount`;
+    const value = applyCorrections(smudged, [makeCorrection(smudged, path, 410)]).nutrition?.rows[sodiumRow]?.values[0];
+    expect(value).toMatchObject({ amount: 410, readability: "clear", corrected_by_user: true });
+  });
+
+  it("a renamed ingredient is readable and quotes the user's words", () => {
+    const blurred = setAtPath(extraction, "ingredients[1].readability", "partial");
+    const patched = applyCorrections(blurred, [makeCorrection(blurred, "ingredients[1].name", "Peanut Powder")]);
+    expect(patched.ingredients[1]).toMatchObject({ name: "Peanut Powder", raw_text: "Peanut Powder", readability: "clear" });
+  });
 });

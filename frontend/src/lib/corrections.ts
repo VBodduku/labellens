@@ -3,19 +3,25 @@ import { parsePath, formatPath, setAtPath, getAtPath } from "./fieldPath";
 
 /**
  * Applies user corrections to an extraction: patches each field, flags corrected nutrient values
- * with `corrected_by_user`, and records the corrections in `user_corrections`.
+ * with `corrected_by_user`, and records the corrections in `user_corrections`. A corrected value or
+ * ingredient counts as readable (the user read it off the pack), so the engine uses it; a renamed
+ * ingredient's `raw_text` follows so verdict messages quote what the user confirmed.
  */
 export function applyCorrections(extraction: LabelExtraction, corrections: Correction[]): LabelExtraction {
   let patched = extraction;
   for (const correction of corrections) {
     patched = setAtPath(patched, correction.field_path, correction.new_value);
     const segments = parsePath(correction.field_path);
+    const parentPath = formatPath(segments.slice(0, -1));
+    if (typeof getAtPath(patched, parentPath) !== "object") continue;
     const isNutrientValue = segments[0] === "nutrition" && segments.includes("values");
     if (isNutrientValue) {
-      const valuePath = formatPath(segments.slice(0, -1));
-      if (typeof getAtPath(patched, valuePath) === "object") {
-        patched = setAtPath(patched, `${valuePath}.corrected_by_user`, true);
-      }
+      patched = setAtPath(patched, `${parentPath}.corrected_by_user`, true);
+      patched = setAtPath(patched, `${parentPath}.readability`, "clear");
+    }
+    if (segments[0] === "ingredients" && segments.at(-1) === "name") {
+      patched = setAtPath(patched, `${parentPath}.raw_text`, correction.new_value);
+      patched = setAtPath(patched, `${parentPath}.readability`, "clear");
     }
   }
   return { ...patched, user_corrections: [...extraction.user_corrections, ...corrections] };

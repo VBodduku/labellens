@@ -38,3 +38,4 @@
 - `?mockScenario=unreadable` builds an unknown report for every profile sent (and applies to rechecks too), so families created in the app get cards in mock mode.
 - In demo mode a failed `/api/recheck` (language switch, correction) falls back to the mock recheck, so the demo works with no backend.
 - The service worker precaches the app shell only; `/api` is never cached or served from the navigation fallback. An offline banner says the demo still works and scanning needs a connection.
+- A correction marks the corrected nutrient value or ingredient `readability: "clear"` (the user read it off the pack) so the engine uses it, and a renamed ingredient's `raw_text` follows its `name` so verdict messages quote the user's words; before, a typed-in value for a smudged row left the verdict at Can't determine.
