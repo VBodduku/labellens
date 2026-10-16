@@ -84,3 +84,4 @@
 - Lactitol is lactose-derived but its inclusion under milk does not establish allergenic protein; confirm whether broad milk-origin screening is the intended profile behavior.
 - Regional names for celery/lupin/molluscs remain intentionally unfilled rather than inventing ambiguous translations. Hindi/Telugu names exist for common Indian allergens; native-speaker review is still needed.
 - Dried ginger/turmeric Jain acceptance, ambiguous additive origins, spice blends and flavour sources carry medium-confidence notes and possible categories for review. Lecithin without source includes possible soy/egg; plant source alone leaves possible soy.
+- Allergen statements: singular "nut" maps like "nuts" (tree_nut definite, peanut possible). Indian packs print "MAY CONTAIN NUT" and "Contains: Milk, Wheat, Nut and Soy"; the exact-item match ignored them, leaving a may-contain warning unflagged.

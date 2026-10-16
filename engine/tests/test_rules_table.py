@@ -85,6 +85,27 @@ def test_statement_rows(
 
 
 @pytest.mark.parametrize(
+    "statement_type,key,complete,state,code",
+    [
+        ("may_contain", "tree_nut", False, "possible", "POSSIBLE_MAY_CONTAIN"),
+        ("may_contain", "peanut", False, "possible", "POSSIBLE_MAY_CONTAIN"),
+        ("contains", "tree_nut", True, "conflict", "CONFLICT_STATEMENT"),
+        ("contains", "peanut", True, "possible", "POSSIBLE_AMBIGUOUS_SOURCE"),
+    ],
+)
+def test_singular_nut_in_a_statement_counts_like_nuts(
+    make_extraction, make_profile, statement_type, key, complete, state, code
+):
+    """Indian labels print "MAY CONTAIN NUT" and "Contains: Milk, Wheat, Nut and Soy"."""
+    extraction = make_extraction("salt", complete=complete)
+    extraction.allergen_statements = [
+        AllergenStatement(id="a", type=statement_type, raw_text="NUT", items=["NUT"])
+    ]
+    actual = result(extraction, make_profile(key, "strict"))
+    assert (actual.state, actual.reason_code) == (state, code)
+
+
+@pytest.mark.parametrize(
     "presence,complete,issues,readability,state,kind,code",
     [
         (
