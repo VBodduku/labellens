@@ -215,7 +215,11 @@ def test_probe_reports_invalid_key_and_missing_ollama_as_down(monkeypatch: pytes
             return httpx.Response(status)
         raise httpx.ConnectError("refused")
 
+    async def fake_post(self, url, headers=None, json=None):  # type: ignore[no-untyped-def]
+        return httpx.Response(200)
+
     monkeypatch.setattr(httpx.AsyncClient, "get", fake_get)
+    monkeypatch.setattr(httpx.AsyncClient, "post", fake_post)
     monkeypatch.setenv("GEMINI_API_KEY", "not-a-real-key")
     get_settings.cache_clear()
     provider_probe.reset_cache()
@@ -224,6 +228,37 @@ def test_probe_reports_invalid_key_and_missing_ollama_as_down(monkeypatch: pytes
     get_settings.cache_clear()
     provider_probe.reset_cache()
     assert asyncio.run(provider_probe.probe_providers(get_settings())) == {"gemini": True, "ollama": False}
+
+
+@pytest.mark.parametrize(("generate_status", "up"), [(403, False), (401, False), (429, True), (503, True), (200, True)])
+def test_probe_reports_a_key_refused_for_generation_as_down(
+    monkeypatch: pytest.MonkeyPatch, generate_status: int, up: bool,
+) -> None:
+    """A blocked project still lists models (200) but every generation returns 403 PERMISSION_DENIED."""
+    import httpx
+
+    from backend.app import provider_probe
+    from backend.app.config import get_settings
+
+    posted: list[str] = []
+
+    async def fake_get(self, url, headers=None):  # type: ignore[no-untyped-def]
+        if "generativelanguage" in str(url):
+            return httpx.Response(200)
+        raise httpx.ConnectError("refused")
+
+    async def fake_post(self, url, headers=None, json=None):  # type: ignore[no-untyped-def]
+        posted.append(str(url))
+        return httpx.Response(generate_status, json={"error": {"code": generate_status}})
+
+    monkeypatch.setattr(httpx.AsyncClient, "get", fake_get)
+    monkeypatch.setattr(httpx.AsyncClient, "post", fake_post)
+    monkeypatch.setenv("GEMINI_API_KEY", "AIzaBLOCKED")
+    monkeypatch.setenv("GEMINI_MODEL", "gemini-test-model")
+    get_settings.cache_clear()
+    provider_probe.reset_cache()
+    assert asyncio.run(provider_probe.probe_providers(get_settings()))["gemini"] is up
+    assert posted == [f"{provider_probe.GEMINI_MODELS_URL}/gemini-test-model:generateContent"]
 
 
 def test_health_hides_a_rate_limited_gemini(client: TestClient, providers: dict[str, bool]) -> None:
