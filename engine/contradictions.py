@@ -6,6 +6,10 @@ the alignment step records when the model's number differed from the printed one
 records when two photos disagree (both as structured section issues). None of these changes a verdict:
 the stricter side is already what the rules use. They are surfaced so the user can check the pack or
 correct a misread, with both sides' evidence and the results they touch.
+
+Each has a stable `key` (kind + what it says; ids are only positions). It is `checked` when the user saved that
+key in `extraction.checked_contradictions`, or corrected the disputed number (that is how the frontend records
+"the pack says this number", and it is what makes the number usable again).
 """
 from __future__ import annotations
 
@@ -41,6 +45,7 @@ class Found:
     ingredient_ids: set[str] = field(default_factory=set)
     terms: set[str] = field(default_factory=set)
     nutrient: str | None = None
+    corrected: bool = False     # the disputed number was corrected (or confirmed) by the user
 
 
 def _evidence(evidence: Sequence[Evidence], text: str, extraction: LabelExtraction) -> list[Evidence]:
@@ -160,13 +165,14 @@ def _numbers(extraction: LabelExtraction) -> list[Found]:
                     numbers = [float(p) for p in parts[3:]]
                 except ValueError:
                     continue
+                corrected = value.corrected_by_user
                 if parts[0] == AI_VS_PRINT_ISSUE:
                     found.append(Found("ai_vs_print", {"nutrient": key, "ai_value": numbers[0], "value": value.amount},
-                                       evidence, path, nutrient=key))
+                                       evidence, path, nutrient=key, corrected=corrected))
                 elif len(numbers) >= 2:
                     other = numbers[1] if numbers[0] == value.amount else numbers[0]
                     found.append(Found("panels", {"nutrient": key, "value": value.amount, "other": other},
-                                       evidence, path, nutrient=key))
+                                       evidence, path, nutrient=key, corrected=corrected))
     return found
 
 
@@ -179,6 +185,11 @@ def _affects(item: Found, reports: Sequence[ProfileReport]) -> list[VerdictRef]:
             if touches:
                 refs.append(VerdictRef(profile_id=report.profile_id, restriction_id=result.restriction_id))
     return refs
+
+
+def contradiction_key(kind: ContradictionKind, params: dict[str, str | float]) -> str:
+    """Stable identity of a contradiction across rechecks: its kind and what it says."""
+    return kind + ":" + "|".join(f"{name}={value}" for name, value in sorted(params.items()))
 
 
 def find_contradictions(
@@ -196,6 +207,8 @@ def find_contradictions(
             id=f"ctr_{n}", kind=item.kind, message_key=f"contradiction.{item.kind}", message_params=item.params,
             explanation=render(f"contradiction.{item.kind}", item.params), evidence=item.evidence,
             affects=_affects(item, reports), field_path=item.field_path,
+            key=(key := contradiction_key(item.kind, item.params)),
+            checked=item.corrected or key in extraction.checked_contradictions,
         )
         for n, item in enumerate(unique)
     ]

@@ -140,3 +140,31 @@ def test_ai_versus_print_and_photo_versus_photo_come_from_recorded_issues(make_e
 
 def test_a_clean_label_has_no_contradictions(make_extraction, make_profile):
     assert only(make_extraction("salt", "sugar"), make_profile("peanut"))[1].contradictions == []
+
+
+# ------------------------------------------------------------------------------- checked on the pack
+def test_a_checked_key_survives_a_recheck_and_leaves_the_stricter_verdict(make_extraction, make_profile):
+    extraction = make_extraction("salt", "egg powder", mark="veg")
+    _, first = only(extraction, make_profile("vegetarian"))
+    [found] = first.contradictions
+    assert found.key == "veg_mark:category=egg_derived|term=egg powder" and not found.checked
+    extraction.checked_contradictions = [found.key]
+    result, again = only(extraction, make_profile("vegetarian"))
+    assert again.contradictions[0].checked and again.contradictions[0].key == found.key
+    assert result.state == "conflict"          # the pack lists egg: checking it does not soften the verdict
+
+
+def test_confirming_the_printed_number_checks_it_and_lets_the_limit_use_it(make_extraction, make_profile):
+    def label(confirmed: bool):
+        extraction = make_extraction("salt")
+        value = NutrientValue(basis="per_100g", amount=750.2, unit="mg", raw_text="750.2",
+                              readability="clear" if confirmed else "partial", corrected_by_user=confirmed)
+        extraction.nutrition = NutritionTable(rows=[NutrientRow(key="sodium_mg", raw_label="Sodium (mg)", values=[value])])
+        extraction.nutrition_section = SectionStatus(presence="found", complete=True,
+                                                     issues=["llm_ocr_number_mismatch:sodium_mg:per_100g:75.2"])
+        return extraction
+
+    before, open_output = only(label(confirmed=False), make_profile("low_sodium"))
+    after, checked_output = only(label(confirmed=True), make_profile("low_sodium"))
+    assert not open_output.contradictions[0].checked and before.state == "unknown"
+    assert checked_output.contradictions[0].checked and after.state == "conflict"     # 750 mg is over the limit

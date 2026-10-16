@@ -9,7 +9,7 @@
  * rendered through the frontend i18n files, never from free LLM text.
  */
 
-export const CONTRACT_VERSION = "1.0.1";
+export const CONTRACT_VERSION = "1.0.2";
 
 export type Lang = "en" | "hi" | "te";
 
@@ -175,6 +175,8 @@ export interface LabelExtraction {
   claims: Claim[];
   user_corrections: Correction[];
   meta: ExtractionMeta;
+  /** Contradiction keys (Contradiction.key) the user checked on the pack. Added in 1.0.2. */
+  checked_contradictions?: string[];
 }
 
 // ---------------------------------------------------------------- profiles
@@ -301,6 +303,10 @@ export interface Contradiction {
   evidence: Evidence[];
   affects: VerdictRef[];
   field_path?: string | null;
+  /** Stable across rechecks (kind + what it says); ids are positions. Added in 1.0.2. */
+  key?: string;
+  /** The user checked the pack (key saved, or the number corrected). Added in 1.0.2. */
+  checked?: boolean;
 }
 
 export interface ScanResult {

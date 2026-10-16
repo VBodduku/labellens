@@ -23,7 +23,7 @@ from typing import Literal, Optional, Union
 
 from pydantic import BaseModel, Field
 
-CONTRACT_VERSION = "1.0.1"
+CONTRACT_VERSION = "1.0.2"
 
 Lang = Literal["en", "hi", "te"]
 
@@ -233,6 +233,8 @@ class LabelExtraction(BaseModel):
     claims: list[Claim] = []
     user_corrections: list[Correction] = []
     meta: ExtractionMeta
+    # Contradiction keys (Contradiction.key) the user checked on the pack. Added in 1.0.2.
+    checked_contradictions: list[str] = []
 
 
 # --------------------------------------------------------------------------------------------
@@ -380,6 +382,8 @@ class Contradiction(BaseModel):
     evidence: list[Evidence] = []   # both sides, as printed
     affects: list[VerdictRef] = []  # restriction results this touches
     field_path: Optional[str] = None    # what to correct if one side was misread
+    key: str = ""                       # stable across rechecks (kind + what it says); ids are positions. 1.0.2
+    checked: bool = False               # the user checked the pack (key saved, or the number corrected). 1.0.2
 
 
 class ScanResult(BaseModel):
