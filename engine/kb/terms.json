@@ -2166,6 +2166,55 @@
     "confidence": "medium"
   },
   {
+    "id": "nature_identical_flavours",
+    "names": {
+      "en": [
+        "nature identical flavouring substances",
+        "nature identical flavouring substance",
+        "nature identical flavouring",
+        "nature identical flavours",
+        "nature identical flavour",
+        "nature identical flavors"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [
+      "onion",
+      "garlic",
+      "animal_derived",
+      "dairy"
+    ],
+    "origin": "varies",
+    "notes": "FSSAI flavour class: substances made by synthesis or isolated from natural raw material, chemically identical to natural ones. The raw material is not declared, so onion, garlic, animal or dairy sources cannot be ruled out.",
+    "confidence": "medium",
+    "review_reason": "Source raw material is never declared; treated like natural flavours."
+  },
+  {
+    "id": "artificial_flavours",
+    "names": {
+      "en": [
+        "artificial flavouring substances",
+        "artificial flavouring substance",
+        "artificial flavouring",
+        "artificial flavours",
+        "artificial flavour",
+        "artificial flavors"
+      ],
+      "hi": [],
+      "te": []
+    },
+    "ins": [],
+    "categories": [],
+    "possible_categories": [],
+    "origin": "synthetic",
+    "notes": "FSSAI flavour class: synthesised substances not found in nature.",
+    "confidence": "medium",
+    "review_reason": "Carrier and solvent are not declared."
+  },
+  {
     "id": "alcohol",
     "names": {
       "en": [

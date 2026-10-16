@@ -1,0 +1,46 @@
+[
+  {
+    "id": "no_added_sugar",
+    "phrases": ["no added sugar", "no sugar added", "without added sugar"],
+    "categories": ["added_sugar"],
+    "nutrient": "added_sugars_g",
+    "max_value": 0.0
+  },
+  {
+    "id": "sugar_free",
+    "phrases": ["sugar free", "zero sugar"],
+    "categories": ["added_sugar"],
+    "nutrient": "total_sugars_g",
+    "max_value": 0.5
+  },
+  {
+    "id": "palm_oil_free",
+    "phrases": ["palm oil free", "no palm oil", "without palm oil"],
+    "categories": ["palm_oil"]
+  },
+  {
+    "id": "gluten_free",
+    "phrases": ["gluten free", "no gluten"],
+    "categories": ["gluten"]
+  },
+  {
+    "id": "msg_free",
+    "phrases": ["no msg", "msg free", "no added msg"],
+    "categories": ["added_msg"]
+  },
+  {
+    "id": "egg_free",
+    "phrases": ["eggless", "egg free", "no egg"],
+    "categories": ["egg"]
+  },
+  {
+    "id": "dairy_free",
+    "phrases": ["dairy free", "milk free", "no milk"],
+    "categories": ["milk"]
+  },
+  {
+    "id": "nut_free",
+    "phrases": ["nut free", "no nuts"],
+    "categories": ["peanut", "tree_nut"]
+  }
+]

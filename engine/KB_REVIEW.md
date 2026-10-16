@@ -1,6 +1,6 @@
 # Knowledge base human review
 
-261 entries; 38 require source, taxonomy or community-practice review below.
+263 entries; 40 require source, taxonomy or community-practice review below.
 
 Status: pending human review. Inclusion here is not approval. No real packet corpus was available when this inventory was prepared.
 
@@ -43,6 +43,8 @@ Every medium-confidence, possible-category, variable-origin or explicitly flagge
 | `turmeric` | medium | none | root_vegetable | Turmeric is a rhizome; acceptance of dried turmeric varies between Jain practices. |
 | `spices` | medium | none | onion, garlic | Unspecified spice/seasoning blends may include onion or garlic; label does not establish composition. |
 | `natural_flavours` | medium | none | onion, garlic, animal_derived, dairy | Source not declared on label. Broad flavour descriptions do not identify onion, garlic or animal/dairy sources. |
+| `nature_identical_flavours` | medium | none | onion, garlic, animal_derived, dairy | Source raw material is never declared; treated like natural flavours. |
+| `artificial_flavours` | medium | none | none | Carrier and solvent are not declared. |
 | `maltodextrin` | high | added_sugar, sugar_alias | none | Spec-required sugar screen; a glucose polymer is not chemically or necessarily regulatorily added sugar. |
 | `date_syrup` | high | added_sugar, sugar_alias | none | Spec groups syrup and paste as sugar signals; date paste may retain intrinsic sugars. |
 | `ins_966` | high | polyol, milk, dairy | none | Spec-required milk-origin taxonomy for lactose-derived lactitol does not establish milk-protein allergenicity. |

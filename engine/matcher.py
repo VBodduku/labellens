@@ -10,7 +10,7 @@ from typing import Literal
 from rapidfuzz.fuzz import token_sort_ratio
 from shared.contract import Ingredient, IngredientAnnotation, Origin
 from shared.engine_interface import UnresolvedTerm
-from engine.kb_loader import ALIASES, BY_CODE, BY_ID, QUALIFIERS, Term
+from engine.kb_loader import ALIASES, BY_CODE, BY_ID, QUALIFIERS, STATEMENTS, Term
 from engine.normalize import code_spans, normalize, split_top_level, unicode_text
 
 # A KB can exceed Python's small implicit regex cache. Keep immutable compiled
@@ -278,6 +278,21 @@ def match_text(text: str) -> TextMatches:
         tuple(hit for result in results for hit in result.matches),
         tuple(term for result in results for term in result.unresolved),
     )
+
+
+def statement_categories(item: str) -> tuple[set[str], set[str]]:
+    """(definite, possible) categories of one allergen-statement item ("nuts", "Milk")."""
+    definite: set[str] = set()
+    possible: set[str] = set()
+    for entry in STATEMENTS:
+        if normalize(item) in {normalize(name) for name in entry.names}:
+            definite.update(entry.categories)
+            possible.update(entry.possible_categories)
+    if not definite and not possible:
+        for hit in match_text(item).matches:
+            definite.update(hit.categories)
+            possible.update(hit.possible_categories)
+    return definite, possible
 
 
 def match_ingredients(ingredients: list[Ingredient]) -> tuple[IngredientMatches, ...]:

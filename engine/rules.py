@@ -9,6 +9,7 @@ from typing import Iterable
 from shared.contract import (
     CATEGORIES,
     Evidence,
+    Ingredient,
     IngredientAnnotation,
     LabelExtraction,
     Match,
@@ -24,12 +25,13 @@ from shared.contract import (
     VerdictState,
 )
 from shared.engine_interface import EngineOutput, TermInterpretation
-from engine.kb_loader import BY_KEY, STATEMENTS
+from engine.contradictions import find_contradictions
+from engine.kb_loader import BY_KEY
 from engine.matcher import (
     IngredientMatches,
     annotation,
     match_ingredients,
-    match_text,
+    statement_categories,
     unresolved_terms,
 )
 from engine.messages import render
@@ -40,6 +42,7 @@ _ORDER = {"conflict": 0, "possible": 1, "unknown": 2, "not_listed": 3}
 _VEG_RESOLVES = frozenset(
     {"meat", "poultry", "fish_derived", "egg_derived", "gelatin", "animal_derived"}
 )
+CONFIRMED_NOTE = "Confirmed by you on the pack."
 
 
 @dataclass
@@ -167,6 +170,11 @@ def _ingredient_signals(
                 ]
                 signal.evidence = evidence + signal.evidence
                 target.append(signal)
+            present, possible = _split_confirmed(ingredient.confirmations, possible)
+            if present:
+                definite.append(
+                    _user_confirmed(ingredient, hit.entry.id, present, evidence)
+                )
             if possible:
                 signal = _signal(
                     "possible",
@@ -213,7 +221,23 @@ def _ingredient_signals(
                 ]
                 ambiguous.append(signal)
     for record, interpretation in llm:
-        matched = categories.intersection(interpretation.categories)
+        present, matched = _split_confirmed(
+            record.ingredient.confirmations,
+            categories.intersection(interpretation.categories),
+        )
+        if present:
+            definite.append(
+                _user_confirmed(
+                    record.ingredient,
+                    None,
+                    present,
+                    _evidence(
+                        record.ingredient.evidence,
+                        record.ingredient.raw_text,
+                        extraction,
+                    ),
+                )
+            )
         if matched:
             signal = _signal(
                 "possible",
@@ -240,6 +264,120 @@ def _ingredient_signals(
     return definite + ambiguous + interpreted + sugars
 
 
+def _split_confirmed(
+    confirmations: dict[str, str], possible: set[str]
+) -> tuple[set[str], set[str]]:
+    """(confirmed present, still possible): categories the user confirmed absent drop out."""
+    present = {c for c in possible if confirmations.get(c) == "present"}
+    return present, {c for c in possible if c not in confirmations}
+
+
+def _user_confirmed(
+    ingredient: Ingredient,
+    canonical_id: str | None,
+    categories: set[str],
+    evidence: list[Evidence],
+) -> Signal:
+    signal = _signal(
+        "conflict",
+        "CONFLICT_USER_CONFIRMED",
+        "user_confirmed",
+        term=ingredient.raw_text,
+        category="|".join(sorted(categories)),
+    )
+    signal.evidence = list(evidence)
+    signal.matches = [
+        Match(
+            ingredient_id=ingredient.id,
+            term=ingredient.raw_text,
+            canonical_id=canonical_id,
+            category=c,
+            source="kb",
+            note=CONFIRMED_NOTE,
+        )
+        for c in sorted(categories)
+    ]
+    return signal
+
+
+def _unrecognised(
+    extraction: LabelExtraction,
+    categories: set[str],
+    records: tuple[IngredientMatches, ...],
+    llm: list[tuple[IngredientMatches, TermInterpretation]],
+) -> Signal | None:
+    """A readable ingredient that neither the KB nor an AI interpretation explains blocks "not listed":
+    its source is unknown, so absence cannot be claimed. Leftover words of a matched ingredient do not."""
+    interpreted = {record.ingredient.id for record, _ in llm}
+    for record in records:
+        ingredient = record.ingredient
+        absent = {c for c, v in ingredient.confirmations.items() if v == "absent"}
+        if (
+            record.matches
+            or not record.unresolved
+            or ingredient.sub_ingredients
+            or ingredient.readability == "unreadable"
+            or ingredient.id in interpreted
+            or categories <= absent
+        ):
+            continue
+        signal = _signal(
+            "unknown",
+            "UNKNOWN_UNRESOLVED_TERM",
+            "unresolved_term",
+            term=ingredient.raw_text,
+            category="|".join(sorted(categories)),
+        )
+        signal.evidence = _evidence(ingredient.evidence, ingredient.raw_text, extraction)
+        signal.matches = [
+            Match(
+                ingredient_id=ingredient.id,
+                term=ingredient.raw_text,
+                source="kb",
+                note="Not in our ingredient database and not interpreted.",
+            )
+        ]
+        return signal
+    return None
+
+
+def _confirmed_absence(
+    extraction: LabelExtraction,
+    absence: Signal,
+    categories: set[str],
+    records: tuple[IngredientMatches, ...],
+) -> Signal:
+    """A complete list is "not listed" because the user checked an unclear ingredient: say so."""
+    if absence.code != "NOT_LISTED_COMPLETE":
+        return absence
+    for record in records:
+        ingredient = record.ingredient
+        absent = sorted(
+            c for c, v in ingredient.confirmations.items() if v == "absent" and c in categories
+        )
+        if absent:
+            signal = _signal(
+                "not_listed",
+                "NOT_LISTED_USER_CONFIRMED",
+                "user_confirmed",
+                term=ingredient.raw_text,
+                category="|".join(absent),
+            )
+            signal.evidence = _evidence(ingredient.evidence, ingredient.raw_text, extraction)
+            signal.matches = [
+                Match(
+                    ingredient_id=ingredient.id,
+                    term=ingredient.raw_text,
+                    category=c,
+                    source="kb",
+                    note=CONFIRMED_NOTE,
+                )
+                for c in absent
+            ]
+            return signal
+    return absence
+
+
 def _statement_signals(
     extraction: LabelExtraction, restriction: Restriction, categories: set[str]
 ) -> list[Signal]:
@@ -249,16 +387,7 @@ def _statement_signals(
         if statement.type == "free_from":
             continue
         for item in statement.items:
-            definite: set[str] = set()
-            possible: set[str] = set()
-            for entry in STATEMENTS:
-                if normalize(item) in {normalize(name) for name in entry.names}:
-                    definite.update(entry.categories)
-                    possible.update(entry.possible_categories)
-            if not definite and not possible:
-                for hit in match_text(item).matches:
-                    definite.update(hit.categories)
-                    possible.update(hit.possible_categories)
+            definite, possible = statement_categories(item)
             matched = categories.intersection(definite)
             ambiguous = categories.intersection(possible) - matched
             if not matched and not ambiguous:
@@ -512,6 +641,10 @@ def _restriction(
         not catalog.needs_threshold and all(s.state == "not_listed" for s in deciding)
     ):
         absence = _absence(extraction, categories, records, restriction)
+        if absence.state == "not_listed" and categories:
+            absence = _unrecognised(
+                extraction, categories, records, llm
+            ) or _confirmed_absence(extraction, absence, categories, records)
         if not deciding or absence.state == "unknown":
             signals.append(absence)
     return _aggregate(restriction, signals)
@@ -656,6 +789,7 @@ def evaluate(
         annotations=annotations,
         nutrition_analysis=analysis,
         reports=reports,
+        contradictions=find_contradictions(extraction, records, reports),
         unknowns=unknown_items(extraction),
         unresolved_terms=[
             term

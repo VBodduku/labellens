@@ -87,6 +87,23 @@ class StatementItem(FrozenModel):
     _categories = field_validator("categories", "possible_categories")(check_categories)
 
 
+class ClaimRule(FrozenModel):
+    """A front-of-pack claim and what on the back label would contradict it."""
+    id: str
+    phrases: tuple[str, ...]
+    categories: tuple[str, ...]
+    nutrient: str | None = None     # the claim also fails when this nutrient is above max_value
+    max_value: float = 0.0
+    _categories = field_validator("categories")(check_categories)
+
+    @field_validator("nutrient")
+    @classmethod
+    def valid_nutrient(cls, value: str | None) -> str | None:
+        if value is not None and value not in NUTRIENT_KEYS:
+            raise ValueError("Unknown nutrient key")
+        return value
+
+
 class Qualifier(FrozenModel):
     phrases: tuple[str, ...]
     origin: Origin
@@ -140,6 +157,7 @@ CATALOG = load_list("catalog.json", CatalogItem)
 STATEMENTS = load_list("statement_items.json", StatementItem)
 QUALIFIERS = load_list("qualifiers.json", Qualifier)
 NUTRIENTS = load_list("nutrients.json", Nutrient)
+CLAIMS = load_list("claims.json", ClaimRule)
 DISPLAY_NAMES = DisplayNames.model_validate_json(
     (ROOT / "kb/names.json").read_text(encoding="utf-8")
 )

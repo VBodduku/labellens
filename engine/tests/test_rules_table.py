@@ -284,7 +284,9 @@ def test_invalid_interpretations_do_not_affect_verdict(
     output = engine.evaluate(
         make_extraction("mystery"), [make_profile()], {"mystery": interpreted}
     )
-    assert output.reports[0].results[0].state == "not_listed"
+    # Ignored, so "mystery" stays unexplained: never a peanut flag, and never "not listed" either.
+    result_ = output.reports[0].results[0]
+    assert (result_.state, result_.reason_code) == ("unknown", "UNKNOWN_UNRESOLVED_TERM")
     assert output.unresolved_terms
 
 

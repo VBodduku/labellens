@@ -106,7 +106,7 @@ def test_generic_albumin_is_possible_explicit_egg_remains_definite():
         ("corn semolina", "gluten", "not_listed"),
         ("hydrolysed vegetable protein", "soy", "possible"),
         ("modified starch", "gluten", "possible"),
-        ("दूधिया", "milk", "not_listed"),
+        ("दूधिया", "milk", "unknown"),     # not milk, and unknown to the KB: no absence claim
     ],
 )
 def test_phase3_engine_regressions(make_extraction, make_profile, text, profile, state):
