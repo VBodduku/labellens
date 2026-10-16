@@ -199,3 +199,38 @@ def test_cache_hit_reuses_interpretations_and_summaries_without_llm(label_png: b
     assert second.extraction.meta.cache_hit and len(llm.prompts) == calls
     assert [r.summary for r in second.reports] == [r.summary for r in first.reports]
     assert len(llm.calls(SUMMARIZE)) == 1 and len(llm.calls(INTERPRET)) == 1
+
+
+# ---------------------------------------------------------------- truthful health
+def test_probe_reports_invalid_key_and_missing_ollama_as_down(monkeypatch: pytest.MonkeyPatch) -> None:
+    import httpx
+
+    from backend.app import provider_probe
+    from backend.app.config import get_settings
+
+    async def fake_get(self, url, headers=None):  # type: ignore[no-untyped-def]
+        if "generativelanguage" in str(url):
+            status = 200 if (headers or {}).get("x-goog-api-key") == "AIzaGOOD" else 400
+            return httpx.Response(status)
+        raise httpx.ConnectError("refused")
+
+    monkeypatch.setattr(httpx.AsyncClient, "get", fake_get)
+    monkeypatch.setenv("GEMINI_API_KEY", "not-a-real-key")
+    get_settings.cache_clear()
+    provider_probe.reset_cache()
+    assert asyncio.run(provider_probe.probe_providers(get_settings())) == {"gemini": False, "ollama": False}
+    monkeypatch.setenv("GEMINI_API_KEY", "AIzaGOOD")
+    get_settings.cache_clear()
+    provider_probe.reset_cache()
+    assert asyncio.run(provider_probe.probe_providers(get_settings())) == {"gemini": True, "ollama": False}
+
+
+def test_health_hides_a_rate_limited_gemini(client: TestClient, providers: dict[str, bool]) -> None:
+    from backend.app.llm.router import LLMRouter, get_router
+
+    limited = LLMRouter([FakeLLM([ProviderUnavailableError("x")], label="gemini:primary")], 5)
+    limited.report_rate_limit("gemini:primary", 60)
+    client.app.dependency_overrides[get_router] = lambda: limited  # type: ignore[attr-defined]
+    providers["gemini"] = True
+    body = client.get("/api/health").json()
+    assert body["providers"]["gemini"] is False and body["status"] == "degraded"

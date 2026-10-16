@@ -41,3 +41,13 @@
 - Profile parsing: severity comes from wording first (allergic -> strict; avoid / trying to cut -> preference), then the model, then the catalog default. Needs the keyword matcher sees but the model dropped are returned as warnings for the confirmation screen.
 - Shared fixed wording (state words, banned words, AI note) lives in `app/wording.py`; hi/te strings are marked for native-speaker review.
 - `backend/app/fixtures.py` removed: every endpoint now does real work; tests load fixtures from `backend/tests/fixture_data.py`.
+
+## Phase 4
+- Gemini: one SDK client per key for the process lifetime; per-request timeout via `GenerateContentConfig.http_options`. A throw-away client per call was garbage-collected mid-request ("client has been closed"). Any SDK exception maps to `ProviderUnavailableError`, so it falls back instead of returning 500.
+- Body size: a streaming ASGI limiter (also catches chunked uploads with no Content-Length). Scan: MAX_IMAGES x MAX_IMAGE_MB + 1 MB -> 413 `BAD_IMAGE`; JSON routes: 4 MB -> 413 `VALIDATION`. It sits inside the request-id/CORS middleware so the 413 is logged and readable by the browser.
+- Images: HEIC/HEIF via `pillow-heif` (BSD-3). Over 50 MP is rejected before decoding. Big JPEGs are decoded with `draft()` at the smallest scale whose long side is still >= 2000 px; the original oriented size is kept for the low-resolution check.
+- OCR: 3 worker threads (one per panel) and a 20 s timeout per image (no tokens on timeout); the self-check's crop OCR runs in the same pool instead of on the event loop.
+- Cache hits need no LLM call: interpretations (with the list of terms already asked) and summaries (keyed by language + profile + verdict fingerprint) are stored next to the cached extraction (`<key>.extras.json`).
+- `httpx`/`google_genai` loggers are set to WARNING (they log request URLs). A test runs scan/ask/explain/health with a fake key and checks logs for the key, prompt text, image bytes and line length.
+- Docker: `python:3.12-slim` + `libgl1 libglib2.0-0` (rapidocr pulls `opencv-python`), runs as uid 1000 (Hugging Face requirement), copies `engine/*.py` + `engine/kb` + `shared/` + `backend/app`; image ~1.1 GB. Root `.dockerignore` is main-only, so `backend/Dockerfile.dockerignore` (BuildKit) limits the context.
+- Hugging Face: `publish_space.py` assembles a minimal Space repo (Dockerfile at its root + HF front matter) and sets variables; it never handles secrets. `huggingface_hub` is a deploy tool, not a runtime dependency.

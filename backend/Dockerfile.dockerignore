@@ -1,0 +1,10 @@
+# Build context is the repo root; send only what backend/Dockerfile copies.
+**
+!backend/requirements.txt
+!backend/__init__.py
+!backend/app/**
+!shared/**
+!engine/*.py
+!engine/kb/**
+**/__pycache__
+**/*.pyc

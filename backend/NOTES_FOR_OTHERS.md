@@ -14,6 +14,9 @@
 - `/api/profile/parse` may return `warnings` such as "Also mentioned: Jain. Add it to the right person if it applies." and `basic_parsing` (no LLM) — show them on the confirmation screen.
 - `/api/explain` returns 503 `LLM_UNAVAILABLE` for a term that is not in the KB when Gemini is unavailable.
 
+- Deployed backend: set `VITE_API_BASE_URL` to the Space URL (`https://<hf-user>-labellens-api.hf.space`). Tell us the Vercel URL so it goes into the Space's `CORS_ORIGINS`.
+- HEIC photos are accepted now; files over 50 MP get 422 `BAD_IMAGE`; bodies over the limit get 413 (also for chunked uploads).
+
 ## For Part 3 (engine)
 - `ENGINE_MODE=real` imports the top-level `engine` package and requires all five functions from `shared/engine_interface.py` to be importable from `engine/__init__.py`.
 - `SectionStatus.issues` strings the backend emits: `unreadable_span`, `truncated_at_image_edge` (from the LLM), `llm_ocr_number_mismatch` / `llm_ocr_number_mismatch:<nutrient_key>`, `value_not_on_photo:<nutrient_key>`, `panel_disagreement:<nutrient_key>`, `panels_partial_lists`, `ocr_only`.
@@ -26,5 +29,6 @@
 ## For main / humans
 - Backend needs Python 3.12 (not 3.13) because of `rapidocr-onnxruntime`.
 - On the M2 demo Mac, gemma3:4b (Ollama) is too slow for full label extraction within the 45 s scan budget (~120 s). Without Gemini the app answers in OCR-only mode. Warm the cache with Gemini before judging (`scripts/warm_cache.py`, Phase 4).
+- Docker image builds from the repo root with `docker build -f backend/Dockerfile .`; it copies `engine/*.py` and `engine/kb/` — keep any new runtime engine files in those places (or tell us).
 - Native-speaker review needed for the hi/te strings in `backend/app/wording.py` and `backend/app/agent/templates.py` (marked `REVIEW`).
 - No contract changes requested.
