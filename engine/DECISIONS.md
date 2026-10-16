@@ -52,3 +52,5 @@
 - A green-mark ambiguity resolution is supporting evidence, not a competing verdict signal; explicit trace notes retain their table-order reason when absence is otherwise justified.
 
 - Consistency status follows the specified 15% energy rule. Independent sanity failures still populate suspect_keys even with status consistent; threshold checks always inspect those keys.
+
+- Compile the entire alias-pattern tuple once at import: the expanded KB exceeded Python's implicit regex cache, so per-ingredient string-pattern matching regressed beyond 50 ms. Immutable compiled patterns preserve matching semantics and remove that cost.
