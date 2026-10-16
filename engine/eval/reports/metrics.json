@@ -9,7 +9,9 @@
     "dangerous_miss_rate": null,
     "evidence_verified_rate": null,
     "unknown_rate": null,
-    "avg_latency_s": null
+    "avg_latency_s": null,
+    "confusion_matrix": null,
+    "limitations": null
   },
   "generated_at": "2026-10-16T13:42:13Z"
 }

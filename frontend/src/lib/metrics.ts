@@ -1,13 +1,12 @@
 import { VERDICT_ORDER, type VerdictState } from "../shared/contract";
 
 /**
- * What the About page may say about accuracy, parsed from public/metrics.json (Part 3's
- * engine/eval/reports/metrics.json). Synthetic runs test software behaviour only and are never shown as
- * accuracy; only real-packet runs produce numbers.
+ * What the About page may say about accuracy, parsed from public/metrics.json — a copy of the engine's
+ * engine/eval/reports/metrics.json: `{ status, metrics, generated_at }`. The engine only publishes
+ * `status: "ready"` for real photographed packets; synthetic test runs stay "pending" with null rates.
  */
 export type MetricsView =
   | { kind: "pending" }
-  | { kind: "synthetic"; packets: number }
   | {
       kind: "real";
       packets: number;
@@ -17,7 +16,7 @@ export type MetricsView =
       unknownRate: number | null;
       ingredientPrecision: number | null;
       ingredientRecall: number | null;
-      averageLatencyMs: number | null;
+      averageLatencyS: number | null;
       confusion: Record<VerdictState, Record<VerdictState, number>> | null;
       limitations: string[];
     }
@@ -42,22 +41,24 @@ function confusionMatrix(value: unknown): Record<VerdictState, Record<VerdictSta
 
 export function parseMetrics(data: unknown): MetricsView {
   if (typeof data !== "object" || data === null) return { kind: "invalid" };
-  const record = data as Record<string, unknown>;
-  if (record.status === "pending") return { kind: "pending" };
-  const realPackets = num(record.real_packets);
-  if (realPackets === null) return { kind: "invalid" };
-  if (record.dataset_kind !== "real" || realPackets === 0) return { kind: "synthetic", packets: num(record.packets) ?? 0 };
+  const envelope = data as Record<string, unknown>;
+  if (envelope.status === "pending") return { kind: "pending" };
+  const record = envelope.metrics;
+  if (envelope.status !== "ready" || typeof record !== "object" || record === null) return { kind: "invalid" };
+  const metrics = record as Record<string, unknown>;
+  const packets = num(metrics.packets);
+  if (packets === null || packets === 0) return { kind: "invalid" };
   return {
     kind: "real",
-    packets: realPackets,
-    verdictAccuracy: num(record.verdict_accuracy),
-    dangerousMissRate: num(record.dangerous_miss_rate),
-    evidenceVerifiedRate: num(record.evidence_verified_rate),
-    unknownRate: num(record.unknown_rate),
-    ingredientPrecision: num(record.ingredient_precision),
-    ingredientRecall: num(record.ingredient_recall),
-    averageLatencyMs: num(record.average_latency_ms),
-    confusion: confusionMatrix(record.confusion_matrix),
-    limitations: Array.isArray(record.limitations) ? record.limitations.filter((item): item is string => typeof item === "string") : [],
+    packets,
+    verdictAccuracy: num(metrics.verdict_accuracy),
+    dangerousMissRate: num(metrics.dangerous_miss_rate),
+    evidenceVerifiedRate: num(metrics.evidence_verified_rate),
+    unknownRate: num(metrics.unknown_rate),
+    ingredientPrecision: num(metrics.ingredient_precision),
+    ingredientRecall: num(metrics.ingredient_recall),
+    averageLatencyS: num(metrics.avg_latency_s),
+    confusion: confusionMatrix(metrics.confusion_matrix),
+    limitations: Array.isArray(metrics.limitations) ? metrics.limitations.filter((item): item is string => typeof item === "string") : [],
   };
 }

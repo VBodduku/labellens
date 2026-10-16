@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 from engine.eval.build_synthetic import build
+from engine.eval.metrics import STATES
 from engine.eval.reporting import AboutMetrics, about_metrics, timestamp
 from engine.eval.run_eval import run
 
@@ -19,6 +20,8 @@ KEYS = {
     "evidence_verified_rate",
     "unknown_rate",
     "avg_latency_s",
+    "confusion_matrix",
+    "limitations",
 }
 
 
@@ -34,6 +37,8 @@ def metrics(kind="real"):
         evidence_verified_rate=0.5,
         unknown_rate=0.2,
         average_latency_ms=1500.0,
+        confusion_matrix={s: {g: int(s == g) for g in STATES} for s in STATES},
+        limitations=["Real packets photographed by the team."],
     )
 
 
@@ -46,6 +51,8 @@ def test_about_envelope_matches_existing_frontend_loader():
     assert (
         result["metrics"]["ingredient_recall"] == 0.9
     )  # Fractions, not percent points.
+    assert result["metrics"]["confusion_matrix"]["conflict"]["conflict"] == 1
+    assert result["metrics"]["limitations"] == ["Real packets photographed by the team."]
     assert result["generated_at"] == "2026-10-16T12:30:00Z"
     AboutMetrics.model_validate_json(json.dumps(result, allow_nan=False))
 
@@ -94,7 +101,7 @@ def test_readable_report_has_all_required_tables_and_pending_publication(tmp_pat
     assert "```json" not in report  # Matrix is a readable table.
     headline = json.loads((tmp_path / "reports/metrics.json").read_text())
     assert headline["status"] == "pending"
-    assert len(headline["metrics"]) == 9
+    assert set(headline["metrics"]) == KEYS
     assert (
         json.loads((tmp_path / "reports/report.json").read_text())["metrics"]["packets"]
         == 2

@@ -166,8 +166,8 @@ Categories are `extraction`, `kb_gap`, `matcher_bug`, `rule_bug`. Engine-owned c
 also require `regression_test`, an exact test path/name. This example is hypothetical,
 not an observed failure. Pass `--classifications engine/eval/classifications.json`
 when scoring; recheck reviews against each run. Unreviewed dangerous misses leave
-`engine_dangerous_misses` null, never a misleading zero. Copy actual packet-specific
-extraction findings into `engine/NOTES_FOR_OTHERS.md` for Part 2.
+`engine_dangerous_misses` null, never a misleading zero. Fix actual packet-specific
+extraction findings in `backend/` (extraction) or `engine/` (KB, matcher, rules).
 
 The markdown report defines each rate and shows the four-by-four confusion matrix.
 The dangerous-miss rate is expected conflict predicted not_listed divided by all
@@ -180,8 +180,8 @@ The small metrics.json handed to the About page retains its existing
 `{status, metrics, generated_at}` envelope. Only nonempty real runs publish ready;
 synthetic runs publish pending with metrics.packets=0 and null rates/latency.
 Detailed scores and provenance remain in report.json/report.md. Rates are fractions,
-avg_latency_s is seconds, and generated_at is UTC artifact-generation time. See
-engine/NOTES_FOR_OTHERS.md for the exact frontend handoff.
+avg_latency_s is seconds, and generated_at is UTC artifact-generation time. Copy
+metrics.json to frontend/public/metrics.json for the About page.
 
 ## Synthetic verification
 

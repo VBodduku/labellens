@@ -25,6 +25,8 @@ class HeadlineValues(BaseModel):
     evidence_verified_rate: Rate | None = None
     unknown_rate: Rate | None = None
     avg_latency_s: float | None = Field(default=None, ge=0, allow_inf_nan=False)
+    confusion_matrix: dict[str, dict[str, int]] | None = None   # [expected][given] over the four states
+    limitations: list[str] | None = None
 
 
 class AboutMetrics(BaseModel):
@@ -49,7 +51,7 @@ def about_metrics(metrics: Mapping[str, object], generated_at: str) -> AboutMetr
     fields = {
         key: metrics.get(key)
         for key in HeadlineValues.model_fields
-        if key not in {"packets", "avg_latency_s"}
+        if key not in {"packets", "avg_latency_s", "limitations"}
     }
     latency = metrics.get("average_latency_ms")
     fields.update(
@@ -57,6 +59,7 @@ def about_metrics(metrics: Mapping[str, object], generated_at: str) -> AboutMetr
         avg_latency_s=float(latency) / 1000
         if isinstance(latency, (float, int))
         else None,
+        limitations=[item for item in cast(list[object], metrics.get("limitations") or []) if isinstance(item, str)],
     )
     if not real:
         fields = {key: None for key in fields}

@@ -15,42 +15,46 @@ describe("install prompt platform detection", () => {
 
 describe("metrics parser", () => {
   const real = {
-    dataset_kind: "real",
-    packets: 12,
-    real_packets: 12,
-    verdict_accuracy: 0.9,
-    dangerous_miss_rate: 0,
-    evidence_verified_rate: 0.95,
-    unknown_rate: 0.2,
-    ingredient_precision: 0.97,
-    ingredient_recall: 0.93,
-    average_latency_ms: 6400,
-    confusion_matrix: {
-      conflict: { conflict: 8, possible: 1, unknown: 0, not_listed: 0 },
-      possible: { conflict: 0, possible: 3, unknown: 0, not_listed: 0 },
-      unknown: { conflict: 0, possible: 0, unknown: 3, not_listed: 0 },
-      not_listed: { conflict: 0, possible: 0, unknown: 0, not_listed: 1 },
+    status: "ready",
+    generated_at: "2026-10-16T12:30:00Z",
+    metrics: {
+      packets: 12,
+      verdict_accuracy: 0.9,
+      dangerous_miss_rate: 0,
+      evidence_verified_rate: 0.95,
+      unknown_rate: 0.2,
+      ingredient_precision: 0.97,
+      ingredient_recall: 0.93,
+      nutrient_accuracy: 0.9,
+      avg_latency_s: 6.4,
+      confusion_matrix: {
+        conflict: { conflict: 8, possible: 1, unknown: 0, not_listed: 0 },
+        possible: { conflict: 0, possible: 3, unknown: 0, not_listed: 0 },
+        unknown: { conflict: 0, possible: 0, unknown: 3, not_listed: 0 },
+        not_listed: { conflict: 0, possible: 0, unknown: 0, not_listed: 1 },
+      },
+      limitations: ["Real packets photographed by the team.", 42],
     },
-    limitations: ["Real packets photographed by the team.", 42],
   };
 
-  it("never presents synthetic runs as accuracy", () => {
-    expect(parseMetrics({ ...real, dataset_kind: "synthetic", packets: 2, real_packets: 0 })).toEqual({ kind: "synthetic", packets: 2 });
-  });
-
-  it("reads real-packet metrics, the confusion matrix and limitations", () => {
+  it("reads the engine's real-packet metrics, the confusion matrix and limitations", () => {
     const view = parseMetrics(real);
     expect(view.kind).toBe("real");
     if (view.kind !== "real") return;
-    expect(view).toMatchObject({ packets: 12, verdictAccuracy: 0.9, dangerousMissRate: 0, averageLatencyMs: 6400 });
+    expect(view).toMatchObject({ packets: 12, verdictAccuracy: 0.9, dangerousMissRate: 0, averageLatencyS: 6.4 });
     expect(view.confusion?.conflict.possible).toBe(1);
     expect(view.limitations).toEqual(["Real packets photographed by the team."]);
   });
 
-  it("handles the placeholder and malformed files", () => {
-    expect(parseMetrics({ status: "pending" })).toEqual({ kind: "pending" });
+  it("shows nothing as accuracy until real packets are measured", () => {
+    expect(parseMetrics({ status: "pending", metrics: { packets: 0, verdict_accuracy: null } })).toEqual({ kind: "pending" });
+    expect(parseMetrics({ ...real, metrics: { ...real.metrics, packets: 0 } })).toEqual({ kind: "invalid" });
+  });
+
+  it("rejects malformed files", () => {
     expect(parseMetrics("nope")).toEqual({ kind: "invalid" });
-    expect(parseMetrics({ dataset_kind: "real" })).toEqual({ kind: "invalid" });
+    expect(parseMetrics({ status: "ready" })).toEqual({ kind: "invalid" });
+    expect(parseMetrics({ dataset_kind: "real", real_packets: 3 })).toEqual({ kind: "invalid" });
   });
 });
 

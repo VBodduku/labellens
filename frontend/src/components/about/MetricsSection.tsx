@@ -10,7 +10,7 @@ const METRICS_TIMEOUT_MS = 10_000;
 
 type MetricsState = { status: "loading" } | { status: "error" } | { status: "loaded"; view: MetricsView };
 
-/** Reads public/metrics.json (Part 3 copies engine/eval/reports/metrics.json there). */
+/** Reads public/metrics.json (a copy of engine/eval/reports/metrics.json). */
 function useMetrics(): MetricsState {
   const [state, setState] = useState<MetricsState>({ status: "loading" });
   useEffect(() => {
@@ -53,16 +53,7 @@ export function MetricsSection() {
 
   if (state.status === "loading") return <p className="text-text-dim">{t("common.loading")}</p>;
   if (state.status === "error" || state.view.kind === "invalid") return <p className="card p-5 text-text-dim">{t("about.metrics.error")}</p>;
-  if (state.view.kind !== "real") {
-    return (
-      <div className="card p-5">
-        <p className="text-text-dim">{t("about.metrics.pending")}</p>
-        {state.view.kind === "synthetic" && state.view.packets > 0 && (
-          <p className="mt-2 text-sm text-text-dim">{t("about.metrics.synthetic", { packets: state.view.packets })}</p>
-        )}
-      </div>
-    );
-  }
+  if (state.view.kind === "pending") return <p className="card p-5 text-text-dim">{t("about.metrics.pending")}</p>;
 
   const view = state.view;
   return (
@@ -74,8 +65,8 @@ export function MetricsSection() {
         <Tile label={t("about.metrics.evidence")} value={percent(view.evidenceVerifiedRate)} />
         <Tile label={t("about.metrics.unknown")} value={percent(view.unknownRate)} />
         <Tile label={t("about.metrics.recall")} value={percent(view.ingredientRecall)} />
-        {view.averageLatencyMs !== null && (
-          <Tile label={t("about.metrics.latency")} value={t("about.metrics.seconds", { value: formatNumber(view.averageLatencyMs / 1000, lang) })} />
+        {view.averageLatencyS !== null && (
+          <Tile label={t("about.metrics.latency")} value={t("about.metrics.seconds", { value: formatNumber(view.averageLatencyS, lang) })} />
         )}
       </dl>
 

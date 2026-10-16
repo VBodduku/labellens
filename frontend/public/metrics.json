@@ -1,4 +1,17 @@
 {
   "status": "pending",
-  "note": "Placeholder. Part 3 replaces this with engine/eval/reports/metrics.json near the end."
+  "metrics": {
+    "packets": 0,
+    "ingredient_recall": null,
+    "ingredient_precision": null,
+    "nutrient_accuracy": null,
+    "verdict_accuracy": null,
+    "dangerous_miss_rate": null,
+    "evidence_verified_rate": null,
+    "unknown_rate": null,
+    "avg_latency_s": null,
+    "confusion_matrix": null,
+    "limitations": null
+  },
+  "generated_at": "2026-10-16T13:42:13Z"
 }

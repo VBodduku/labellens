@@ -343,7 +343,6 @@
   "install.ios.step1": "Tap the Share button in your browser.",
   "install.ios.step2": "Choose “Add to Home Screen”.",
   "install.ios.step3": "Tap “Add” — LabelLens opens like an app, camera included.",
-  "about.metrics.synthetic": "Automated checks on {packets} synthetic test labels pass. These test the software, not accuracy on real packets.",
   "about.metrics.packets": "Real packets tested",
   "about.metrics.verdicts": "Verdicts correct",
   "about.metrics.dangerous": "Missed conflicts",

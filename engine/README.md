@@ -156,8 +156,8 @@ and [FAO JECFA specifications](https://www.fao.org/food/food-safety-quality/scie
 These identify additives; an identifier alone does not establish feedstock origin,
 allergen concentration, legal authorization, or personal diet practice. The
 [Allergy UK lactose guidance](https://www.allergyuk.org/resources/lactose-intolerance/)
-also distinguishes similarly named non-lactose ingredients. See DECISIONS.md and
-NOTES_FOR_OTHERS.md for taxonomy limitations and review items.
+also distinguishes similarly named non-lactose ingredients. See DECISIONS.md ("Known taxonomy
+limitations") and KB_REVIEW.md for review items.
 
 ## Evaluation
 
@@ -193,7 +193,8 @@ The numeric fields inside `metrics` are packets, ingredient_recall,
 ingredient_precision, nutrient_accuracy, verdict_accuracy, dangerous_miss_rate,
 evidence_verified_rate, unknown_rate and avg_latency_s. Rates are fractions, time is
 seconds, and null means unmeasured. generated_at is UTC artifact-generation time.
-See `NOTES_FOR_OTHERS.md` for the exact owner handoff and UI formatting requirements.
+`confusion_matrix` ([expected][given]) and `limitations` are filled for ready runs only.
+Copy the file to `frontend/public/metrics.json`; the About page reads it as-is.
 
 Only nonempty real runs publish `status: ready`. Synthetic runs publish pending,
 zero real packets and null headline values; their detailed software-check scores
@@ -267,6 +268,5 @@ be scored as complete. These repairs add no verdict rules. The expanded suite ha
 590 passing tests; [final verification](eval/FINAL_VERIFICATION.md) records the
 adversarial cases and remaining real-data validation limits.
 
-See [Phase 4 measurement status](eval/PHASE4_STATUS.md) for current blockers and
-what can honestly go into the pitch. This package reports label evidence and its
+Real-packet accuracy stays unmeasured until photographed packets are evaluated. This package reports label evidence and its
 limits; none of its four states is a guarantee about the food.

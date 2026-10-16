@@ -344,7 +344,6 @@
   "install.ios.step1": "अपने ब्राउज़र में शेयर बटन पर टैप करें।",
   "install.ios.step2": "“होम स्क्रीन पर जोड़ें” चुनें।",
   "install.ios.step3": "“जोड़ें” पर टैप करें — LabelLens ऐप की तरह खुलेगा, कैमरे के साथ।",
-  "about.metrics.synthetic": "{packets} सिंथेटिक टेस्ट लेबल पर स्वचालित जाँच पास हैं। ये सॉफ़्टवेयर की जाँच हैं, असली पैकेटों पर सटीकता की नहीं।",
   "about.metrics.packets": "जाँचे गए असली पैकेट",
   "about.metrics.verdicts": "सही नतीजे",
   "about.metrics.dangerous": "छूटे हुए टकराव",
