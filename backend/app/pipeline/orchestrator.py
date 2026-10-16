@@ -1,8 +1,10 @@
 """The scan flow (master spec §5.1 steps 3-9 and 11).
 
-quality -> cache lookup -> OCR (panels in parallel) -> LLM structuring (Gemini -> backup -> Ollama)
+quality -> cache lookup -> focus + OCR (panels in parallel) -> LLM structuring (Gemini -> backup -> Ollama)
 -> alignment -> panel merge -> self-verification -> cache store -> engine -> LLM interpretation of
 unresolved terms -> engine again -> per-profile summaries -> ScanResult.
+Focus crops each photo to its text, upright and enlarged; OCR, the LLM and verification read that
+view and every box is mapped back to the full photo before caching.
 When every LLM fails or the LLM budget runs out, the OCR-only reader replaces structuring +
 alignment; interpretation and summaries still run on whichever provider is usable (they are short).
 Every LLM stage gets what is left of the
@@ -13,7 +15,7 @@ from __future__ import annotations
 import asyncio
 import time
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from backend.app import engine_adapter, errors
 from backend.app.cache import CacheExtras, ExtractionCache, cache_key, summary_key
@@ -25,10 +27,10 @@ from backend.app.pipeline import ocr_only, summarize
 from backend.app.pipeline.align import PanelExtraction, TokenIndex, align_panel, panel_image_ids
 from backend.app.pipeline.assemble import build_scan_result
 from backend.app.pipeline.interpret import interpret
+from backend.app.pipeline.focus import FOCUS_VERSION, Focused, read_panel, to_full_frame
 from backend.app.pipeline.images import PreparedImage
 from backend.app.pipeline.llm_schema import LLMExtraction
 from backend.app.pipeline.merge import MergedLabel, evidence_of, merge_panels
-from backend.app.pipeline.ocr import run_ocr
 from backend.app.pipeline.quality import add_cropped_edge, assess
 from backend.app.pipeline.scan_memory import SCAN_MEMORY, ScanRecord, fingerprint
 from backend.app.pipeline.structure import PROMPT_VERSION, Citations, structure
@@ -92,8 +94,8 @@ def _hint(hints: list[PanelHint], n: int) -> PanelHint:
     return hints[n] if n < len(hints) else "unknown"
 
 
-async def _ocr_all(images: list[PreparedImage]) -> list[list[OcrToken]]:
-    return list(await asyncio.gather(*(run_ocr(image) for image in images)))
+async def _read_all(images: list[PreparedImage]) -> list[Focused]:
+    return list(await asyncio.gather(*(read_panel(image) for image in images)))
 
 
 def _from_llm(extraction: LLMExtraction, citations: Citations, images: list[PreparedImage],
@@ -155,7 +157,7 @@ def _extraction(scan: ScanInput, qualities: list[ImageQuality], tokens: list[Ocr
 
 
 def scan_cache_key(scan: ScanInput) -> str:
-    return cache_key(scan.raw, scan.hints, PROMPT_VERSION, get_settings().gemini_model)
+    return cache_key(scan.raw, scan.hints, f"{PROMPT_VERSION}+{FOCUS_VERSION}", get_settings().gemini_model)
 
 
 async def extract(scan: ScanInput, router: LLMRouter, cache: ExtractionCache, deadline: Deadline) -> LabelExtraction:
@@ -171,18 +173,22 @@ async def extract(scan: ScanInput, router: LLMRouter, cache: ExtractionCache, de
     with stage("quality"):
         qualities = [assess(i) for i in scan.images]
     with stage("ocr"):
-        per_image = await _ocr_all(scan.images)
-    qualities = [add_cropped_edge(q, t) for q, t in zip(qualities, per_image)]
-    if not any(per_image) and all(not q.ok for q in qualities):
+        panels = await _read_all(scan.images)
+    views = {p.image.image_id: p.view for p in panels}
+    note("focus", [f"{p.image.image_id}:turns={p.view.turns},crop={not p.view.identity}" for p in panels])
+    qualities = [add_cropped_edge(q, [to_full_frame(t, views) for t in p.tokens]) for q, p in zip(qualities, panels)]
+    if not any(p.tokens for p in panels) and all(not q.ok for q in qualities):
         raise errors.bad_image("We could not read any text. Retake the photo closer, in good light.")
-    tokens = [t for image_tokens in per_image for t in image_tokens]
+    tokens = [t for p in panels for t in p.tokens]
+    seen = replace(scan, images=[p.image for p in panels])     # boxes stay on the focused views until verified
 
-    structured = await _structure(scan, tokens, router, deadline.budget(SCAN_BUDGET_S, STRUCTURE_RESERVE_S))
+    structured = await _structure(seen, tokens, router, deadline.budget(SCAN_BUDGET_S, STRUCTURE_RESERVE_S))
     extraction = _extraction(scan, qualities, tokens, structured, 0)
     verify_budget = deadline.budget(SCAN_BUDGET_S, VERIFY_RESERVE_S)
     if structured.provider != "ocr_only" and verify_budget:
         with stage("verify"):
-            extraction = await verify(extraction, scan.images, scan.profiles, router, verify_budget)
+            extraction = await verify(extraction, seen.images, scan.profiles, router, verify_budget)
+    extraction = to_full_frame(extraction, views)
     duration_ms = int((time.perf_counter() - started) * 1000)
     extraction = extraction.model_copy(update={"meta": extraction.meta.model_copy(update={"duration_ms": duration_ms})})
 

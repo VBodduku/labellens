@@ -14,6 +14,7 @@ from PIL import Image
 from backend.app.cache import ExtractionCache
 from backend.app.llm.base import ProviderUnavailableError
 from backend.app.pipeline import ocr, orchestrator
+from backend.app.pipeline.focus import Focused, View
 from backend.app.pipeline.images import BadImageError, decode_upload
 from backend.app.pipeline.orchestrator import ScanInput, run_scan
 from backend.tests import fixture_data
@@ -126,9 +127,9 @@ def test_gemini_invalid_json_twice_then_no_ollama_still_answers(label_png: bytes
 @pytest.fixture
 def no_ocr_text(monkeypatch: pytest.MonkeyPatch) -> None:
     async def nothing(image):  # type: ignore[no-untyped-def]
-        return []
+        return Focused(image, View(), [])
 
-    monkeypatch.setattr(orchestrator, "run_ocr", nothing)
+    monkeypatch.setattr(orchestrator, "read_panel", nothing)
     monkeypatch.setattr(orchestrator, "assess",
                         lambda image: ImageQuality(ok=True, blur_score=500, glare_ratio=0, brightness=150))
 

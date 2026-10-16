@@ -11,7 +11,7 @@ phone (frontend/, React PWA)
   │  up to 3 label photos + family profiles + language
   ▼
 POST /api/scan (backend/, FastAPI)
-  1. quality check → OCR (rapidocr: every word with its position)
+  1. quality check → focus (crop to the text, turn it upright, enlarge) → OCR (rapidocr: every word with its position)
   2. Gemini structures the label, citing OCR words
      (fallbacks: backup key → Ollama on this Mac → OCR-only)
   3. alignment: each item is verified / approximate / unverified against the OCR words

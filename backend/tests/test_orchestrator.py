@@ -14,6 +14,7 @@ from backend.tests.fixture_data import FIXTURES_DIR
 from backend.app.llm.base import ProviderUnavailableError, RateLimitedError
 from backend.app.pipeline import orchestrator
 from backend.app.pipeline.align import union_box
+from backend.app.pipeline.focus import Focused, View
 from backend.app.pipeline.images import decode_upload
 from backend.app.pipeline.orchestrator import ScanInput, run_scan
 from backend.scripts.make_test_label import fixture_tokens
@@ -86,9 +87,9 @@ def test_panels_run_ocr_in_parallel(label_png: bytes, cache: ExtractionCache, mo
         peak = max(peak, active)
         await asyncio.sleep(0.05)
         active -= 1
-        return [token(0, "Sugar", 0.1, 0.1, image_id=image.image_id)]
+        return Focused(image, View(), [token(0, "Sugar", 0.1, 0.1, image_id=image.image_id)])
 
-    monkeypatch.setattr(orchestrator, "run_ocr", slow_ocr)
+    monkeypatch.setattr(orchestrator, "read_panel", slow_ocr)
     scan(label_png, scan_llm(recorded("ollama_test_label.json")), cache, count=3)
     assert peak == 3
 
