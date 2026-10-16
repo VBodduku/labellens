@@ -56,3 +56,38 @@ def test_message_rendering_keeps_wire_params():
     assert params['category']=='onion|garlic'
     params={'nutrient':'total_sugars_g','basis':'per_100g','value':38.,'limit':22.5,'unit':'g'}
     assert 'per 100 g' in render('verdict.conflict.threshold',params)
+
+
+@pytest.mark.parametrize('basis,amount,sizes',[
+    ('per_serving',10,{'serving_size':40,'pack_size':120,'pack_unit':'g'}),          # serving size printed without a unit
+    ('per_serving',10,{'pack_size':120,'pack_unit':'g','servings_per_pack':3}),      # serving = pack / servings
+    ('per_pack',30,{'serving_size':40,'serving_unit':'g','servings_per_pack':3}),    # pack = serving x servings
+    ('per_pack',30,{'pack_size':120,'servings_per_pack':3,'serving_unit':'g'}),      # pack size printed without a unit
+])
+def test_per_100_from_sizes_the_label_implies(make_extraction,basis,amount,sizes):
+    extraction=make_extraction('sugar')
+    extraction.nutrition=table(basis=basis,amount=amount,**sizes)
+    assert engine.analyze_nutrition(extraction).per_100['total_sugars_g']==pytest.approx(25)
+    assert value_at_basis(extraction.nutrition,'total_sugars_g','per_100g')[0]==pytest.approx(25)
+
+
+def test_no_unit_anywhere_is_not_guessed(make_extraction):
+    extraction=make_extraction('sugar')
+    extraction.nutrition=table(serving_size=40,servings_per_pack=3)
+    assert engine.analyze_nutrition(extraction).per_100=={}
+
+
+def test_threshold_uses_a_calculated_per_100_value(make_extraction,make_profile):
+    extraction=make_extraction('sugar')
+    extraction.nutrition=table(amount=12,pack_size=120,pack_unit='g',servings_per_pack=3)
+    result=engine.evaluate(extraction,[make_profile('diabetes_sugar')]).reports[0].results[0]
+    assert (result.state,result.reason_code,result.message_params['value'])==('conflict','CONFLICT_THRESHOLD',pytest.approx(30))
+
+
+def test_derived_serving_size_never_marks_printed_values_suspect(make_extraction):
+    # "Approx. 3 servings" of a 100 g pack: 33.3 g servings would make the printed 10 g per serving look wrong.
+    extraction=make_extraction('sugar')
+    extraction.nutrition=NutritionTable(rows=[NutrientRow(key='total_sugars_g',raw_label='Total sugars',values=[
+        NutrientValue(basis='per_100g',amount=25,unit='g',raw_text='25'),
+        NutrientValue(basis='per_serving',amount=10,unit='g',raw_text='10')])],pack_size=100,pack_unit='g',servings_per_pack=3)
+    assert engine.analyze_nutrition(extraction).consistency.suspect_keys==[]

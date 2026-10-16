@@ -41,6 +41,11 @@ reading order; numbers restart at 0 for each photo. OCR may split, merge or miss
    column header: "per 100 g" -> per_100g, "per 100 ml" -> per_100ml, "per serve/serving (30 g)" ->
    per_serving, "per pack" -> per_pack. `text` is the value exactly as printed (e.g. `38.0 g`), `amount`
    the number in it, or null if unreadable. Serving size and servings per pack as printed.
+   Sizes (they let per-serving or whole-pack values be turned into per 100 g): `serving_size` +
+   `serving_unit` from "Serving size 30 g" or a column header like "per serve (30 g)";
+   `servings_per_pack` from "Servings per pack: 4" (also "approx. 4"); `pack_size` + `pack_unit` from
+   the net quantity anywhere on the photos ("Net Wt. 120 g", "Net Quantity 200 ml"). Units are only
+   g or ml: write kg and L as g and ml (1 kg = 1000 g, 1 L = 1000 ml). Leave a size null if not printed.
 10. Veg mark (Indian FSSAI symbol): a square outline containing a filled circle. Green = `veg`.
     Brown/red with a filled triangle or circle = `non_veg`. `unclear` if a mark is visible but you
     cannot tell which, `not_found` if there is none. Give its `box_2d`.

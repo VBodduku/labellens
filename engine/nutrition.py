@@ -139,6 +139,30 @@ def _servings(table: NutritionTable) -> float | None:
     return None
 
 
+def completed_sizes(table: NutritionTable) -> NutritionTable:
+    """Serving and pack sizes the label implies but does not print, for basis conversions only.
+
+    A size printed without a unit takes the other size's unit (one packet is weighed one way);
+    serving = pack / servings and pack = serving x servings. Nothing is filled in when no unit
+    is known anywhere: g versus ml would need a density.
+    """
+    serving = table.serving_size if _positive(table.serving_size) else None
+    pack = table.pack_size if _positive(table.pack_size) else None
+    count = table.servings_per_pack if _positive(table.servings_per_pack) else None
+    serving_unit = table.serving_unit or (table.pack_unit if serving is not None else None)
+    pack_unit = table.pack_unit or (serving_unit if pack is not None else None)
+    if serving is None and pack is not None and count is not None:
+        serving, serving_unit = pack / count, pack_unit
+    if pack is None and serving is not None and count is not None:
+        pack, pack_unit = serving * count, serving_unit
+    return table.model_copy(update={
+        "serving_size": serving if serving is not None and math.isfinite(serving) else table.serving_size,
+        "serving_unit": serving_unit,
+        "pack_size": pack if pack is not None and math.isfinite(pack) else table.pack_size,
+        "pack_unit": pack_unit,
+    })
+
+
 def _scale(table: NutritionTable, basis: str, unit: str) -> float | None:
     """Quantity represented by a basis, expressed in one unit; no density assumptions."""
     if basis == f"per_100{unit}":
@@ -187,7 +211,7 @@ def _value_at_basis(
 def value_at_basis(
     table: NutritionTable, nutrient: str, basis: str
 ) -> tuple[float, Evidence | None] | None:
-    return _value_at_basis(table, readable_values(table), nutrient, basis)
+    return _value_at_basis(completed_sizes(table), readable_values(table), nutrient, basis)
 
 
 def correction_candidates(number: float) -> tuple[float, ...]:
@@ -239,7 +263,10 @@ def _deviation(declared: float, computed: float) -> float:
 
 
 def _sanity_suspects(
-    table: NutritionTable, values: ValueMap, rounding: Mapping[tuple[str, str], float]
+    table: NutritionTable,
+    values: ValueMap,
+    rounding: Mapping[tuple[str, str], float],
+    printed: NutritionTable,
 ) -> set[str]:
     suspects: set[str] = set()
     keys = set(key for key, _ in values)
@@ -261,18 +288,19 @@ def _sanity_suspects(
             ):
                 # Either side could be the misread value; do not guess which one is correct.
                 suspects.update((part, whole))
-    if _positive(table.serving_size) and table.serving_unit:
-        assert table.serving_size is not None
+    # Only a printed serving size can accuse a printed value: a derived one may rest on "about 3 servings".
+    if _positive(printed.serving_size) and printed.serving_unit:
+        assert printed.serving_size is not None
         for key in keys:
             per_100, serving = (
-                values.get((key, f"per_100{table.serving_unit}")),
+                values.get((key, f"per_100{printed.serving_unit}")),
                 values.get((key, "per_serving")),
             )
             if per_100 and serving:
-                expected = per_100[0] * table.serving_size / 100
+                expected = per_100[0] * printed.serving_size / 100
                 rounding_allowance = rounding.get(
-                    (key, f"per_100{table.serving_unit}"), 0.0
-                ) * table.serving_size / 100 + rounding.get((key, "per_serving"), 0.0)
+                    (key, f"per_100{printed.serving_unit}"), 0.0
+                ) * printed.serving_size / 100 + rounding.get((key, "per_serving"), 0.0)
                 if (
                     abs(serving[0] - expected)
                     > max(abs(expected) * 0.1, rounding_allowance) + 1e-9
@@ -282,11 +310,11 @@ def _sanity_suspects(
 
 
 def _consistency(
-    table: NutritionTable, readings: Readings, preferred_basis: str
+    table: NutritionTable, readings: Readings, preferred_basis: str, printed: NutritionTable
 ) -> ConsistencyCheck:
     values = readings.values
     suspects = set(readings.conflicts) | _sanity_suspects(
-        table, values, readings.rounding
+        table, values, readings.rounding, printed
     )
     amounts: dict[str, float] = {}
     required = set(_CORE)
@@ -356,31 +384,32 @@ def analyze_nutrition(extraction: LabelExtraction) -> NutritionAnalysis | None:
         return None
     readings = _readings(table)
     values = readings.values
+    sized = completed_sizes(table)
     printed_bases = {basis for _, basis in values if basis in {"per_100g", "per_100ml"}}
     unit = (
         "ml"
         if printed_bases == {"per_100ml"}
         else "g"
         if printed_bases == {"per_100g"}
-        else table.serving_unit or table.pack_unit or "g"
+        else sized.serving_unit or sized.pack_unit or "g"
     )
     basis = f"per_100{unit}"
     per_100: dict[str, float] = {}
     per_pack: dict[str, float] = {}
     for nutrient in dict.fromkeys(key for key, _ in values if key in NUTRIENT_KEYS):
-        value = _value_at_basis(table, values, nutrient, basis)
+        value = _value_at_basis(sized, values, nutrient, basis)
         if value is not None:
             per_100[nutrient] = value[0]
-        pack = _value_at_basis(table, values, nutrient, "per_pack")
+        pack = _value_at_basis(sized, values, nutrient, "per_pack")
         if pack is not None:
             per_pack[nutrient] = pack[0]
-    servings = _servings(table)
+    servings = _servings(sized)
     return NutritionAnalysis(
         per_100=per_100,
         per_100_unit=unit,
         per_pack=per_pack,
         servings_per_pack=servings,
-        consistency=_consistency(table, readings, basis),
+        consistency=_consistency(sized, readings, basis, table),
         notes=["nutrition.serving_small"]
         if servings is not None and servings >= 2
         else [],

@@ -77,6 +77,8 @@
 
 - Allergen-name gaps found by probing common label words: added दुग्ध / दुग्ध ठोस (formal Hindi milk), सोयाबीन / సోయాబీన్, పల్లీలు / వేరుశనగలు (peanut), అక్రోట్ (walnut), పాల పొడి (milk powder) and the oblique Telugu forms నువ్వుల / ఆవాల / ఆవ నూనె (sesame, mustard). Unmatched, these stayed unresolved and a complete list read "Not listed". They join the native-speaker list in KB_REVIEW.md.
 
+- Per-100 values are also worked out from sizes the label implies but does not print (`completed_sizes`): a serving or pack size printed without a unit takes the other size's unit, serving = pack / servings, pack = serving x servings. Nothing is assumed when no g/ml unit is printed anywhere. The per-serving vs per-100 sanity check still uses only a printed serving size, so an approximate "about 3 servings" can never mark a printed value suspect.
+
 ## Known taxonomy limitations (need human review)
 - The frozen lactose catalog maps to milk, which cannot distinguish lactose-free milk, low-lactose cheeses or low-lactose clarified butter. This is a broad origin screen; correcting that clinically imprecise taxonomy needs a human-approved contract/catalog design decision on main.
 - The requested sugar_alias/added_sugar taxonomy includes maltodextrin and date paste; neither should be presented as a precise chemical or regulatory added-sugar claim. Existing message template says "a form of sugar"; a more accurate future template would say "an ingredient to check against the sugar value". Request for main only; shared files were not changed.

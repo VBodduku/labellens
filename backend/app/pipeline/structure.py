@@ -12,7 +12,7 @@ from backend.app.pipeline.images import PreparedImage
 from backend.app.pipeline.llm_schema import LLMExtraction
 from shared.contract import OcrToken, PanelHint
 
-PROMPT_VERSION = "structure-v3"
+PROMPT_VERSION = "structure-v4"
 Citations = dict[str, list[str]]        # image_id -> token ids in prompt order (the model cites the index)
 PROMPT_PATH = Path(__file__).resolve().parents[1] / "llm" / "prompts" / "structure.md"
 TOKEN_CAP: dict[ProviderName, int] = {"gemini": 1500, "ollama": 600}
