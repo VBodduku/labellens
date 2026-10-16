@@ -201,7 +201,7 @@ async def _interpretations(extraction: LabelExtraction, output: EngineOutput, ex
     wanted = {t.term for t in output.unresolved_terms}
     if not wanted:
         return {}
-    if wanted <= set(extras.interpreted_terms):          # cache hit: no LLM call
+    if wanted <= set(extras.interpreted_terms) or extraction.meta.cache_hit:   # cache hits never wait on an LLM
         return {t: extras.interpretations[t] for t in wanted if t in extras.interpretations}
     budget = deadline.budget(INTERPRET_CAP_S, INTERPRET_RESERVE_S)
     if not budget or not router.can_generate():
@@ -216,10 +216,11 @@ async def _interpretations(extraction: LabelExtraction, output: EngineOutput, ex
 
 
 async def _summaries(scan: ScanInput, output: EngineOutput, extras: CacheExtras, router: LLMRouter,
-                     deadline: Deadline) -> dict[str, str]:
+                     deadline: Deadline, cache_hit: bool) -> dict[str, str]:
     keys = {r.profile_id: summary_key(scan.lang, r.profile_id, fingerprint(r)) for r in output.reports}
-    if keys and all(k in extras.summaries for k in keys.values()):     # cache hit: no LLM call
-        return {pid: extras.summaries[k] for pid, k in keys.items()}
+    cached = {pid: extras.summaries[k] for pid, k in keys.items() if k in extras.summaries}
+    if cache_hit or (keys and len(cached) == len(keys)):  # cache hits never wait on an LLM (templates fill gaps)
+        return cached
     budget = deadline.budget(SUMMARY_CAP_S, SUMMARY_RESERVE_S)
     if not budget or not router.can_generate(PROSE_PROVIDERS):
         return {}
@@ -241,7 +242,7 @@ async def run_scan(scan: ScanInput, router: LLMRouter, cache: ExtractionCache) -
     if interpretations:
         with stage("engine"):
             output = engine_adapter.evaluate(extraction, scan.profiles, interpretations)
-    summaries = await _summaries(scan, output, extras, router, deadline)
+    summaries = await _summaries(scan, output, extras, router, deadline, extraction.meta.cache_hit)
     if extraction.meta.provider != "ocr_only":
         cache.put_extras(key, extras)
 

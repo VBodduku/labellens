@@ -31,5 +31,6 @@
 - On the M2 demo Mac, gemma3:4b (Ollama) is too slow for full label extraction within the 45 s scan budget (~120 s). Without Gemini the app answers in OCR-only mode. Warm the cache with Gemini before judging (`scripts/warm_cache.py`, Phase 4).
 - Docker image builds from the repo root with `docker build -f backend/Dockerfile .`; it copies `engine/*.py` and `engine/kb/` — keep any new runtime engine files in those places (or tell us).
 - Native-speaker review needed for the hi/te strings in `backend/app/wording.py` and `backend/app/agent/templates.py` (marked `REVIEW`).
+- `.env.example` (main): optional new backend variable `GEMINI_FALLBACK_MODEL` (default `gemini-flash-lite-latest`; tried on the same key when `GEMINI_MODEL` is overloaded or out of quota).
 - `.env.example` (main): optional new backend variable `OCR_WORKERS` (default 3; set 1 on small hosts such as Render free).
 - No contract changes requested.

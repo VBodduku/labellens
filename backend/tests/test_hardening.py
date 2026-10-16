@@ -234,3 +234,16 @@ def test_health_hides_a_rate_limited_gemini(client: TestClient, providers: dict[
     providers["gemini"] = True
     body = client.get("/api/health").json()
     assert body["providers"]["gemini"] is False and body["status"] == "degraded"
+
+
+def test_cache_hit_without_stored_summaries_makes_no_llm_call(label_png: bytes, cache: ExtractionCache) -> None:
+    from backend.tests.fakes import SUMMARIZE, recorded, scan_llm
+
+    llm = scan_llm(recorded("gemini_test_label.json"), name="gemini")         # summaries fail the first time
+    asyncio.run(run_scan(scan_input(label_png), router_with(llm), cache))
+    calls = len(llm.prompts)
+    started = time.perf_counter()
+    second = asyncio.run(run_scan(scan_input(label_png), router_with(llm), cache))
+    assert time.perf_counter() - started < 1.5 and second.extraction.meta.cache_hit
+    assert len(llm.prompts) == calls and all(r.summary is None for r in second.reports)
+    assert len(llm.calls(SUMMARIZE)) == 1
