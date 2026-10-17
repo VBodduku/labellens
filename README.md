@@ -92,7 +92,9 @@ cd frontend && npm install && cd ..
 | `GEMINI_MODEL` | `gemini-flash-latest` | Main model. |
 | `GEMINI_FALLBACK_MODEL` | `gemini-3.5-flash,gemini-flash-lite-latest,…` | Tried in order on the same key when the main model is overloaded or out of quota. |
 | `OLLAMA_BASE_URL`, `OLLAMA_MODEL` | `http://localhost:11434`, `gemma3:4b` | Local vision model used when Gemini is unavailable. |
-| `LLM_TIMEOUT_S` | `30` | Timeout per AI call. A whole scan is capped at 45 s. |
+| `LLM_TIMEOUT_S` | `30` | Timeout per AI call. |
+| `SCAN_BUDGET_S` | `45` | Time limit for one whole scan. Raise it on slow hosts (Render free: `150`). |
+| `OCR_TIMEOUT_S` | `30` | Time limit for finding and reading the text of one photo (Render free: `100`). |
 | `ENGINE_MODE` | `real` | `real` = `engine/`; `stub` = a naive stand-in for tests. |
 | `CORS_ORIGINS` | `http://localhost:5173,…` | Frontend origins allowed to call the backend (add the Vercel URL when deployed). |
 | `CACHE_DIR` | `.cache` | Disk cache of readings, keyed by photo bytes, so repeat scans are instant and free. |
@@ -101,6 +103,7 @@ cd frontend && npm install && cd ..
 | `VITE_API_BASE_URL` | (empty) | Empty locally (Vite forwards `/api`). For a deployed frontend: the backend URL. |
 | `API_PROXY_TARGET` | `http://localhost:8000` | Where the dev server forwards `/api`. |
 | `VITE_USE_MOCKS` | `false` | `true` = the frontend uses the bundled fixtures, no backend needed. |
+| `VITE_SCAN_TIMEOUT_S` | `60` | How long the app waits for a scan. Keep it above `SCAN_BUDGET_S` (Render free: `180`). |
 
 ## Run
 
@@ -171,7 +174,7 @@ Design decisions are recorded one line each in `backend/DECISIONS.md`, `engine/D
 - **Basic reading (no AI)** reads ingredients and statements by keyword rules. It never says "Not listed" from the list, uses nutrition numbers only when the label corroborates them, and can stop early on tightly packed two-column layouts.
 - **Knowledge base:** 40 entries await expert review ([`engine/KB_REVIEW.md`](engine/KB_REVIEW.md)), for example contested additive sources and dried ginger/turmeric for Jain diets.
 - **Speed:** fresh scans take about 15–40 s on Gemini's free tier (target 8 s). Repeat scans of the same photo are instant (cache).
-- **Free hosting:** Render's free tier sleeps after 15 minutes idle (about a minute to wake) and has 512 MB of memory, so OCR runs one photo at a time.
+- **Free hosting:** Render's free tier sleeps after 15 minutes idle (about a minute to wake), has 512 MB of memory and 0.1 CPU. Reading one photo takes about 30 s there, so a deployed scan takes 1–2 minutes (with `SCAN_BUDGET_S=150`). Run the backend on a laptop for a fast live demo.
 - Camera quality thresholds (blur, glare) are not calibrated on real phones yet; barcode and QR areas can trigger a glare warning.
 
 ## Future improvements

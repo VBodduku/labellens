@@ -8,7 +8,7 @@ view and every box is mapped back to the full photo before caching.
 When every LLM fails or the LLM budget runs out, the OCR-only reader replaces structuring +
 alignment; interpretation and summaries still run on whichever provider is usable (they are short).
 Every LLM stage gets what is left of the
-45 s budget minus a reserve for the stages after it.
+scan budget (SCAN_BUDGET_S, 45 s by default) minus a reserve for the stages after it.
 """
 from __future__ import annotations
 
@@ -51,7 +51,6 @@ from shared.contract import (
 )
 from shared.engine_interface import EngineOutput, TermInterpretation, UnresolvedTerm
 
-SCAN_BUDGET_S = 45.0
 STRUCTURE_RESERVE_S = 12.0      # kept back from structuring for verify, interpretation and summaries
 VERIFY_RESERVE_S = 8.0          # kept back from verification for interpretation and summaries
 INTERPRET_CAP_S, INTERPRET_RESERVE_S = 10.0, 5.0
@@ -61,6 +60,7 @@ MIN_STAGE_S = 3.0
 
 class Deadline:
     def __init__(self, total_s: float) -> None:
+        self.total_s = total_s
         self._end = time.monotonic() + total_s
 
     def budget(self, cap_s: float, reserve_s: float) -> float:
@@ -200,9 +200,9 @@ async def extract(scan: ScanInput, router: LLMRouter, cache: ExtractionCache, de
     tokens = [t for p in panels for t in p.tokens]
     seen = replace(scan, images=[p.image for p in panels])     # boxes stay on the focused views until verified
 
-    structured = await _structure(seen, tokens, router, deadline.budget(SCAN_BUDGET_S, STRUCTURE_RESERVE_S))
+    structured = await _structure(seen, tokens, router, deadline.budget(deadline.total_s, STRUCTURE_RESERVE_S))
     extraction = _extraction(scan, qualities, tokens, structured, 0)
-    verify_budget = deadline.budget(SCAN_BUDGET_S, VERIFY_RESERVE_S)
+    verify_budget = deadline.budget(deadline.total_s, VERIFY_RESERVE_S)
     if structured.provider != "ocr_only" and verify_budget:
         with stage("verify"):
             extraction = await verify(extraction, seen.images, scan.profiles, router, verify_budget)
@@ -261,7 +261,7 @@ async def _summaries(scan: ScanInput, output: EngineOutput, extras: CacheExtras,
 
 
 async def run_scan(scan: ScanInput, router: LLMRouter, cache: ExtractionCache) -> ScanResult:
-    deadline = Deadline(SCAN_BUDGET_S)
+    deadline = Deadline(get_settings().scan_budget_s)
     extraction = await extract(scan, router, cache, deadline)
     key = scan_cache_key(scan)
     extras = cache.get_extras(key)

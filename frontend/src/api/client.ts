@@ -9,7 +9,8 @@ import type {
 import { ApiError, parseErrorResponse, toApiError } from "./errors";
 import type { CallOptions, LabelLensApi, ScanInput } from "./types";
 
-export const SCAN_TIMEOUT_MS = 60_000;
+/** How long to wait for a scan: 60 s, or VITE_SCAN_TIMEOUT_S for a slow backend host (keep it above SCAN_BUDGET_S). */
+export const SCAN_TIMEOUT_MS = (Number(import.meta.env.VITE_SCAN_TIMEOUT_S) || 60) * 1000;
 export const DEFAULT_TIMEOUT_MS = 20_000;
 
 interface RequestOptions extends CallOptions {

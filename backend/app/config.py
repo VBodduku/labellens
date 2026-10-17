@@ -31,6 +31,8 @@ class Settings:
     max_image_mb: float
     log_level: str
     ocr_workers: int                    # parallel OCR runs; 1 on small hosts (Render free: 512 MB)
+    scan_budget_s: float                # one scan, end to end; raise on slow hosts (Render free: 0.1 CPU)
+    ocr_timeout_s: float                # finding and reading the text of one photo
 
     @property
     def max_image_bytes(self) -> int:
@@ -74,4 +76,6 @@ def get_settings() -> Settings:
         max_image_mb=float(_env("MAX_IMAGE_MB", "8")),
         log_level=_env("LOG_LEVEL", "info").upper(),
         ocr_workers=max(1, int(_env("OCR_WORKERS", "3"))),
+        scan_budget_s=float(_env("SCAN_BUDGET_S", "45")),
+        ocr_timeout_s=float(_env("OCR_TIMEOUT_S", "30")),
     )

@@ -17,7 +17,7 @@ from backend.app.logging_setup import stage
 from backend.app.pipeline import summarize
 from backend.app.pipeline.assemble import build_scan_result
 from backend.app.pipeline.images import BadImageError, PreparedImage, decode_upload, image_id
-from backend.app.pipeline.orchestrator import SCAN_BUDGET_S, ScanInput, run_scan
+from backend.app.pipeline.orchestrator import ScanInput, run_scan
 from backend.app.pipeline.scan_memory import SCAN_MEMORY
 from backend.app.pipeline.verify import scan_unknowns
 from shared.contract import Lang, PanelHint, Profile, RecheckRequest, ScanResult
@@ -90,7 +90,7 @@ async def scan(
     hints = parse_panel_hints(panel_hints, len(prepared))
     scan_input = ScanInput(images=prepared, raw=raw, hints=hints, profiles=parsed_profiles, lang=lang)
     try:
-        return await asyncio.wait_for(run_scan(scan_input, router, cache), SCAN_BUDGET_S)
+        return await asyncio.wait_for(run_scan(scan_input, router, cache), get_settings().scan_budget_s)
     except TimeoutError as exc:
         raise errors.ApiError(503, "LLM_UNAVAILABLE", "Reading the label took too long. Please try again.") from exc
 

@@ -19,3 +19,8 @@ services:
         value: real
       - key: OCR_WORKERS
         value: "1"
+      # The free plan has 0.1 CPU: reading one photo takes ~30 s, a whole scan 60-120 s.
+      - key: OCR_TIMEOUT_S
+        value: "100"
+      - key: SCAN_BUDGET_S
+        value: "150"

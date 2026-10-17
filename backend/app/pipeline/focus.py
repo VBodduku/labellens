@@ -20,6 +20,7 @@ import numpy as np
 from PIL import Image
 from pydantic import BaseModel
 
+from backend.app.config import get_settings
 from backend.app.pipeline.images import PreparedImage
 from backend.app.pipeline.ocr import executor, get_engine, ocr_image
 from shared.contract import Box, Evidence, OcrToken
@@ -38,7 +39,6 @@ CROP_BELOW = 0.6                # crop only when the kept text covers less than 
 PAD = 0.03                      # crop margin, as a share of the photo's sides
 VERTICAL = 1.5                  # a line box this much taller than wide holds sideways text
 UPRIGHT_CONF = 0.8              # character-weighted OCR confidence that settles the orientation without a second read
-FOCUS_TIMEOUT_S = 30.0
 
 logger = logging.getLogger("labellens.focus")
 M = TypeVar("M", bound=BaseModel)
@@ -243,8 +243,10 @@ def _read(image: PreparedImage, source: Image.Image, view: View) -> Focused:
     return Focused(seen, view, ocr_image(seen.ocr_image, image.image_id))
 
 
-async def read_panel(image: PreparedImage, timeout_s: float = FOCUS_TIMEOUT_S) -> Focused:
-    """Focus + OCR in the thread pool; a stuck run reads nothing rather than blocking the scan."""
+async def read_panel(image: PreparedImage, timeout_s: float | None = None) -> Focused:
+    """Focus + OCR in the thread pool; a stuck run reads nothing rather than blocking the scan.
+    The limit is OCR_TIMEOUT_S (30 s by default; slow hosts need more)."""
+    timeout_s = get_settings().ocr_timeout_s if timeout_s is None else timeout_s
     loop = asyncio.get_running_loop()
     try:
         focused = await asyncio.wait_for(loop.run_in_executor(executor(), focus_and_read, image), timeout_s)

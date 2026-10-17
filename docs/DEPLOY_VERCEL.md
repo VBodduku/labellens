@@ -21,7 +21,8 @@ dashboards below.
 1. Sign up at <https://render.com> with GitHub, and allow Render to access the `labellens` repository.
 2. In the dashboard, click **New → Blueprint** and pick the repository. Render reads `render.yaml` at the repo root
    (Docker, free plan, health check `/api/catalog`, `ENGINE_MODE=real`, `OCR_WORKERS=1`).
-3. Render asks for the secret values:
+3. Render asks for the secret values (the blueprint also sets `OCR_TIMEOUT_S=100` and `SCAN_BUDGET_S=150`, because
+   the free plan's 0.1 CPU needs about 30 s just to read one photo):
    - `GEMINI_API_KEY`: your key.
    - `GEMINI_API_KEY_BACKUP`: a second key, or leave it empty.
    - `CORS_ORIGINS`: leave as `http://localhost:5173` for now. You'll add the Vercel URL in Part C.
@@ -53,6 +54,7 @@ Render".
    |---|---|
    | `VITE_API_BASE_URL` | the Render URL from Part A, e.g. `https://labellens-api.onrender.com`, with **no trailing slash** |
    | `VITE_USE_MOCKS` | `false` |
+   | `VITE_SCAN_TIMEOUT_S` | `180` (the app waits this long for a scan; the free backend needs 1–2 minutes) |
 
 5. Click **Deploy**. The build takes about 1–2 minutes.
 6. After deploying, open **Settings → General → Node.js Version** and choose **22.x** (the app needs Node 22 or
@@ -96,7 +98,8 @@ Notes:
 | "Can't reach LabelLens" on scan or recheck | `VITE_API_BASE_URL` is wrong, missing, or has a trailing slash. Fix it in Vercel and **redeploy**. Or the backend is asleep: open `/api/health` and wait. |
 | Browser console: *blocked by CORS policy* | The Vercel URL is missing from `CORS_ORIGINS` on Render, or doesn't match exactly (https, no trailing slash). |
 | "Basic reading only" on every scan | Gemini isn't working on the server. Check `/api/health` → `"gemini"`. If false: the key is missing or refused (create a new key in a new AI Studio project), or the free quota is used up (add `GEMINI_API_KEY_BACKUP`). |
-| Scans time out on Render | First scan after waking, or a very large photo. Try again. Make sure `OCR_WORKERS=1`. |
+| "We couldn't use this photo" on a sharp photo, about 30 s after Analyse | The free plan's 0.1 CPU ran out of time reading the photo. On Render set `OCR_TIMEOUT_S=100` and `SCAN_BUDGET_S=150`; on Vercel set `VITE_SCAN_TIMEOUT_S=180` and redeploy. |
+| Scans time out on Render | First scan after waking, or a very large photo. Try again. Check the three time limits above and `OCR_WORKERS=1`. |
 | Render "Out of memory" (Events tab) | `OCR_WORKERS` must be `1` on the free plan. |
 | Camera doesn't open | Use the `https://` Vercel URL, not a preview iframe; allow the camera in the browser's site settings. **Upload a photo** always works. |
 | The old version keeps loading | The app is a PWA and caches itself. Close and reopen it, or clear the site data. |

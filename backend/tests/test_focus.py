@@ -133,3 +133,26 @@ def _png(image: Image.Image) -> bytes:
     buffer = io.BytesIO()
     image.save(buffer, format="PNG")
     return buffer.getvalue()
+
+
+def test_the_photo_reading_time_limit_comes_from_the_settings(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Slow hosts (Render free: 0.1 CPU) raise OCR_TIMEOUT_S; a run past the limit reads nothing."""
+    import asyncio
+    import time
+
+    from backend.app.config import get_settings
+    from backend.app.pipeline.images import PreparedImage
+
+    monkeypatch.setenv("OCR_TIMEOUT_S", "0.05")
+    monkeypatch.setenv("SCAN_BUDGET_S", "150")
+    get_settings.cache_clear()
+    try:
+        assert (get_settings().ocr_timeout_s, get_settings().scan_budget_s) == (0.05, 150.0)
+        monkeypatch.setattr(focus, "focus_and_read", lambda image: time.sleep(0.5))
+        image = PreparedImage.__new__(PreparedImage)
+        object.__setattr__(image, "image_id", "img_0")
+        assert asyncio.run(focus.read_panel(image)).tokens == []
+    finally:
+        monkeypatch.delenv("OCR_TIMEOUT_S")
+        monkeypatch.delenv("SCAN_BUDGET_S")
+        get_settings.cache_clear()
