@@ -356,3 +356,27 @@ def test_values_with_a_recovered_unit_reach_the_engine() -> None:
     extraction = scan_result().extraction.model_copy(update={"nutrition": p.nutrition})
     analysis = engine_adapter.analyze_nutrition(extraction)
     assert analysis is not None and analysis.per_100["total_fat_g"] == pytest.approx(24.1)
+
+
+def test_the_value_is_found_after_ocr_read_the_unit_as_a_number() -> None:
+    tokens = line_tokens(["MUFA(9)", "1.6"], 0.10)                     # OCR read "(g)" as "(9)" (Yoga Bar photo)
+    rows = [{"key": "other", "label": "MUFA (g)", "values": [{"basis": "per_serving", "amount": 1.6, "unit": "g",
+             "text": "1.6", "token_ids": [0, 1], "readability": "clear", "box_2d": None}]}]
+    p = align_panel(panel(nutrition={"rows": rows}, nutrition_section=section()), "img_0", TokenIndex(tokens),
+                    [t.token_id for t in tokens])
+    value = p.nutrition.rows[0].values[0]  # type: ignore[union-attr]
+    assert (value.amount, value.readability) == (1.6, "clear")
+    assert not any(i.startswith("llm_ocr_number_mismatch") for i in p.nutrition_section.issues)
+
+
+def test_a_badge_with_the_same_words_does_not_move_the_row() -> None:
+    badge = line_tokens(["No", "Trans", "Fat"], 0.05)                 # front-of-pack badge, found first
+    row = line_tokens(["TransFat(g)", "0.0", "0%"], 0.30, start=3, x0=0.5)
+    tokens = badge + row
+    rows = [{"key": "trans_fat_g", "label": "Trans Fat (g)", "values": [{"basis": "per_serving", "amount": 0.0,
+             "unit": "g", "text": "0.0", "token_ids": [4], "readability": "clear", "box_2d": None}]}]
+    p = align_panel(panel(nutrition={"rows": rows}, nutrition_section=section()), "img_0", TokenIndex(tokens),
+                    [t.token_id for t in tokens])
+    value = p.nutrition.rows[0].values[0]  # type: ignore[union-attr]
+    assert value.readability == "clear"
+    assert not any(i.startswith("value_off_row") for i in p.nutrition_section.issues)

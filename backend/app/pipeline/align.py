@@ -33,6 +33,7 @@ from backend.app.pipeline.textnorm import (
     numbers_differ,
     parse_number,
     parse_percentage,
+    printed_numbers,
     printed_units,
     unit_name,
 )
@@ -59,7 +60,7 @@ MIN_WINDOW_LENGTH = 0.8         # window text must be at least this x item text 
 MAX_LENGTH_FACTOR = 1.5         # matched text may be at most this x item text (+ slack) long
 LENGTH_SLACK = 4
 CONFIDENCE: dict[EvidenceStatus, float] = {"verified": 1.0, "approximate": 0.7, "unverified": 0.4}
-ALIGN_VERSION = "align-v6"         # part of the extraction cache key: older readings may keep a number as a unit, trust a veg mark that is not green on the photo, or a
+ALIGN_VERSION = "align-v7"         # part of the extraction cache key: older readings may keep a number as a unit, trust a veg mark that is not green on the photo, or a
                                    # value on another row, or miss an allergen statement the OCR words show
 MISMATCH_ISSUE = "llm_ocr_number_mismatch"
 NOT_ON_PHOTO_ISSUE = "value_not_on_photo"
@@ -242,6 +243,9 @@ def _checked_amount(
         if ocr_amount is None:
             return None, "unreadable"
         if value.amount is not None and numbers_differ(value.amount, ocr_amount):
+            # The matched words can include the row label: "MUFA(9) 1.6" is OCR's "(g)" then the value.
+            if any(not numbers_differ(value.amount, n) for n in printed_numbers(alignment.ocr_text)):
+                return value.amount, value.readability
             if number_digits(f"{value.amount:g}") == number_digits(alignment.ocr_text):
                 return value.amount, value.readability
             issues.append(f"{MISMATCH_ISSUE}:{key}:{value.basis}:{value.amount:g}")   # the engine reports it
@@ -365,13 +369,14 @@ class _PanelAligner:
                       for v in values]
         elif label.status == "verified":
             lines = [e.box for e in label.evidence if e.box is not None]
-            values = [self._on_row(row.key, v, lines, issues) for v in values]
+            values = [self._on_row(row.key, row.label, v, lines, issues) for v in values]
         return NutrientRow(key=row.key, raw_label=row.label, values=values)
 
-    def _on_row(self, key: str, value: NutrientValue, lines: Sequence[Box], issues: list[str]) -> NutrientValue:
+    def _on_row(self, key: str, label: str, value: NutrientValue, lines: Sequence[Box],
+                issues: list[str]) -> NutrientValue:
         evidence = value.evidence
         if value.amount is None or evidence is None or evidence.box is None or evidence.status != "verified" \
-                or _shares_line(evidence.box, lines):
+                or _shares_line(evidence.box, lines) or self._label_before(label, evidence.box):
             return value
         right_of_label = max(b.x + b.w for b in lines)
         on_row = [t for t in self.index.by_image.get(self.image_id, [])
@@ -380,6 +385,13 @@ class _PanelAligner:
             return value.model_copy(update={"evidence": line_evidence(on_row[:1], 1.0)[0]})
         issues.append(f"{OFF_ROW_ISSUE}:{key}")
         return value.model_copy(update={"readability": "partial"})
+
+    def _label_before(self, label: str, box: Box) -> bool:
+        """The row's label is printed on the value's own line, left of it. Checked directly because the same
+        words can appear elsewhere first ("No Trans Fat" on a front-of-pack badge before "Trans Fat (g)")."""
+        words = [t for t in self.index.by_image.get(self.image_id, [])
+                 if _shares_line(t.box, [box]) and t.box.x + t.box.w <= box.x + box.w / 2]
+        return bool(words) and fuzz.partial_ratio(norm(label), norm(" ".join(t.text for t in words))) >= CITED_MIN_SCORE
 
     def nutrition(self, nutrition: LLMNutrition | None, issues: list[str]) -> NutritionTable | None:
         if nutrition is None:

@@ -44,6 +44,14 @@ def parse_number(text: str) -> float | None:
     return _to_float(match.group(0)) if match else None
 
 
+def printed_numbers(text: str) -> list[float]:
+    """Every number in printed text except percentages ("MUFA(9) 1.6 5%" -> [9.0, 1.6]); none if smudged."""
+    if any(mark in text for mark in _UNREADABLE_MARKS):
+        return []
+    cleaned = _O_AS_ZERO.sub("0", text)
+    return [_to_float(m.group(0)) for m in _NUMBER.finditer(cleaned) if not cleaned[m.end():].lstrip().startswith("%")]
+
+
 def number_digits(text: str) -> str | None:
     """Digits of the first number in the text, without its decimal point or leading zeros ("08.8" -> "88")."""
     match = _NUMBER.search(_O_AS_ZERO.sub("0", text))
