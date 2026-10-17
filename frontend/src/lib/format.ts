@@ -16,6 +16,13 @@ export function formatNumber(value: number, lang: Lang): string {
   return format.format(value);
 }
 
+/** A calculated amount, rounded to what the label's own precision supports ("391 kcal", "11.4 g", "0.29 g"). */
+export function formatCalculated(value: number, lang: Lang): string {
+  const digits = Math.abs(value) >= 100 ? 0 : Math.abs(value) >= 1 ? 1 : 2;
+  const factor = 10 ** digits;
+  return formatNumber(Math.round(value * factor) / factor, lang);
+}
+
 const orLists = new Map<Lang, Intl.ListFormat>();
 
 /** Joins items with the locale's word for "or" ("onion or garlic", "प्याज़ या लहसुन"). */

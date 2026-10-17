@@ -2,7 +2,7 @@ import { LocateFixed, Pencil } from "lucide-react";
 import { m } from "motion/react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { formatNumber } from "../../lib/format";
+import { formatCalculated, formatNumber } from "../../lib/format";
 import { hasServingValues, nutritionRows, type NutritionBasisView } from "../../lib/nutritionView";
 import type { ScanResult } from "../../shared/contract";
 import { useUiStore } from "../../store/ui";
@@ -80,12 +80,13 @@ export function NutritionTable({ result, onEdit }: { result: ScanResult; onEdit:
             </tr>
           </thead>
           <tbody className="divide-y divide-line">
-            {rows.map((row) => {
+            {rows.map((row, index) => {
+              const name = row.key === "other" ? row.label : t(`nutrients.${row.key}`, { defaultValue: row.label });
               const locatable = row.evidence?.box && row.evidence.status !== "unverified" ? row.evidence : null;
               return (
-                <tr key={row.key} className={row.suspect ? "bg-possible/10 shadow-[inset_3px_0_0_var(--possible)]" : undefined}>
+                <tr key={`${row.key}:${index}`} className={row.suspect ? "bg-possible/10 shadow-[inset_3px_0_0_var(--possible)]" : undefined}>
                   <th scope="row" className="py-2.5 pl-4 text-left font-medium">
-                    <span className="block">{t(`nutrients.${row.key}`, { defaultValue: row.label })}</span>
+                    <span className="block">{name}</span>
                     {row.suspect && <span className="text-xs font-semibold text-possible">{t("nutrition.suspect")}</span>}
                   </th>
                   <td className="py-1 pr-1 text-right">
@@ -104,7 +105,7 @@ export function NutritionTable({ result, onEdit }: { result: ScanResult; onEdit:
                         </span>
                       ) : (
                         <span className="font-semibold tabular-nums">
-                          {formatNumber(row.amount, lang)} {row.unit}
+                          {row.derived ? formatCalculated(row.amount, lang) : formatNumber(row.amount, lang)} {row.unit}
                         </span>
                       )}
                       {locatable && (
@@ -117,7 +118,7 @@ export function NutritionTable({ result, onEdit }: { result: ScanResult; onEdit:
                       )}
                       {row.fieldPath ? (
                         <IconButton
-                          label={t("nutrition.edit", { name: t(`nutrients.${row.key}`, { defaultValue: row.label }) })}
+                          label={t("nutrition.edit", { name })}
                           onClick={() =>
                             row.fieldPath &&
                             onEdit({

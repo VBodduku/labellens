@@ -103,3 +103,40 @@ describe("report ordering", () => {
     expect(order).toEqual(["p_aarav", "p_thatha", "p_lakshmi"]);
   });
 });
+
+describe("nutritionRows for rows without a standard key (MUFA, Omega-3)", () => {
+  // A per-serving-only label like the Yoga Bar: 35 g serving, 1 per pack.
+  const perServing: ScanResult = {
+    ...fixtureScanResult,
+    extraction: {
+      ...fixtureScanResult.extraction,
+      nutrition: {
+        serving_size: 35, serving_unit: "g", servings_per_pack: 1, pack_size: 35, pack_unit: "g",
+        rows: [
+          { key: "other", raw_label: "MUFA (g)", values: [{ basis: "per_serving", amount: 1.6, unit: "g", raw_text: "1.6", readability: "clear", corrected_by_user: false }] },
+          { key: "other", raw_label: "Omega-3 (g)", values: [{ basis: "per_serving", amount: 0.1, unit: "g", raw_text: "0.1", readability: "partial", corrected_by_user: false }] },
+        ],
+      },
+    },
+  };
+
+  it("keeps the printed label and works out per 100 g from a clear per-serving value", () => {
+    const [mufa, omega] = nutritionRows(perServing, "per_100");
+    expect(mufa).toMatchObject({ label: "MUFA (g)", derived: true, readability: "clear" });
+    expect(mufa?.amount).toBeCloseTo(4.571, 3);
+    expect(omega?.amount).toBeNull();                       // an unconfirmed value is never scaled
+  });
+
+  it("works out the whole pack from the servings per pack", () => {
+    expect(nutritionRows(perServing, "per_pack")[0]?.amount).toBeCloseTo(1.6, 6);
+  });
+});
+
+describe("formatCalculated", () => {
+  it("rounds calculated amounts to a sensible precision", async () => {
+    const { formatCalculated } = await import("./format");
+    expect(formatCalculated(391.428, "en")).toBe("391");
+    expect(formatCalculated(11.428, "en")).toBe("11.4");
+    expect(formatCalculated(0.2857, "en")).toBe("0.29");
+  });
+});

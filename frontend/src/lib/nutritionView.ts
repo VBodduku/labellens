@@ -1,4 +1,4 @@
-import type { Basis, Evidence, Readability, ScanResult } from "../shared/contract";
+import type { Basis, Evidence, NutrientRow as NutritionRow, Readability, ScanResult } from "../shared/contract";
 
 export type NutritionBasisView = "per_100" | "per_serving" | "per_pack";
 
@@ -31,12 +31,34 @@ function extractionBasis(view: NutritionBasisView, per100Unit: "g" | "ml"): Basi
 }
 
 /**
+ * A row the engine has no key for ("MUFA", "Omega-3"): its per-100 or whole-pack amount, worked out from a clear
+ * per-serving value the same way the engine does for the others (only when the serving is weighed in the same
+ * unit as the 100; never across g and ml).
+ */
+function scaledOther(
+  values: NutritionRow["values"],
+  view: NutritionBasisView,
+  table: NonNullable<ScanResult["extraction"]["nutrition"]>,
+  per100Unit: "g" | "ml",
+): number | undefined {
+  const serving = values.find((value) => value.basis === "per_serving" && value.readability === "clear" && value.amount != null);
+  if (!serving || serving.amount == null) return undefined;
+  if (view === "per_100" && table.serving_size && table.serving_unit === per100Unit) {
+    return (serving.amount * 100) / table.serving_size;
+  }
+  if (view === "per_pack" && table.servings_per_pack) return serving.amount * table.servings_per_pack;
+  return undefined;
+}
+
+/**
  * Rows for the nutrition table. Per 100 g/ml and per serving come from the label's own values (editable);
  * whole pack comes from the engine's derived `per_pack` (read-only). Values the engine normalised but the
- * label did not print fall back to `nutrition_analysis.per_100`.
+ * label did not print fall back to `nutrition_analysis.per_100`. A row without a standard key shows its
+ * printed label.
  */
 export function nutritionRows(result: ScanResult, view: NutritionBasisView): NutritionCell[] {
-  const rows = result.extraction.nutrition?.rows ?? [];
+  const table = result.extraction.nutrition;
+  const rows = table?.rows ?? [];
   const analysis = result.nutrition_analysis;
   const suspect = new Set(analysis?.consistency.suspect_keys ?? []);
   const per100Unit = analysis?.per_100_unit ?? "g";
@@ -54,8 +76,10 @@ export function nutritionRows(result: ScanResult, view: NutritionBasisView): Nut
       evidence: value?.evidence ?? null,
     };
 
+    const other = row.key === "other" && table ? scaledOther(row.values, view, table, per100Unit) : undefined;
+
     if (view === "per_pack") {
-      const amount = analysis?.per_pack[row.key];
+      const amount = analysis?.per_pack[row.key] ?? other;
       return {
         ...base,
         amount: amount ?? null,
@@ -68,7 +92,7 @@ export function nutritionRows(result: ScanResult, view: NutritionBasisView): Nut
     }
 
     if (!value) {
-      const derived = view === "per_100" ? analysis?.per_100[row.key] : undefined;
+      const derived = view === "per_100" ? (analysis?.per_100[row.key] ?? other) : undefined;
       return {
         ...base,
         amount: derived ?? null,
