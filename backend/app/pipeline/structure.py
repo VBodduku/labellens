@@ -68,6 +68,20 @@ def llm_image(image: PreparedImage) -> LLMImage:
     return LLMImage(mime_type="image/jpeg", data=buffer.getvalue())
 
 
+MIN_WORDS_FOR_CONTENT = 20     # a photo with this many OCR words has something the reading must contain
+
+
+def empty_reading(reading: LLMExtraction, ocr_words: int) -> str | None:
+    """An answer with no ingredients, nutrition rows or allergen statements for a photo full of text is a failed
+    reading (seen live from an overloaded model), not a label with nothing on it: ask again or try the next model."""
+    found = sum(len(p.ingredients) + len(p.allergen_statements) + (len(p.nutrition.rows) if p.nutrition else 0)
+                for p in reading.panels)
+    if found or ocr_words < MIN_WORDS_FOR_CONTENT:
+        return None
+    return (f"the answer lists no ingredients, nutrition rows or allergen statements, but the photo has {ocr_words} "
+            "words of text; transcribe the label")
+
+
 @dataclass(frozen=True)
 class StructureOutput:
     result: LLMResult[LLMExtraction]
@@ -76,11 +90,15 @@ class StructureOutput:
 
 async def structure(
     images: list[PreparedImage], hints: list[PanelHint], tokens: list[OcrToken], router: LLMRouter,
+    timeout_s: float | None = None,
 ) -> StructureOutput:
+    """`timeout_s` is the scan's budget for reading: the router uses it to start a fallback model beside a slow one."""
     result = await router.generate(
         lambda provider: build_prompt(images, hints, tokens, TOKEN_CAP[provider]),
         [llm_image(i) for i in images],
         LLMExtraction,
+        timeout_s=timeout_s,
+        check=lambda reading: empty_reading(reading, len(tokens)),
     )
     image_ids = [i.image_id for i in images]
     return StructureOutput(result, citations_for(tokens, image_ids, TOKEN_CAP[result.provider]))

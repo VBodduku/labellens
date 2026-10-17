@@ -56,6 +56,7 @@ VERIFY_RESERVE_S = 8.0          # kept back from verification for interpretation
 INTERPRET_CAP_S, INTERPRET_RESERVE_S = 10.0, 5.0
 SUMMARY_CAP_S, SUMMARY_RESERVE_S = 8.0, 1.5
 MIN_STAGE_S = 3.0
+STRUCTURE_GRACE_S = 1.0         # the router keeps to its own budget; this only catches a call that ignores it
 
 
 class Deadline:
@@ -135,7 +136,9 @@ async def _structure(scan: ScanInput, tokens: list[OcrToken], router: LLMRouter,
         if budget_s <= 0:
             raise TimeoutError
         with stage("llm"):
-            structured = await asyncio.wait_for(structure(scan.images, scan.hints, tokens, router), budget_s)
+            # The router gets the budget (so it can hedge a slow model); the outer limit is only a safety net.
+            structured = await asyncio.wait_for(structure(scan.images, scan.hints, tokens, router, budget_s),
+                                                budget_s + STRUCTURE_GRACE_S)
     except (AllProvidersFailedError, TimeoutError) as exc:
         note("llm_failure", type(exc).__name__)
         with stage("ocr_only"):

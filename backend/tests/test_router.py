@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import time
 import json
 
 import pytest
@@ -60,9 +61,46 @@ def test_rate_limit_cools_down_and_falls_through_to_backup_then_ollama() -> None
 def test_a_callers_budget_covers_the_whole_chain(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("backend.app.llm.router.MIN_ATTEMPT_S", 0.05)
     slow, next_one = FakeLLM([GOOD], delay_s=1.0), FakeLLM([GOOD], label="gemini:lite", delay_s=1.0)
+    started = time.monotonic()
     with pytest.raises(AllProvidersFailedError):
         asyncio.run(LLMRouter([slow, next_one], 5).generate(lambda p: "x", [], LLMExtraction, timeout_s=0.3))
-    assert len(slow.prompts) == 1 and next_one.prompts == []          # no fresh 0.3 s for the next model
+    assert time.monotonic() - started < 0.5                            # no fresh 0.3 s for the next model
+    assert len(slow.prompts) == 1 and len(next_one.prompts) == 1       # hedged inside the same budget
+
+
+def test_an_overloaded_model_that_is_slow_to_say_so_does_not_starve_the_fallback(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Seen live: gemini-3.5-flash took ~30 s to return its 503, leaving the fallbacks a few seconds."""
+    monkeypatch.setattr("backend.app.llm.router.MIN_ATTEMPT_S", 0.05)
+    overloaded = FakeLLM([ModelOverloadedError(60)], label="gemini:primary:main", delay_s=2.0)
+    lite = FakeLLM([GOOD], label="gemini:primary:lite", model="lite", delay_s=0.1)
+    started = time.monotonic()
+    result = asyncio.run(LLMRouter([overloaded, lite], 5).generate(lambda p: "x", [], LLMExtraction, timeout_s=1.0))
+    assert result.model == "lite"
+    assert time.monotonic() - started < 1.0                            # answered at ~0.7 s, not after the 503
+
+
+def test_a_model_that_answers_in_time_costs_no_extra_call(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr("backend.app.llm.router.MIN_ATTEMPT_S", 0.05)
+    quick = FakeLLM([GOOD], label="gemini:primary:main", delay_s=0.05)
+    lite = FakeLLM([GOOD], label="gemini:primary:lite", model="lite")
+    result = asyncio.run(LLMRouter([quick, lite], 5).generate(lambda p: "x", [], LLMExtraction, timeout_s=1.0))
+    assert result.model == quick.model and lite.prompts == []
+
+
+def test_a_slow_model_that_answers_first_still_wins_and_the_spare_call_is_cancelled(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr("backend.app.llm.router.MIN_ATTEMPT_S", 0.05)
+    slow = FakeLLM([GOOD], label="gemini:primary:main", delay_s=0.45)
+    spare = FakeLLM([GOOD], label="gemini:primary:lite", model="lite", delay_s=2.0)
+    started = time.monotonic()
+    result = asyncio.run(LLMRouter([slow, spare], 5).generate(lambda p: "x", [], LLMExtraction, timeout_s=0.6))
+    assert result.model == slow.model and len(spare.prompts) == 1     # spare started at 0.36 s, then cancelled
+    assert time.monotonic() - started < 0.6
+
+
+def test_without_a_budget_models_are_tried_one_after_another() -> None:
+    down = FakeLLM([ProviderUnavailableError("down")], label="gemini:primary:main", delay_s=0.05)
+    lite = FakeLLM([GOOD], label="gemini:primary:lite", model="lite")
+    assert run(LLMRouter([down, lite], 5)).model == "lite" and len(down.prompts) == 1
 
 
 def test_overloaded_model_is_skipped_for_its_cooldown_without_counting_as_rate_limit() -> None:
@@ -177,3 +215,28 @@ def test_each_key_gets_main_then_fallback_model(monkeypatch: pytest.MonkeyPatch)
     monkeypatch.setenv("GEMINI_FALLBACK_MODEL", "older-model, lite-model,")
     get_settings.cache_clear()
     assert [c.model for c in gemini_clients()] == ["main-model", "older-model", "lite-model"]
+
+
+def test_an_unusable_answer_gets_one_repair_then_the_next_model() -> None:
+    empty, lite = FakeLLM([GOOD, GOOD], label="gemini:primary:main"), FakeLLM([GOOD], label="gemini:primary:lite", model="lite")
+    seen: list[str] = []
+
+    def check(value: LLMExtraction) -> str | None:
+        seen.append("checked")
+        return "empty" if len(seen) <= 2 else None              # the first model's answer and its repair are rejected
+
+    result = asyncio.run(LLMRouter([empty, lite], 5).generate(lambda p: "x", [], LLMExtraction, check=check))
+    assert result.model == "lite" and len(empty.prompts) == 2
+    assert "- empty" in empty.prompts[1]                        # the repair prompt says what was wrong
+
+
+def test_a_backup_that_fails_at_once_passes_its_turn_on_without_waiting(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Seen live: the second model was out of quota (instant 429) while the first was still hanging."""
+    monkeypatch.setattr("backend.app.llm.router.MIN_ATTEMPT_S", 0.05)
+    hanging = FakeLLM([GOOD], label="gemini:primary:main", delay_s=5.0)
+    no_quota = FakeLLM([RateLimitedError(69072)], label="gemini:primary:flash")
+    lite = FakeLLM([GOOD], label="gemini:primary:lite", model="lite", delay_s=0.1)
+    started = time.monotonic()
+    result = asyncio.run(LLMRouter([hanging, no_quota, lite], 5).generate(lambda p: "x", [], LLMExtraction, timeout_s=1.0))
+    assert result.model == "lite"
+    assert time.monotonic() - started < 0.8                    # lite started right after the 429, at ~0.5 s

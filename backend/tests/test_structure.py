@@ -4,7 +4,7 @@ from PIL import Image
 
 from backend.app.pipeline.images import PreparedImage
 from backend.app.pipeline.structure import build_prompt, cap_tokens, citations_for, format_tokens, llm_image
-from backend.tests.fakes import token
+from backend.tests.fakes import recorded, token
 
 
 def test_token_list_is_grouped_per_image_with_full_ids() -> None:
@@ -34,3 +34,17 @@ def test_llm_image_is_jpeg_capped_at_1600() -> None:
     image = PreparedImage("img_0", 2000, 1000, Image.new("RGB", (2000, 1000), "white"))
     part = llm_image(image)
     assert part.mime_type == "image/jpeg" and part.data[:2] == b"\xff\xd8"
+
+
+def test_an_empty_reading_of_a_photo_full_of_text_is_rejected() -> None:
+    from backend.app.pipeline.llm_schema import LLMExtraction
+    from backend.app.pipeline.structure import empty_reading
+
+    section = {"presence": "not_found", "complete": False}
+    empty = LLMExtraction.model_validate({"panels": [{"image_id": "img_0", "ingredients_section": section,
+                                                       "allergen_section": section, "nutrition_section": section,
+                                                       "veg_mark": {"value": "not_found"}}]})
+    assert empty_reading(empty, 180) is not None and "180 words" in (empty_reading(empty, 180) or "")
+    assert empty_reading(empty, 5) is None                       # a photo with almost no text may really be empty
+    full = LLMExtraction.model_validate_json(recorded("ollama_test_label.json"))
+    assert empty_reading(full, 180) is None

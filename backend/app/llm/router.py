@@ -5,9 +5,9 @@ import asyncio
 import logging
 import time
 from collections.abc import Callable, Collection, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from functools import lru_cache
-from typing import Generic, TypeVar
+from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, ValidationError
 
@@ -32,6 +32,7 @@ M = TypeVar("M", bound=BaseModel)
 
 TIMEOUT_COOLDOWN_S = 300       # a provider too slow for image calls is skipped for them a while (local Ollama)
 MIN_ATTEMPT_S = 2.0            # less left of a caller's budget than this: stop trying further models
+HEDGE_SHARE = 0.5              # a model silent for this share of the time left gets the next model started beside it
 REPAIR_INSTRUCTION = (
     "\n\nYour previous answer did not match the required JSON schema. Validation errors:\n{errors}\n"
     "Return the corrected JSON only."
@@ -54,6 +55,17 @@ class LLMResult(Generic[M]):
     provider: ProviderName
     model: str
     attempts: int
+
+
+@dataclass
+class _Run:
+    """Shared bookkeeping of one generate() call across the models it tries (possibly two at once)."""
+    schemas: dict[bool, dict]
+    timeout: float
+    deadline: float | None
+    check: Callable[[Any], str | None] | None = None
+    attempts: int = 0
+    retry_after: list[int] = field(default_factory=list)
 
 
 class AllProvidersFailedError(Exception):
@@ -110,65 +122,121 @@ class LLMRouter:
     async def generate(
         self, prompt_for: Callable[[ProviderName], str], images: list[LLMImage], schema_model: type[M],
         timeout_s: float | None = None, providers: Collection[ProviderName] | None = None,
+        check: Callable[[M], str | None] | None = None,
     ) -> LLMResult[M]:
         """`providers` restricts the chain (e.g. user-facing prose only from Gemini). `timeout_s` is the
-        caller's budget for the whole chain; without it each attempt gets LLM_TIMEOUT_S."""
-        schemas = {flag: inline_schema(schema_model, require_all=flag) for flag in (True, False)}
-        timeout = min(self._timeout_s, timeout_s) if timeout_s is not None else self._timeout_s
-        deadline = self._clock() + timeout_s if timeout_s is not None else None
-        attempts = 0
-        retry_after: list[int] = []
-        for state in self._states:
-            if providers is not None and state.client.name not in providers:
-                continue
-            if state.cooldown_until > self._clock():
-                if state.rate_limited:
-                    retry_after.append(int(state.cooldown_until - self._clock()) + 1)
-                continue
-            if images and state.slow_until > self._clock():
-                continue
-            prompt = prompt_for(state.client.name)
-            schema = schemas[getattr(state.client, "require_all_fields", True)]
-            for repair in (False, True):
-                limit = timeout if deadline is None else min(timeout, deadline - self._clock())
-                if deadline is not None and limit < MIN_ATTEMPT_S:
-                    break
-                attempts += 1
-                try:
-                    text = await asyncio.wait_for(state.client.generate_json(prompt, images, schema, limit), limit)
-                    value = schema_model.model_validate_json(text)
-                except ValidationError as exc:
-                    self._fail(state, f"invalid output: {exc.error_count()} errors")
-                    if repair:
-                        break
-                    prompt = prompt + REPAIR_INSTRUCTION.format(errors=_short_errors(exc))
+        caller's budget for the whole chain; without it each attempt gets LLM_TIMEOUT_S. `check` rejects a
+        schema-valid answer that is still unusable (it returns the reason), like invalid JSON: one repair, then
+        the next model.
+
+        Models are tried in order. With a budget, a model that has used HEDGE_SHARE of the time left without
+        answering is not waited out alone: the next model starts alongside it and the first valid answer wins.
+        An overloaded model can take ~30 s just to return its 503, which used to leave the fallbacks no time.
+        A model that answers in time costs no extra call."""
+        run = _Run(
+            schemas={flag: inline_schema(schema_model, require_all=flag) for flag in (True, False)},
+            timeout=min(self._timeout_s, timeout_s) if timeout_s is not None else self._timeout_s,
+            deadline=self._clock() + timeout_s if timeout_s is not None else None,
+            check=check,
+        )
+        waiting = [s for s in self._states if providers is None or s.client.name in providers]
+        running: dict[asyncio.Task[LLMResult[M] | None], ClientState] = {}
+        hedge_at: float | None = None
+
+        def start_next() -> float | None:
+            """Start the next usable model; returns when to hedge it (None: no budget, or nothing left)."""
+            while waiting:
+                state = waiting.pop(0)
+                if self._usable(state, images, run.retry_after):
+                    task = asyncio.create_task(self._attempt(state, prompt_for, images, schema_model, run))
+                    running[task] = state
+                    if run.deadline is None or not waiting:
+                        return None
+                    return self._clock() + HEDGE_SHARE * (run.deadline - self._clock())
+            return None
+
+        hedge_at = start_next()
+        try:
+            while running:
+                wait_s = max(0.0, hedge_at - self._clock()) if hedge_at is not None else None
+                done, _ = await asyncio.wait(running, timeout=wait_s, return_when=asyncio.FIRST_COMPLETED)
+                if not done:                                    # the current model is slow: hedge with the next
+                    hedge_at = start_next()
                     continue
-                except RateLimitedError as exc:
-                    state.cooldown_until = self._clock() + exc.retry_after_s
-                    state.rate_limited = True
-                    retry_after.append(exc.retry_after_s)
-                    self._fail(state, f"rate limited for {exc.retry_after_s}s")
-                    break
-                except AccessDeniedError as exc:
-                    self.report_access_denied(state.client.label, exc.retry_after_s)
-                    self._fail(state, f"access denied, key skipped for {exc.retry_after_s}s")
-                    break
-                except ModelOverloadedError as exc:
-                    state.cooldown_until = self._clock() + exc.retry_after_s
-                    state.rate_limited = False
-                    self._fail(state, f"overloaded, skipped for {exc.retry_after_s}s")
-                    break
-                except TimeoutError:
-                    if images and limit >= self._timeout_s:     # too slow for photos, not a short caller budget
-                        state.slow_until = self._clock() + TIMEOUT_COOLDOWN_S
-                    self._fail(state, f"timed out after {limit:g}s")
-                    break
-                except LLMError as exc:
-                    self._fail(state, str(exc) or type(exc).__name__)
-                    break
-                state.last_ok, state.last_error = self._clock(), None
-                return LLMResult(value=value, provider=state.client.name, model=state.client.model, attempts=attempts)
-        raise AllProvidersFailedError(rate_limited=bool(retry_after), retry_after_s=min(retry_after, default=None))
+                for task in done:
+                    running.pop(task)
+                    result = task.result()
+                    if result is not None:
+                        return result
+                    hedge_at = start_next()                     # a failed model's turn passes on straight away
+        finally:
+            for task in running:
+                task.cancel()
+        raise AllProvidersFailedError(rate_limited=bool(run.retry_after),
+                                      retry_after_s=min(run.retry_after, default=None))
+
+    def _usable(self, state: ClientState, images: list[LLMImage], retry_after: list[int]) -> bool:
+        """Checked when a model's turn comes, so a key refused or rate limited meanwhile is skipped."""
+        if state.cooldown_until > self._clock():
+            if state.rate_limited:
+                retry_after.append(int(state.cooldown_until - self._clock()) + 1)
+            return False
+        return not (images and state.slow_until > self._clock())
+
+    async def _attempt(
+        self, state: ClientState, prompt_for: Callable[[ProviderName], str], images: list[LLMImage],
+        schema_model: type[M], run: "_Run",
+    ) -> LLMResult[M] | None:
+        """One model: a call plus one repair attempt on invalid JSON or an unusable answer. None when it failed."""
+        prompt = prompt_for(state.client.name)
+        schema = run.schemas[getattr(state.client, "require_all_fields", True)]
+        for repair in (False, True):
+            limit = run.timeout if run.deadline is None else min(run.timeout, run.deadline - self._clock())
+            if run.deadline is not None and limit < MIN_ATTEMPT_S:
+                return None
+            run.attempts += 1
+            try:
+                text = await asyncio.wait_for(state.client.generate_json(prompt, images, schema, limit), limit)
+                value = schema_model.model_validate_json(text)
+                problem = run.check(value) if run.check else None
+            except ValidationError as exc:
+                self._fail(state, f"invalid output: {exc.error_count()} errors")
+                if repair:
+                    return None
+                prompt = prompt + REPAIR_INSTRUCTION.format(errors=_short_errors(exc))
+                continue
+            except RateLimitedError as exc:
+                state.cooldown_until = self._clock() + exc.retry_after_s
+                state.rate_limited = True
+                run.retry_after.append(exc.retry_after_s)
+                self._fail(state, f"rate limited for {exc.retry_after_s}s")
+                return None
+            except AccessDeniedError as exc:
+                self.report_access_denied(state.client.label, exc.retry_after_s)
+                self._fail(state, f"access denied, key skipped for {exc.retry_after_s}s")
+                return None
+            except ModelOverloadedError as exc:
+                state.cooldown_until = self._clock() + exc.retry_after_s
+                state.rate_limited = False
+                self._fail(state, f"overloaded, skipped for {exc.retry_after_s}s")
+                return None
+            except TimeoutError:
+                if images and limit >= self._timeout_s:     # too slow for photos, not a short caller budget
+                    state.slow_until = self._clock() + TIMEOUT_COOLDOWN_S
+                self._fail(state, f"timed out after {limit:g}s")
+                return None
+            except LLMError as exc:
+                self._fail(state, str(exc) or type(exc).__name__)
+                return None
+            if problem:
+                self._fail(state, f"unusable answer: {problem}")
+                if repair:
+                    return None
+                prompt = prompt + REPAIR_INSTRUCTION.format(errors=f"- {problem}")
+                continue
+            state.last_ok, state.last_error = self._clock(), None
+            return LLMResult(value=value, provider=state.client.name, model=state.client.model, attempts=run.attempts)
+        return None
 
     def _fail(self, state: ClientState, reason: str) -> None:
         state.last_error = reason
