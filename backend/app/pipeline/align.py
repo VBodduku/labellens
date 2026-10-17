@@ -33,6 +33,8 @@ from backend.app.pipeline.textnorm import (
     numbers_differ,
     parse_number,
     parse_percentage,
+    printed_units,
+    unit_name,
 )
 from shared.contract import (
     AllergenStatement,
@@ -57,7 +59,7 @@ MIN_WINDOW_LENGTH = 0.8         # window text must be at least this x item text 
 MAX_LENGTH_FACTOR = 1.5         # matched text may be at most this x item text (+ slack) long
 LENGTH_SLACK = 4
 CONFIDENCE: dict[EvidenceStatus, float] = {"verified": 1.0, "approximate": 0.7, "unverified": 0.4}
-ALIGN_VERSION = "align-v5"         # part of the extraction cache key: older readings may trust a veg mark that is not green on the photo, or a
+ALIGN_VERSION = "align-v6"         # part of the extraction cache key: older readings may keep a number as a unit, trust a veg mark that is not green on the photo, or a
                                    # value on another row, or miss an allergen statement the OCR words show
 MISMATCH_ISSUE = "llm_ocr_number_mismatch"
 NOT_ON_PHOTO_ISSUE = "value_not_on_photo"
@@ -211,6 +213,21 @@ def single_evidence(alignment: Alignment) -> Evidence:
     })
 
 
+def value_unit(unit: str, *printed: str) -> str:
+    """The value's unit. The model sometimes repeats the number in `unit` ("501"), and the engine then drops the
+    value as an unknown unit; the unit is then taken from the first printed text that names exactly one: the OCR
+    words, the value as transcribed ("38.0 g"), the row label ("Sodium (mg)"). Otherwise it stays as given and
+    the engine will not use it."""
+    known = unit_name(unit)
+    if known is not None:
+        return known
+    for source in printed:
+        units = printed_units(source)
+        if len(units) == 1:
+            return units.pop()
+    return unit.strip()
+
+
 def _checked_amount(
     key: str, value: LLMNutrientValue, alignment: Alignment, issues: list[str],
 ) -> tuple[float | None, Readability]:
@@ -323,13 +340,13 @@ class _PanelAligner:
             for n in range(len(items)) if valid_parent(n) is None
         ]
 
-    def nutrient_value(self, key: str, value: LLMNutrientValue, issues: list[str]) -> NutrientValue:
+    def nutrient_value(self, key: str, label: str, value: LLMNutrientValue, issues: list[str]) -> NutrientValue:
         alignment = self.align(value.text, value.token_ids, value.box_2d)
         amount, readability = _checked_amount(key, value, alignment, issues)
         return NutrientValue(
             basis=value.basis,
             amount=amount,
-            unit=value.unit,
+            unit=value_unit(value.unit, alignment.ocr_text or "", value.text, label),
             raw_text=clean_item_text(alignment.ocr_text or value.text),
             evidence=single_evidence(alignment),
             readability=readability,
@@ -339,7 +356,7 @@ class _PanelAligner:
         """Values whose number is printed on the photo but on another row's line are not this row's values: a
         re-read once put Total Fat's 24.1 under a covered Sodium row. A value counts only on its label's line;
         when the label itself is not on the photo, the values are kept for display but never used."""
-        values = [self.nutrient_value(row.key, v, issues) for v in row.values]
+        values = [self.nutrient_value(row.key, row.label, v, issues) for v in row.values]
         label = align_span(row.label, [], None, self.image_id, self.index)
         if label.status == "unverified":
             if any(v.amount is not None for v in values):

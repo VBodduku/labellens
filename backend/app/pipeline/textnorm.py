@@ -11,6 +11,8 @@ _NUMBER = re.compile(r"\d+(?:[.,]\d+)?")
 _PERCENT = re.compile(r"(\d+(?:[.,]\d+)?)\s*%")
 _THOUSANDS = re.compile(r"^\d{1,3},\d{3}$")
 _UNREADABLE_MARKS = ("?", "�")
+_UNIT_NAMES = {"kcal": "kcal", "kj": "kJ", "g": "g", "mg": "mg", "mcg": "mcg", "µg": "mcg", "μg": "mcg", "ug": "mcg"}
+_UNIT_WORD = re.compile(r"(?<![^\W\d_])(kcal|kj|mcg|µg|μg|ug|mg|g)(?![^\W\d_])", re.IGNORECASE)   # not inside a word
 
 
 def norm(text: str) -> str:
@@ -51,6 +53,16 @@ def number_digits(text: str) -> str | None:
 def parse_percentage(text: str) -> float | None:
     match = _PERCENT.search(_O_AS_ZERO.sub("0", text))
     return _to_float(match.group(1)) if match else None
+
+
+def unit_name(unit: str) -> str | None:
+    """Canonical nutrient unit ("KCAL" -> "kcal", "µg" -> "mcg"), or None if it is not one."""
+    return _UNIT_NAMES.get(unit.strip().casefold())
+
+
+def printed_units(text: str) -> set[str]:
+    """Units written in printed text: "38.0 g" -> {"g"}, "Sodium (mg)" -> {"mg"}, "Sugars" -> set()."""
+    return {_UNIT_NAMES[match.group(1).casefold()] for match in _UNIT_WORD.finditer(text)}
 
 
 def numbers_differ(a: float, b: float, tolerance: float = 0.01) -> bool:

@@ -330,3 +330,29 @@ def test_the_same_number_on_the_right_line_is_used_instead() -> None:
     value = p.nutrition.rows[0].values[0]  # type: ignore[union-attr]
     assert (value.amount, value.readability) == (0.6, "clear")
     assert value.evidence is not None and value.evidence.token_ids == ["img_0:t13"]   # its own line's 0.6
+
+
+def unit_row(key: str, label: str, amount: float, unit: str, text: str, cite: int) -> dict:
+    return {"key": key, "label": label, "values": [{"basis": "per_100g", "amount": amount, "unit": unit, "text": text,
+                                                     "token_ids": [cite], "readability": "clear", "box_2d": None}]}
+
+
+@pytest.mark.parametrize("label,unit,text,expected", [
+    ("Total Fat (g)", "24.1", "24.1", "g"),         # the model repeated the number as the unit: the label names it
+    ("Total Fat", "24.1", "24.1 g", "g"),           # ... or the printed value does
+    ("Total Fat", "G", "24.1", "g"),                # a real unit is only tidied
+    ("Total Fat (kJ/kcal)", "24.1", "24.1", "24.1"),  # two units named: nothing is guessed
+])
+def test_a_number_given_as_the_unit_is_replaced_by_the_printed_unit(label: str, unit: str, text: str, expected: str) -> None:
+    p = aligned_table(unit_row("total_fat_g", label, 24.1, unit, text, 6))
+    assert p.nutrition.rows[0].values[0].unit == expected  # type: ignore[union-attr]
+
+
+def test_values_with_a_recovered_unit_reach_the_engine() -> None:
+    from backend.app import engine_adapter
+    from backend.tests.fixture_data import scan_result
+
+    p = aligned_table(unit_row("total_fat_g", "Total Fat (g)", 24.1, "24.1", "24.1", 6))
+    extraction = scan_result().extraction.model_copy(update={"nutrition": p.nutrition})
+    analysis = engine_adapter.analyze_nutrition(extraction)
+    assert analysis is not None and analysis.per_100["total_fat_g"] == pytest.approx(24.1)
