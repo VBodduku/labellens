@@ -11,6 +11,7 @@ import { useScanStore } from "./store/scan";
 const Landing = lazy(() => import("./routes/Landing"));
 const Scan = lazy(() => import("./routes/Scan"));
 const Result = lazy(() => import("./routes/Result"));
+const Compare = lazy(() => import("./routes/Compare"));
 const Profiles = lazy(() => import("./routes/Profiles"));
 const About = lazy(() => import("./routes/About"));
 const NotFound = lazy(() => import("./routes/NotFound"));
@@ -39,6 +40,7 @@ export function App() {
                   <Route path="/" element={<Landing />} />
                   <Route path="/scan" element={<Scan />} />
                   <Route path="/result" element={<Result />} />
+                  <Route path="/compare" element={<Compare />} />
                   <Route path="/profiles" element={<Profiles />} />
                   <Route path="/about" element={<About />} />
                   <Route path="*" element={<NotFound />} />

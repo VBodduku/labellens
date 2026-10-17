@@ -107,3 +107,70 @@ describe("scan store checkContradiction", () => {
     expect(request.extraction.checked_contradictions).toContain(disputed(path).key);
   });
 });
+
+describe("scan store comparison", () => {
+  const panel = { id: "panel_a", file: new Blob(["a"]), url: "blob:a", hint: "back" as const };
+
+  beforeEach(() => {
+    recheck.mockReset();
+    URL.revokeObjectURL = vi.fn();
+    useScanStore.setState({
+      panels: [panel],
+      result: structuredClone(fixtureScanResult),
+      scanProfiles: fixtureProfiles,
+      corrections: [],
+      status: "done",
+      isDemo: false,
+      pinned: null,
+      pinnedStatus: "idle",
+      pinnedError: null,
+      swapped: false,
+    });
+  });
+
+  it("sets the current scan aside as product A and starts an empty scan for product B", async () => {
+    await useScanStore.getState().startCompare();
+    const state = useScanStore.getState();
+    expect(state.pinned?.result.scan_id).toBe(fixtureScanResult.scan_id);
+    expect(state.pinned?.panels).toEqual([panel]);
+    expect(state).toMatchObject({ result: null, panels: [], status: "idle", swapped: false });
+  });
+
+  it("swaps A into the result screen and remembers that A still comes first", async () => {
+    await useScanStore.getState().startCompare();
+    const b = { ...structuredClone(fixtureScanResult), scan_id: "scan_b" };
+    useScanStore.setState({ result: b, status: "done" });
+    await useScanStore.getState().swapCompare();
+    const state = useScanStore.getState();
+    expect(state.result?.scan_id).toBe(fixtureScanResult.scan_id);
+    expect(state.pinned?.result.scan_id).toBe("scan_b");
+    expect(state.swapped).toBe(true);
+  });
+
+  it("rechecks product A for another family without touching the current scan's request", async () => {
+    await useScanStore.getState().startCompare();
+    const family: Profile[] = [fixtureProfiles[0]!];
+    recheck.mockImplementation(async (request: RecheckRequest) => ({ ...fixtureScanResult, reports: fixtureScanResult.reports.slice(0, 1), lang: request.lang }));
+    await useScanStore.getState().recheckPinned(family, "en");
+    const state = useScanStore.getState();
+    expect((recheck.mock.calls[0]?.[0] as RecheckRequest).profiles).toEqual(family);
+    expect(state.pinned).toMatchObject({ scanProfiles: family });
+    expect(state.pinned?.result.reports).toHaveLength(1);
+    expect(state).toMatchObject({ pinnedStatus: "idle", pinnedError: null, status: "idle" });
+  });
+
+  it("keeps product A's results when its recheck fails, and says so", async () => {
+    await useScanStore.getState().startCompare();
+    recheck.mockRejectedValue(new ApiError("NETWORK", "offline"));
+    await useScanStore.getState().recheckPinned([fixtureProfiles[0]!], "en");
+    const state = useScanStore.getState();
+    expect(state.pinned?.scanProfiles).toEqual(fixtureProfiles);
+    expect(state.pinnedError?.code).toBe("NETWORK");
+  });
+
+  it("stops comparing", async () => {
+    await useScanStore.getState().startCompare();
+    await useScanStore.getState().stopCompare();
+    expect(useScanStore.getState()).toMatchObject({ pinned: null, swapped: false });
+  });
+});

@@ -1,4 +1,4 @@
-import { Camera, ImagePlus, ScanText, Users } from "lucide-react";
+import { Camera, Columns2, ImagePlus, ScanText, Users } from "lucide-react";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -66,8 +66,9 @@ function EmptyResult() {
 
 function ResultView({ result, panels }: { result: ScanResult; panels: Panel[] }) {
   const { t } = useTranslation();
-  const { scanProfiles, isDemo, status, corrections, changedVerdicts, recheckError, addCorrection, recheck, checkContradiction } =
+  const { scanProfiles, isDemo, status, corrections, changedVerdicts, recheckError, addCorrection, recheck, checkContradiction, pinned, startCompare } =
     useScanStore();
+  const navigate = useNavigate();
   const { profiles: savedProfiles, hydrated: profilesHydrated } = useProfilesStore();
   const { lang, selectedProfileId, selectProfile } = useUiStore();
   const [tab, setTab] = useState<TabKey>("nutrition");
@@ -131,6 +132,21 @@ function ResultView({ result, panels }: { result: ScanResult; panels: Panel[] })
         <ButtonLink to="/scan" variant="ghost" className="ml-auto max-sm:hidden" icon={<Camera className="size-4" aria-hidden="true" />}>
           {t("result.scanAgain")}
         </ButtonLink>
+      </div>
+      <div className="mt-2">
+        {pinned && pinned.result.scan_id !== result.scan_id ? (
+          <ButtonLink to="/compare" variant="secondary" icon={<Columns2 className="size-4" aria-hidden="true" />}>
+            {t("compare.open", { name: pinned.result.extraction.product_name ?? t("result.unnamedProduct") })}
+          </ButtonLink>
+        ) : (
+          <Button
+            variant="secondary"
+            onClick={() => void startCompare().then(() => navigate("/scan?compare=1"))}
+            icon={<Columns2 className="size-4" aria-hidden="true" />}
+          >
+            {t("compare.start")}
+          </Button>
+        )}
       </div>
       <div className="mt-2">
         <ExtractionMetaBadges meta={result.extraction.meta} />

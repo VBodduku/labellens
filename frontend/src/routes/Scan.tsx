@@ -38,7 +38,7 @@ export default function Scan() {
   const params = new URLSearchParams(search);
   const debug = params.get("debug") === "1";
 
-  const { panels: storedPanels, isDemo, scanProfiles, addPanel, retakePanel, removePanel, setPanelHint, analyse } = useScanStore();
+  const { panels: storedPanels, isDemo, scanProfiles, addPanel, retakePanel, removePanel, setPanelHint, analyse, pinned } = useScanStore();
   const userProfiles = useProfilesStore((state) => state.profiles);
   const lang = useUiStore((state) => state.lang);
 
@@ -48,6 +48,8 @@ export default function Scan() {
       ? Number(retakeParam)
       : null;
   const panels = isDemo && resultRetake === null ? [] : storedPanels;
+  /** Scanning product B of a comparison: analysing opens the comparison instead of a single result. */
+  const comparing = params.get("compare") === "1" && pinned !== null && resultRetake === null;
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const [trayRetake, setTrayRetake] = useState<number | null>(null);
@@ -109,12 +111,19 @@ export default function Scan() {
   }
 
   function onAnalyse() {
-    void analyse({ profiles: userProfiles, lang });
-    navigate({ pathname: "/result", search: resultSearch(search) });
+    // Product B is checked for the same family as A when no family is saved (e.g. A is the demo label).
+    const family = comparing && pinned && userProfiles.length === 0 ? pinned.scanProfiles : userProfiles;
+    void analyse({ profiles: family, lang });
+    navigate(comparing ? "/compare" : { pathname: "/result", search: resultSearch(search) });
   }
 
   const issues = monitor.latest?.issues ?? null;
-  const topMessage = resultRetake !== null ? t("scan.retakeMode", { n: resultRetake + 1 }) : t("scan.title");
+  const topMessage =
+    resultRetake !== null
+      ? t("scan.retakeMode", { n: resultRetake + 1 })
+      : comparing && pinned
+        ? t("compare.scanBanner", { name: pinned.result.extraction.product_name ?? t("result.unnamedProduct") })
+        : t("scan.title");
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-black text-white">
@@ -141,7 +150,9 @@ export default function Scan() {
       <header className="relative z-10 flex items-center gap-3 px-3 pb-2 pt-[max(0.75rem,env(safe-area-inset-top))]">
         <button
           type="button"
-          onClick={() => navigate(resultRetake !== null ? { pathname: "/result", search: resultSearch(search) } : "/")}
+          onClick={() =>
+            navigate(resultRetake !== null ? { pathname: "/result", search: resultSearch(search) } : comparing ? "/compare" : "/")
+          }
           aria-label={t("scan.close")}
           className="flex size-11 items-center justify-center rounded-full bg-black/50 backdrop-blur-md"
         >
